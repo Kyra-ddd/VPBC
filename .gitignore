@@ -1,0 +1,39 @@
+# ===== 系统 / 编辑器 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+*.lnk
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===== Claude Code 本地态 =====
+# 对话流水只存本机，不入库（跨设备靠 README+CLAUDE.md 承载进度）
+.claude/projects/
+.claude/settings.local.json
+*.jsonl
+
+# 保留：.claude/CLAUDE.md（如有）、.claude/memory/（项目级记忆，需跨设备）
+
+# ===== 临时文件 =====
+~$*
+*.tmp
+*.bak
+*.log
+
+# ===== 敏感数据（切勿入库）=====
+# 本地配置、真实业务数据、密钥等
+.env
+.env.local
+secrets/
+*.key
+*.pem
+
+# ===== 大二进制文件 =====
+# Axure / Sketch 等大型原型文件建议走 Git LFS 或仅存云端链接
+# 如需忽略，取消下面注释：
+# *.rp
+# *.rplib

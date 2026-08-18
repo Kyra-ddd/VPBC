@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>研报 · 研报管理</title>
+<link rel="stylesheet" href="vp.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ 左侧导航 ============ -->
+  <aside class="sidebar">
+    <nav class="side-nav">
+      <div class="side-label">主菜单</div>
+      <a class="side-item active" href="05-research-report.html"><span class="ico">📄</span><span data-lang="zh">研报管理</span><span data-lang="en" style="display:none">Research</span></a>
+      <a class="side-item" href="02-industry-analyst.html"><span class="ico">👥</span><span data-lang="zh">行业配置</span><span data-lang="en" style="display:none">Industries</span></a>
+      <a class="side-item" href="03-stock-pool.html"><span class="ico">📊</span><span>股票池</span></a>
+      <a class="side-item" href="04-portfolio.html"><span class="ico">📈</span><span>模拟组合</span></a>
+      <a class="side-item" href="01-config.html"><span class="ico">⚙️</span><span>配置</span></a>
+    </nav>
+  </aside>
+
+  <!-- ============ 主列 ============ -->
+  <div class="main-col">
+
+    <!-- 顶栏 -->
+    <header class="topbar">
+      <div class="flex items-center gap-3">
+        <button class="sidebar-toggle" onclick="toggleSidebar()" title="收起菜单">☰</button>
+        <div class="brand">
+          <div class="brand-logo">VPBC</div>
+          <span class="brand-name">研报管理</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="tiny" style="color:rgba(255,255,255,0.8)" id="clock"></span>
+        <div class="user-chip">
+          <div class="avatar">K</div>
+          <span>kyra-ddd</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="container">
+      <!-- 页面标题区 -->
+      <div class="page-head">
+        <div class="page-title">
+          <span class="ti">📄</span>研报
+          <button class="btn btn-primary btn-sm" style="margin-left:16px" onclick="showEditor()">＋ 新建研报</button>
+        </div>
+        <div class="page-meta">创建研报 · 关联行业/股票/组合 · 记录投资观点</div>
+      </div>
+
+      <!-- 筛选区 -->
+      <div class="card mb-4">
+        <div class="card-body" style="padding:12px 16px">
+          <div class="flex items-center gap-3 flex-wrap">
+            <input class="input" placeholder="标题/标签" style="width:140px">
+            <input class="input" placeholder="股票代码（含市场）" style="width:140px">
+            <select class="select filter-select" style="min-width:86px">
+              <option value="">全部市场</option>
+              <option value="HK">港股</option>
+              <option value="US">美股</option>
+              <option value="CN">A股</option>
+            </select>
+            <select class="select filter-select" style="min-width:86px">
+              <option value="">全部行业</option>
+              <option>科技</option>
+              <option>金融</option>
+              <option>地产</option>
+              <option>消费</option>
+            </select>
+            <select class="select filter-select" style="min-width:86px">
+              <option value="">全部评级</option>
+              <option>AAA+</option>
+              <option>AAA</option>
+              <option>AAA-</option>
+              <option>AA+</option>
+              <option>AA</option>
+              <option>AA-</option>
+              <option>A+</option>
+              <option>A</option>
+              <option>A-</option>
+              <option>BBB+</option>
+              <option>BBB</option>
+              <option>BBB-</option>
+              <option>BB+</option>
+              <option>BB</option>
+              <option>BB-</option>
+              <option>B+</option>
+              <option>B</option>
+              <option>B-</option>
+              <option>CCC</option>
+              <option>CC</option>
+              <option>C</option>
+              <option>D</option>
+            </select>
+            <select class="select filter-select" style="min-width:86px">
+              <option value="">全部状态</option>
+              <option>已发布</option>
+              <option>草稿</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 研报列表 -->
+      <div class="card">
+        <div class="card-body" style="padding:0">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>股票</th>
+                <th>研报标题</th>
+                <th>市场-行业</th>
+                <th>评级</th>
+                <th>创建人</th>
+                <th>创建时间</th>
+                <th>附件</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="reportBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="notice mt-4">
+        <span class="ico">ⓘ</span>
+        <span>研究员仅能查看其覆盖行业内的研报；管理员可查看全部研报。涨跌色采用<strong>港式惯例</strong>：上涨=#B23A48，下跌=#20A06E。</span>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ============ 研报详情弹窗 ============ -->
+<div class="modal" id="detailModal" style="display:none">
+  <div class="modal-overlay" onclick="closeDetail()"></div>
+  <div class="modal-panel" style="max-width:800px">
+    <div class="modal-header">
+      <div class="modal-title">港股科技行业深度报告：AI 驱动下的新机遇</div>
+      <button class="btn btn-ghost btn-sm" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:70vh;overflow-y:auto">
+      <!-- 信息卡 -->
+      <div class="flex gap-3 flex-wrap mb-4" style="font-size:13px">
+        <span class="tag tag-blue">行业报告</span>
+        <span>港股 · 科技</span>
+        <span class="tag tag-green">AAA+</span>
+        <span>关联股票：<strong>腾讯控股 00700.HK</strong></span>
+        <span>关联组合：<strong>港股大消费模拟盘</strong></span>
+      </div>
+      <div class="flex gap-4 mb-4" style="font-size:12px;color:var(--vp-gray)">
+        <span>创建人：David</span>
+        <span>创建时间：2026-08-10</span>
+        <span>最后修改：2026-08-12</span>
+        <span>版本：v1.2</span>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--vp-gray-100);margin:16px 0">
+      <!-- 正文 -->
+      <div style="font-size:14px;line-height:1.8;color:var(--vp-ink)">
+        <p><strong>一、行业 overview</strong></p>
+        <p>港股科技板块在 2026 年上半年整体表现强劲，受益于 AI 技术的快速发展与商业化落地。我们认为，AI 将成为港股科技板块的核心驱动力...</p>
+        <p style="margin-top:16px"><strong>二、核心标的推荐</strong></p>
+        <p>基于我们的分析，推荐以下标的：腾讯控股（00700.HK）、舜宇光学（02382.HK）、阿里巴巴（09988.HK）...</p>
+        <p style="margin-top:16px"><strong>三、风险提示</strong></p>
+        <p>宏观经济波动、AI 监管政策变化、市场竞争加剧等风险...</p>
+      </div>
+      <!-- 关联股票 -->
+      <div style="margin-top:24px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px">关联股票</div>
+        <div class="flex gap-2 flex-wrap">
+          <div class="stock-chip">00700.HK 腾讯控股</div>
+          <div class="stock-chip">02382.HK 舜宇光学</div>
+          <div class="stock-chip">09988.HK 阿里巴巴</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeDetail()">关闭</button>
+      <button class="btn btn-ghost btn-sm" onclick="alert('原型：编辑研报')">✏️ 编辑</button>
+      <button class="btn btn-ghost btn-sm" onclick="alert('原型：分享')">📤 分享</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 新建/编辑研报弹窗 ============ -->
+<div class="modal" id="editorModal" style="display:none">
+  <div class="modal-overlay" onclick="closeEditor()"></div>
+  <div class="modal-panel" style="max-width:700px">
+    <div class="modal-header">
+      <div class="modal-title" id="editorTitle">新建研报</div>
+      <button class="btn btn-ghost btn-sm" onclick="closeEditor()">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:70vh;overflow-y:auto">
+      <div class="form-row">
+        <label class="form-label required">研报标题</label>
+        <input class="input" style="width:100%" placeholder="如：港股科技行业深度报告">
+      </div>
+      <div class="form-row">
+        <label class="form-label required">市场</label>
+        <select class="select" style="width:100%">
+          <option value="">请选择市场</option>
+          <option>港股</option>
+          <option>美股</option>
+          <option>A股</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label required">行业</label>
+        <select class="select" style="width:100%">
+          <option value="">请先选择市场</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label required">股票代码（含市场）</label>
+        <input id="stockCodeInput" class="input" style="width:100%" placeholder="如：00700.HK、NVDA.US、600519.SH" required>
+      </div>
+      <div class="form-row">
+        <label class="form-label">关联组合</label>
+        <select class="select" style="width:100%">
+          <option value="">不关联组合</option>
+          <option>港股大消费模拟盘</option>
+          <option>美股科技组合</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">关联组合</label>
+        <select class="select" style="width:100%">
+          <option value="">不关联组合</option>
+          <option>港股大消费模拟盘</option>
+          <option>美股科技组合</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label required">评级</label>
+        <select class="select" style="width:100%">
+          <option value="">请选择评级</option>
+          <option>AAA+</option>
+          <option>AAA</option>
+          <option>AAA-</option>
+          <option>AA+</option>
+          <option>AA</option>
+          <option>AA-</option>
+          <option>A+</option>
+          <option>A</option>
+          <option>A-</option>
+          <option>BBB+</option>
+          <option>BBB</option>
+          <option>BBB-</option>
+          <option>BB+</option>
+          <option>BB</option>
+          <option>BB-</option>
+          <option>B+</option>
+          <option>B</option>
+          <option>B-</option>
+          <option>CCC</option>
+          <option>CC</option>
+          <option>C</option>
+          <option>D</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label required">正文</label>
+        <textarea class="textarea" style="width:100%;height:200px" placeholder="请输入研报正文内容..."></textarea>
+      </div>
+      <div class="form-row">
+        <label class="form-label">附件</label>
+        <input id="reportAttachment" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%">
+      </div>
+      <div class="form-row">
+        <label class="form-label">标签</label>
+        <input class="input" style="width:100%" placeholder="多个标签用逗号分隔，如：AI、半导体、消费">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeEditor()">取消</button>
+      <button class="btn btn-ghost btn-sm" onclick="alert('原型：保存草稿')">💾 存草稿</button>
+      <button class="btn btn-primary btn-sm" onclick="validateReportForm()">🚀 发布</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== 研报数据 ===== */
+const REPORTS = [
+  { id:"R001", title:"港股科技行业深度报告：AI 驱动下的新机遇", market:"港股", industry:"科技", stock:"00700.HK", rating:"AAA+", ratingCls:"tag-green", creator:"David", time:"2026-08-10", attachment:{ name:"AI-港股科技深度报告.pdf", size:"2.3MB", type:"PDF" } },
+  { id:"R002", title:"阿里巴巴首次覆盖：电商+云双轮驱动", market:"港股", industry:"零售", stock:"09988.HK", rating:"AAA", ratingCls:"tag-green", creator:"Kyra", time:"2026-08-09", attachment:{ name:"Alibaba-cover.docx", size:"0.8MB", type:"DOCX" } },
+  { id:"R003", title:"美股科技 Q2 财报前瞻：AI 变现加速", market:"美股", industry:"科技", stock:"NVDA.US", rating:"AA+", ratingCls:"tag-blue", creator:"Kyra", time:"2026-08-08", attachment:{ name:"Q2-AI-earnings.pdf", size:"1.5MB", type:"PDF" } },
+  { id:"R004", title:"港股金融板块周报：降息预期升温", market:"港股", industry:"金融", stock:"0939.HK", rating:"AAA-", ratingCls:"tag-green", creator:"Grace", time:"2026-08-07", attachment:null },
+  { id:"R005", title:"固收专题：美债收益率曲线倒挂分析", market:"美股", industry:"宏观", stock:"—", rating:"BBB+", ratingCls:"tag-gray", creator:"Grace", time:"2026-08-05", attachment:{ name:"rates-curve.xlsx", size:"0.4MB", type:"XLSX" } },
+  { id:"R006", title:"腾讯控股跟踪报告：游戏回暖，广告提速", market:"港股", industry:"科技", stock:"00700.HK", rating:"AA+", ratingCls:"tag-blue", creator:"David", time:"2026-08-03", attachment:{ name:"Tencent-update.pdf", size:"1.1MB", type:"PDF" } },
+];
+
+function renderReports() {
+  const body = document.getElementById("reportBody");
+  body.innerHTML = REPORTS.map(r => {
+    const att = r.attachment ? `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();showAttachment('${r.id}')">查看</button>` : '';
+    return `
+      <tr style="cursor:pointer" onclick="showDetail('${r.id}')">
+        <td class="mono-num muted">${r.stock || '—'}</td>
+        <td><div class="bold" style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</div></td>
+        <td>${r.market} · ${r.industry}</td>
+        <td><span class="tag ${r.ratingCls}">${r.rating}</span></td>
+        <td>${r.creator}</td>
+        <td class="muted">${r.time}</td>
+        <td>${att}</td>
+        <td class="center">
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();showDetail('${r.id}')">查看</button>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：编辑研报')">编辑</button>
+        </td>
+      </tr>`;
+  }).join("");
+}
+
+/* ===== 弹窗控制 ===== */
+function showDetail(id) {
+  document.getElementById('detailModal').style.display = '';
+}
+function closeDetail() {
+  document.getElementById('detailModal').style.display = 'none';
+}
+function showAttachment(id) {
+  const report = REPORTS.find(item => item.id === id);
+  const attachment = report?.attachment;
+  if (!attachment) {
+    alert('当前研报没有上传附件');
+    return;
+  }
+  alert(`附件信息\n名称：${attachment.name}\n类型：${attachment.type}\n大小：${attachment.size}`);
+}
+function showEditor() {
+  document.getElementById('editorTitle').textContent = '新建研报';
+  document.getElementById('editorModal').style.display = '';
+}
+function closeEditor() {
+  document.getElementById('editorModal').style.display = 'none';
+}
+function validateReportForm() {
+  const stockCode = document.getElementById('stockCodeInput')?.value?.trim();
+  const file = document.getElementById('reportAttachment')?.files?.[0];
+  const marketCodePattern = /(?:\d{5,6}\.(?:HK|US|SH|SZ|CN)|[A-Za-z0-9]+\.(?:HK|US|SH|SZ|CN))/i;
+
+  if (!stockCode) {
+    alert('股票代码为必填项，且必须包含市场后缀，如：00700.HK、NVDA.US');
+    return false;
+  }
+  if (!marketCodePattern.test(stockCode)) {
+    alert('股票代码必须带市场后缀，例如 00700.HK / NVDA.US / 600519.SH');
+    return false;
+  }
+  if (file) {
+    alert('原型：已校验通过，准备发布研报，并保留附件信息');
+  } else {
+    alert('原型：已校验通过，准备发布研报（无附件）');
+  }
+  return true;
+}
+
+/* ===== 时钟 ===== */
+function tick() {
+  const d = new Date(); const p = n => String(n).padStart(2,"0");
+  document.getElementById("clock").textContent = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+tick(); setInterval(tick, 30000);
+
+/* ===== 侧边栏折叠 ===== */
+const SIDEBAR_KEY = 'vp-sidebar-collapsed';
+function applySidebarState() {
+  const sidebar = document.querySelector('.sidebar');
+  const toggleBtn = document.querySelector('.sidebar-toggle');
+  if (!sidebar || !toggleBtn) return;
+  const collapsed = localStorage.getItem(SIDEBAR_KEY) === '1';
+  sidebar.classList.toggle('collapsed', collapsed);
+  toggleBtn.setAttribute('title', collapsed ? '展开菜单' : '收起菜单');
+  toggleBtn.textContent = collapsed ? '☰' : '☰';
+}
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  if (!sidebar) return;
+  const collapsed = sidebar.classList.toggle('collapsed');
+  localStorage.setItem(SIDEBAR_KEY, collapsed ? '1' : '0');
+  const toggleBtn = document.querySelector('.sidebar-toggle');
+  if (toggleBtn) toggleBtn.setAttribute('title', collapsed ? '展开菜单' : '收起菜单');
+}
+applySidebarState();
+
+/* ===== 初始化 ===== */
+renderReports();
+</script>
+
+<style>
+.stock-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--vp-mint-50);border:1px solid var(--vp-gray-100);border-radius:6px;font-size:13px;color:var(--vp-ink)}
+.chip-input{padding:8px 12px;border:1px solid var(--vp-gray-100);border-radius:8px;background:#fff}
+.file-upload{display:flex;align-items:center;justify-content:center;gap:8px;padding:24px;border:2px dashed var(--vp-gray-100);border-radius:8px;color:var(--vp-gray);cursor:pointer;font-size:14px}
+.file-upload:hover{border-color:var(--vp-green);color:var(--vp-green)}
+.tag-lime{background:#E8F5E9;color:#1B5E20;font-size:11px;padding:2px 6px;border-radius:4px}
+.form-row{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:600;color:var(--vp-ink);margin-bottom:6px}
+.form-label.required::after{content:" *";color:var(--vp-danger)}
+.textarea{width:100%;min-height:120px;padding:10px 12px;border:1px solid var(--vp-gray-100);border-radius:8px;font-size:14px;font-family:inherit;resize:vertical}
+.textarea:focus{outline:none;border-color:var(--vp-green);box-shadow:0 0 0 3px rgba(32,160,110,0.1)}
+.modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center}
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.4)}
+.modal-panel{position:relative;background:#fff;border-radius:12px;width:90%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--vp-gray-100)}
+.modal-title{font-size:16px;font-weight:600;color:var(--vp-ink)}
+.modal-body{flex:1;overflow-y:auto;padding:20px}
+.modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid var(--vp-gray-100)}
+/* 筛选区下拉：按内容自适应宽度，不再撑满整行 */
+.filter-select{width:auto;flex:0 1 auto}
+</style>
+</body>
+</html>

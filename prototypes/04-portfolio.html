@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模拟组合 · 研报管理</title>
+<link rel="stylesheet" href="vp.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ 左侧导航 ============ -->
+  <aside class="sidebar">
+    <nav class="side-nav">
+      <div class="side-label">主菜单</div>
+      <a class="side-item" href="05-research-report.html"><span class="ico">📄</span><span data-lang="zh">研报管理</span><span data-lang="en" style="display:none">Research</span></a>
+      <a class="side-item" href="02-industry-analyst.html"><span class="ico">👥</span><span data-lang="zh">行业配置</span><span data-lang="en" style="display:none">Industries</span></a>
+      <a class="side-item" href="03-stock-pool.html"><span class="ico">📊</span><span>股票池</span></a>
+      <a class="side-item active" href="04-portfolio.html"><span class="ico">📈</span><span>模拟组合</span></a>
+      <a class="side-item" href="01-config.html"><span class="ico">⚙️</span><span>配置</span></a>
+    </nav>
+  </aside>
+
+  <!-- ============ 主列 ============ -->
+  <div class="main-col">
+
+    <!-- 顶栏 -->
+    <header class="topbar">
+      <div class="flex items-center gap-3">
+        <button class="sidebar-toggle" onclick="toggleSidebar()" title="收起菜单">☰</button>
+        <div class="brand">
+          <div class="brand-logo">VPBC</div>
+          <span class="brand-name">研报管理</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="tiny" style="color:rgba(255,255,255,0.8)" id="clock"></span>
+        <div class="user-chip">
+          <div class="avatar">K</div>
+          <span>kyra-ddd</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="container">
+      <!-- 页面标题区 -->
+      <div class="page-head">
+        <div class="page-title"><span class="ti">📈</span>模拟组合</div>
+        <div class="page-meta">创建虚拟组合 · 记录模拟持仓 · 分享讨论</div>
+      </div>
+
+      <!-- 子页签 -->
+      <div class="segmented mb-4" id="mainTab">
+        <button class="seg active" data-tab="mine">我的组合</button>
+        <button class="seg" data-tab="shared">被分享的组合</button>
+      </div>
+
+      <!-- ============ Tab 1：我的组合 ============ -->
+      <section class="tab-pane" data-pane="mine">
+        <div class="card">
+          <div class="card-head">
+            <div class="flex items-center gap-3">
+              <div class="search-box"><input class="input" placeholder="搜索组合名称 / 创建人"></div>
+              <div class="segmented">
+                <button class="seg active">全部</button>
+                <button class="seg">私人</button>
+                <button class="seg">已分享</button>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="alert('原型：新建组合（名称/描述/初始资金）')">＋ 新建组合</button>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="list-scroll">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>组合名称</th>
+                  <th>持仓数</th>
+                  <th>总权重</th>
+                  <th>初始资金</th>
+                  <th>创建人</th>
+                  <th>分享</th>
+                  <th>状态</th>
+                  <th class="right">操作</th>
+                </tr>
+              </thead>
+              <tbody id="portfolioBody"></tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 同页详情区：点组合名后展开在列表下方 -->
+        <section id="inlineDetail" style="display:none">
+          <div class="inline-detail-divider">
+            <span>组合详情</span>
+            <button class="btn btn-ghost btn-sm" onclick="closeDetail()">收起 ✕</button>
+          </div>
+          <div id="inlineDetailBody">
+        <!-- 汇总 KPI -->
+        <div class="kpi-grid mb-4">
+          <div class="kpi">
+            <div class="kpi-icon">💰</div>
+            <div>
+              <div class="kpi-num" style="color:var(--vp-green)">+12.8%</div>
+              <div class="kpi-label">累计收益率</div>
+            </div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-icon">📈</div>
+            <div>
+              <div class="kpi-num" style="color:var(--vp-green)">+1.25%</div>
+              <div class="kpi-label">今日收益率</div>
+            </div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-icon">💵</div>
+            <div>
+              <div class="kpi-num">1,128万</div>
+              <div class="kpi-label">当前市值</div>
+            </div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-icon">💳</div>
+            <div>
+              <div class="kpi-num">1,000万</div>
+              <div class="kpi-label">初始资金</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 基本信息 + 操作 -->
+        <div class="card mb-4">
+          <div class="card-head">
+            <div class="flex items-center gap-3">
+              <div class="card-title" id="detailTitle">港股大消费模拟盘</div>
+              <span class="tag tag-green">已分享 · 只读</span>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-primary btn-sm" onclick="alert('原型：调仓操作')">⚙️ 调仓</button>
+              <button class="btn btn-ghost btn-sm" onclick="alert('原型：添加标的')">＋ 添加标的</button>
+              <button class="btn btn-ghost btn-sm" onclick="alert('原型：分享设置')">📤 分享</button>
+              <button class="btn btn-ghost btn-sm" onclick="alert('原型：编辑组合信息')">✏️ 编辑</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="flex gap-4 flex-wrap" style="font-size:13px;color:var(--vp-gray)">
+              <span>创建人：<strong style="color:var(--vp-ink)">David</strong></span>
+              <span>初始资金：<strong style="color:var(--vp-ink)">1,000万</strong></span>
+              <span>当前市值：<strong style="color:var(--vp-ink)">1,128万</strong></span>
+              <span>持仓：<strong style="color:var(--vp-ink)">4只</strong></span>
+              <span>总权重：<strong style="color:var(--vp-ink)">87%</strong></span>
+              <span>预留现金：<strong style="color:var(--vp-ink)">130万</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 区间表现：净值走势 -->
+        <div class="card mb-4">
+          <div class="card-head">
+            <div class="flex items-center gap-3">
+              <div class="card-title">区间表现</div>
+              <div class="segmented" id="rangeSeg">
+                <button class="seg" data-range="1M">近1月</button>
+                <button class="seg" data-range="3M">近3月</button>
+                <button class="seg active" data-range="6M">近6月</button>
+                <button class="seg" data-range="YTD">今年以来</button>
+                <button class="seg" data-range="1Y">近1年</button>
+                <button class="seg" data-range="MAX">成立以来</button>
+              </div>
+            </div>
+            <label class="flex items-center gap-2 tiny" style="cursor:pointer">
+              <input type="checkbox" id="bmToggle" checked> 对比基准（恒生指数）
+            </label>
+          </div>
+          <div class="card-body">
+            <div id="navChart" style="position:relative"></div>
+            <div class="tiny" style="color:var(--vp-gray-light);margin-top:6px">区间起始净值归一为 1.00 · 悬停查看各日期数值</div>
+          </div>
+        </div>
+
+        <!-- 持仓明细 + 调仓记录：并行两列 -->
+        <div class="duo-grid mb-4">
+          <!-- 左：持仓明细 -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">持仓明细</div>
+              <div class="flex gap-2">
+                <button class="btn btn-ghost btn-sm" onclick="alert('原型：调整权重')">调整权重</button>
+                <button class="btn btn-ghost btn-sm" onclick="alert('原型：卖出')">卖出</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="duo-scroll">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>股票</th>
+                      <th class="num">权重</th>
+                      <th class="num">持仓股数</th>
+                      <th class="num">成本价</th>
+                      <th class="num">当前价</th>
+                      <th class="num">浮动盈亏</th>
+                      <th class="num">浮动收益率</th>
+                    </tr>
+                  </thead>
+                  <tbody id="holdingBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右：调仓记录 -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">调仓记录</div>
+              <div class="flex gap-2">
+                <button class="btn btn-ghost btn-sm" onclick="alert('原型：按日期筛选调仓记录')">📅 筛选</button>
+                <button class="btn btn-primary btn-sm" onclick="openRebalance()">⚙️ 发起调仓</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="duo-scroll">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>调仓日期</th>
+                      <th>类型</th>
+                      <th>标的</th>
+                      <th class="num">变动</th>
+                      <th class="num">成交价</th>
+                      <th class="num">金额</th>
+                      <th class="num">调仓后权重</th>
+                      <th>操作人</th>
+                      <th>备注</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rebalanceBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 指标库 -->
+        <div class="card mb-4">
+          <div class="card-head">
+            <div class="flex items-center gap-3">
+              <div class="card-title">指标库</div>
+              <span class="tiny" id="indicatorPicked"></span>
+            </div>
+            <div class="flex gap-2">
+              <input class="input" placeholder="搜索指标..." style="width:140px" id="indicatorSearch" oninput="renderIndicatorLib()">
+              <button class="btn btn-primary btn-sm" onclick="openIndicatorPick()">＋ 选择指标</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- 图上方：已上图指标的 chip（可移除）+ 保存设置 -->
+            <div class="ind-chips" id="indChips"></div>
+            <!-- 时间区间：预设 + 自定义起止 -->
+            <div class="flex items-center gap-3 mb-3 flex-wrap">
+              <div class="segmented" id="indRangeSeg">
+                <button class="seg active" data-ir="6M">近6月</button>
+                <button class="seg" data-ir="1Y">近1年</button>
+                <button class="seg" data-ir="3Y">近3年</button>
+                <button class="seg" data-ir="CUS">自定义</button>
+              </div>
+              <div class="flex items-center gap-2" id="indCustomRange" style="display:none">
+                <input class="input" type="date" id="indDateFrom" value="2026-02-15" style="width:140px">
+                <span class="tiny">至</span>
+                <input class="input" type="date" id="indDateTo" value="2026-08-15" style="width:140px">
+                <button class="btn btn-secondary btn-sm" onclick="applyCustomRange()">应用</button>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="alert('原型：保存当前指标展示设置（已选指标 + 时间区间），下次进入自动恢复')">💾 保存展示设置</button>
+            </div>
+            <!-- 指标多线走势图：选中的指标各一条线 -->
+            <div id="indChart" style="position:relative"></div>
+          </div>
+          <div class="card-body" style="padding:0;border-top:1px solid var(--vp-mint-200)">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>指标名称</th>
+                  <th>口径</th>
+                  <th class="num">当前值</th>
+                  <th class="num">1月前</th>
+                  <th class="num">3月前</th>
+                  <th class="num">6月前</th>
+                  <th class="right">操作</th>
+                </tr>
+              </thead>
+              <tbody id="indicatorBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 弹层：发起调仓 -->
+        <div class="modal-mask" id="rebalanceModal" style="display:none" onclick="if(event.target===this)closeRebalance()">
+          <div class="modal-box">
+            <div class="modal-head">
+              <div class="card-title">发起调仓 · 港股大消费模拟盘</div>
+              <button class="btn btn-ghost btn-sm" onclick="closeRebalance()">✕</button>
+            </div>
+            <div class="modal-body">
+              <div class="flex gap-3 mb-3">
+                <div><div class="tiny mb-1">调仓日期</div><input class="input" type="date" value="2026-08-15"></div>
+                <div><div class="tiny mb-1">类型</div>
+                  <select class="select" id="rbType" onchange="renderRbForm()">
+                    <option value="buy">买入</option>
+                    <option value="sell">卖出</option>
+                    <option value="weight">权重调整</option>
+                  </select>
+                </div>
+              </div>
+              <div id="rbForm"></div>
+              <div class="tiny" style="margin-top:10px">说明：模拟盘调仓即时生效，按当日收盘价虚拟成交；调仓后自动重算组合净值曲线。</div>
+            </div>
+            <div class="modal-foot">
+              <button class="btn btn-ghost btn-sm" onclick="closeRebalance()">取消</button>
+              <button class="btn btn-primary btn-sm" onclick="closeRebalance();alert('原型：调仓已提交，净值曲线与持仓已重算')">确认调仓</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 弹层：选择指标 -->
+        <div class="modal-mask" id="indicatorModal" style="display:none" onclick="if(event.target===this)closeIndicatorPick()">
+          <div class="modal-box" style="max-width:520px">
+            <div class="modal-head">
+              <div class="card-title">选择要观察的指标</div>
+              <button class="btn btn-ghost btn-sm" onclick="closeIndicatorPick()">✕</button>
+            </div>
+            <div class="modal-body">
+              <div class="segmented mb-3" id="indCatSeg"></div>
+              <div id="indPickList" class="pick-list"></div>
+              <div class="tiny" style="margin-top:10px">勾选后指标进入上方「指标库」表格，按当前区间口径计算。</div>
+            </div>
+            <div class="modal-foot">
+              <button class="btn btn-ghost btn-sm" onclick="closeIndicatorPick()">取消</button>
+              <button class="btn btn-primary btn-sm" onclick="applyIndicatorPick()">应用（<span id="pickCount">0</span> 项）</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="notice mt-4">
+          <span class="ico">ⓘ</span>
+          <span>组合为<strong>虚拟模拟盘</strong>，不涉及真实交易。涨跌色采用<strong>港式惯例</strong>：上涨=#B23A48，下跌=#20A06E。</span>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+/* ===== Tab 切换 ===== */
+document.querySelectorAll('#mainTab .seg').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('#mainTab .seg').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
+    document.querySelector('.tab-pane[data-pane="' + b.dataset.tab + '"]').style.display = '';
+    closeDetail();
+  };
+});
+
+function showDetail(name) {
+  document.getElementById("inlineDetail").style.display = "";
+  document.getElementById("detailTitle").textContent = name;
+  selectedPortfolio = name;
+  renderPortfolios();
+  renderHoldings();
+  renderIndicators();
+  renderNavChart();
+  renderRebalances();
+  // 展开详情后滚到详情区
+  document.getElementById("inlineDetail").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function closeDetail() {
+  document.getElementById("inlineDetail").style.display = "none";
+  selectedPortfolio = null;
+  renderPortfolios();
+}
+
+/* ===== 组合数据 ===== */
+const PORTFOLIOS = [
+  { id:"P001", name:"港股大消费模拟盘", holdings:4, weight:"87%", capital:"1,000万", creator:"David", share:"已分享", shareType:"只读", status:"启用" },
+  { id:"P002", name:"美股科技组合", holdings:3, weight:"72%", capital:"500万", creator:"Kyra", share:"私人", shareType:"—", status:"启用" },
+  { id:"P003", name:"A股大金融", holdings:5, weight:"95%", capital:"800万", creator:"Grace", share:"已分享", shareType:"可编辑", status:"启用" },
+  { id:"P004", name:"港股地产研究池", holdings:6, weight:"65%", capital:"300万", creator:"David", share:"私人", shareType:"—", status:"停用" },
+];
+const SHARED_PORTFOLIOS = [
+  { id:"P001", name:"港股大消费模拟盘", holdings:4, weight:"87%", creator:"David", perm:"只读" },
+  { id:"P003", name:"A股大金融", holdings:5, weight:"95%", creator:"Grace", perm:"可编辑" },
+];
+const HOLDINGS = [
+  { code:"00700.HK", name:"腾讯控股", weight:25, shares:65800, cost:350.0, current:385.0, profit:2303000, return:10.0 },
+  { code:"09988.HK", name:"阿里巴巴", weight:22, shares:258000, cost:78.5, current:86.2, profit:1986600, return:9.8 },
+  { code:"02382.HK", name:"舜宇光学", weight:20, shares:203000, cost:88.0, current:102.5, profit:2943500, return:16.5 },
+  { code:"06160.HK", name:"百济神州", weight:20, shares:140800, cost:125.0, current:145.0, profit:2816000, return:16.0 },
+];
+
+const INDICATORS = [
+  { name:"市盈率 P/E", value:28.5, m1:26.2, m3:24.8, m6:23.1, trend:"up" },
+  { name:"市净率 P/B", value:4.2, m1:4.0, m3:3.8, m6:3.5, trend:"up" },
+  { name:"ROE", value:18.5, m1:17.2, m3:16.8, m6:15.5, trend:"up" },
+  { name:"股息率", value:2.8, m1:2.9, m3:3.0, m6:3.2, trend:"down" },
+  { name:"毛利率", value:45.2, m1:44.8, m3:43.5, m6:42.0, trend:"up" },
+  { name:"净利润率", value:22.5, m1:21.8, m3:20.5, m6:19.2, trend:"up" },
+  { name:"负债率", value:35.8, m1:36.2, m3:37.5, m6:38.0, trend:"down" },
+  { name:"流动比率", value:2.1, m1:2.0, m3:1.9, m6:1.8, trend:"up" },
+];
+
+/* ===== 区间净值数据（演示）：按 range 取一段日期序列，起始归一 1.00 ===== */
+const NAV_SERIES = {
+  "1M":  { dates:["07-15","07-22","07-29","08-05","08-12","08-15"], nav:[1.000,1.021,1.008,1.043,1.052,1.061], bm:[1.000,0.994,1.002,1.011,1.018,1.015] },
+  "3M":  { dates:["05-15","05-29","06-12","06-26","07-10","07-24","08-07","08-15"], nav:[1.000,0.972,1.010,1.048,1.022,1.075,1.096,1.128], bm:[1.000,0.981,0.996,1.024,1.003,1.035,1.048,1.052] },
+  "6M":  { dates:["02-16","03-16","04-15","05-15","06-15","07-15","08-15"], nav:[1.000,0.948,0.977,1.021,0.996,1.064,1.128], bm:[1.000,0.962,0.981,1.010,0.988,1.031,1.052] },
+  "YTD": { dates:["01-02","02-02","03-02","04-02","05-02","06-02","07-02","08-02","08-15"], nav:[1.000,0.971,0.943,0.982,1.015,0.998,1.046,1.089,1.128], bm:[1.000,0.978,0.955,0.987,1.004,0.991,1.022,1.041,1.052] },
+  "1Y":  { dates:["2025-08","2025-10","2025-12","2026-02","2026-04","2026-06","2026-08"], nav:[1.000,0.926,0.981,0.943,1.012,1.061,1.128], bm:[1.000,0.951,0.992,0.958,1.001,1.033,1.052] },
+  "MAX": { dates:["2024-08","2025-02","2025-08","2026-02","2026-08"], nav:[1.000,1.082,1.105,1.268,1.361], bm:[1.000,1.041,1.062,1.121,1.178] },
+};
+let selectedPortfolio = null;
+let currentRange = "6M";
+let showBenchmark = true;
+
+/* ===== 调仓记录（演示） ===== */
+const REBALANCES = [
+  { date:"2026-08-12", type:"卖出", code:"02020.HK", name:"商汤", delta:"-2.0%", price:"1.86", amt:"-58万", weight:"0%", op:"David", note:"AI 商业化不及预期，清仓" },
+  { date:"2026-08-12", type:"买入", code:"00700.HK", name:"腾讯控股", delta:"+2.0%", price:"385.0", amt:"+77万", weight:"25%", op:"David", note:"商汤仓位腾挪，加仓主覆盖" },
+  { date:"2026-07-28", type:"权重调整", code:"02382.HK", name:"舜宇光学", delta:"+3.0%", price:"102.5", amt:"+30万", weight:"20%", op:"David", note:"Q2 出货超预期" },
+  { date:"2026-06-20", type:"买入", code:"06160.HK", name:"百济神州", delta:"新建仓", price:"125.0", amt:"+176万", weight:"16%", op:"David", note:"创新药管线读出数据积极" },
+  { date:"2026-05-16", type:"卖出", code:"00388.HK", name:"港交所", delta:"-5.0%", price:"288.2", amt:"-58万", weight:"0%", op:"David", note:"仓位集中度调整" },
+];
+
+/* ===== 指标库：分类 + 可选指标池 ===== */
+const IND_CATS = ["收益表现","风险","基准对比","持仓特征"];
+const IND_POOL = {
+  "收益表现": [
+    { id:"ret_ytd", name:"YTD 收益率", formula:"年初至最新净值涨幅", picked:true, fmt:v=>v.toFixed(1)+"%", value:12.8, m1:5.2, m3:9.8, m6:2.1, trend:"up" },
+    { id:"ret_ann", name:"年化收益率", formula:"几何年化", picked:true, fmt:v=>v.toFixed(1)+"%", value:15.2, m1:9.4, m3:11.2, m6:6.5, trend:"up" },
+    { id:"ret_cum", name:"累计收益率", formula:"成立以来", picked:true, fmt:v=>v.toFixed(1)+"%", value:36.1, m1:6.1, m3:10.5, m6:3.2, trend:"up" },
+    { id:"ret_m", name:"月度收益", formula:"自然月收益率", picked:false, fmt:v=>(v>=0?"+":"")+v.toFixed(1)+"%", value:1.8, m1:3.2, m3:-0.8, m6:2.4, trend:"up" },
+    { id:"win_rate", name:"胜率（月）", formula:"收益为正的月份占比", picked:false, fmt:v=>v.toFixed(0)+"%", value:68, m1:64, m3:66, m6:61, trend:"up" },
+  ],
+  "风险": [
+    { id:"mdd", name:"最大回撤", formula:"区间净值峰谷最大跌幅", picked:true, fmt:v=>v.toFixed(1)+"%", value:-8.5, m1:-3.2, m3:-5.1, m6:-8.5, trend:"down" },
+    { id:"vol", name:"年化波动率", formula:"日收益标准差×√252", picked:true, fmt:v=>v.toFixed(1)+"%", value:18.6, m1:15.2, m3:16.8, m6:19.4, trend:"up" },
+    { id:"sharpe", name:"夏普比率", formula:"(年化收益-无风险利率)/波动率", picked:true, fmt:v=>v.toFixed(2), value:1.85, m1:1.42, m3:1.58, m6:1.20, trend:"up" },
+    { id:"calmar", name:"卡玛比率", formula:"年化收益/最大回撤", picked:false, fmt:v=>v.toFixed(2), value:1.79, m1:2.94, m3:2.20, m6:0.76, trend:"up" },
+    { id:"downside", name:"下行波动率", formula:"仅负收益的年化波动", picked:false, fmt:v=>v.toFixed(1)+"%", value:12.3, m1:10.1, m3:11.5, m6:13.2, trend:"down" },
+  ],
+  "基准对比": [
+    { id:"alpha", name:"Alpha", formula:"CAPM 年化超额收益", picked:true, fmt:v=>v.toFixed(1)+"%", value:3.2, m1:1.8, m3:2.4, m6:1.1, trend:"up" },
+    { id:"beta", name:"Beta", formula:"对基准的敏感度", picked:true, fmt:v=>v.toFixed(2), value:0.92, m1:0.95, m3:0.93, m6:0.97, trend:"down" },
+    { id:"ir", name:"信息比率", formula:"超额收益/跟踪误差", picked:false, fmt:v=>v.toFixed(2), value:0.86, m1:0.52, m3:0.64, m6:0.38, trend:"up" },
+    { id:"te", name:"跟踪误差", formula:"年化超额收益标准差", picked:false, fmt:v=>v.toFixed(1)+"%", value:3.7, m1:3.5, m3:3.6, m6:2.9, trend:"up" },
+    { id:"ex_ret", name:"超额收益", formula:"组合收益-基准收益", picked:false, fmt:v=>(v>=0?"+":"")+v.toFixed(1)+"%", value:7.6, m1:3.4, m3:4.5, m6:1.8, trend:"up" },
+  ],
+  "持仓特征": [
+    { id:"pe", name:"市盈率 P/E", formula:"持仓加权 P/E", picked:true, fmt:v=>v.toFixed(1), value:28.5, m1:26.2, m3:24.8, m6:23.1, trend:"up" },
+    { id:"pb", name:"市净率 P/B", formula:"持仓加权 P/B", picked:false, fmt:v=>v.toFixed(1), value:4.2, m1:4.0, m3:3.8, m6:3.5, trend:"up" },
+    { id:"roe", name:"ROE", formula:"持仓加权 ROE", picked:false, fmt:v=>v.toFixed(1)+"%", value:18.5, m1:17.2, m3:16.8, m6:15.5, trend:"up" },
+    { id:"div", name:"股息率", formula:"持仓加权股息率", picked:false, fmt:v=>v.toFixed(1)+"%", value:2.8, m1:2.9, m3:3.0, m6:3.2, trend:"down" },
+    { id:"turnover", name:"换手率（年）", formula:"买卖均值/净值", picked:false, fmt:v=>v.toFixed(0)+"%", value:142, m1:118, m3:126, m6:130, trend:"up" },
+  ],
+};
+let pickCat = "收益表现";
+
+function renderPortfolios() {
+  const body = document.getElementById("portfolioBody");
+  body.innerHTML = PORTFOLIOS.map(p => {
+    const shareTag = p.share === "已分享"
+      ? `<span class="tag tag-blue">${p.share}</span>`
+      : `<span class="tag tag-gray">${p.share}</span>`;
+    const stTag = p.status === "启用" ? "tag-green" : "tag-gray";
+    return `<tr class="${selectedPortfolio === p.name ? 'row-selected' : ''}" style="cursor:pointer" onclick="showDetail('${p.name}')">
+        <td class="bold">${p.name}</td>
+        <td class="num">${p.holdings}</td>
+        <td class="num">${p.weight}</td>
+        <td>${p.capital}</td>
+        <td>${p.creator}</td>
+        <td>${shareTag}</td>
+        <td><span class="tag ${stTag}">${p.status}</span></td>
+        <td class="right nowrap">
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：查看详情')">查看</button>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：${p.status==='启用'?'停用':'启用'}组合')">${p.status==='启用'?'停用':'启用'}</button>
+        </td>
+      </tr>`;
+  }).join("");
+}
+
+function renderSharedPortfolios() {
+  const body = document.getElementById("sharedBody");
+  body.innerHTML = SHARED_PORTFOLIOS.map(p => {
+    const permTag = p.perm === "只读"
+      ? `<span class="tag tag-gray">只读</span>`
+      : `<span class="tag tag-blue">可编辑</span>`;
+    return `<tr class="${selectedPortfolio === p.name ? 'row-selected' : ''}" style="cursor:pointer" onclick="showDetail('${p.name}')">
+        <td class="bold">${p.name}</td>
+        <td class="num">${p.holdings}</td>
+        <td class="num">${p.weight}</td>
+        <td>${p.creator}</td>
+        <td>${permTag}</td>
+        <td class="right nowrap">
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：查看详情')">查看</button>
+        </td>
+      </tr>`;
+  }).join("");
+}
+
+function renderHoldings() {
+  const body = document.getElementById("holdingBody");
+  body.innerHTML = HOLDINGS.map(h => {
+    const profitUp = h.profit >= 0;
+    const returnUp = h.return >= 0;
+    return `<tr>
+        <td class="mono-num">${h.code}<br><span class="tiny">${h.name}</span></td>
+        <td class="num">
+          <div class="flex items-center gap-2">
+            <div class="weight-bar"><div class="weight-fill" style="width:${h.weight}%"></div></div>
+            <span>${h.weight}%</span>
+          </div>
+        </td>
+        <td class="num mono-num">${h.shares.toLocaleString()}</td>
+        <td class="num mono-num">${h.cost.toFixed(2)}</td>
+        <td class="num mono-num">${h.current.toFixed(2)}</td>
+        <td class="num mono-num" style="color:${profitUp?'var(--vp-danger)':'var(--vp-green)'}">${profitUp?'+':''}${h.profit.toLocaleString()}</td>
+        <td class="num mono-num" style="color:${returnUp?'var(--vp-danger)':'var(--vp-green)'}">${returnUp?'+':''}${h.return.toFixed(1)}%</td>
+      </tr>`;
+  }).join("");
+}
+
+function renderIndicators() {
+  renderIndicatorLib();
+}
+
+/* ===== 区间表现：净值走势 SVG（2px 线 · 十字线 tooltip · 单序列无图例） ===== */
+function renderNavChart() {
+  const host = document.getElementById("navChart");
+  const data = NAV_SERIES[currentRange];
+  const W = 760, H = 120, PL = 44, PR = 56, PT = 8, PB = 20;
+  const iw = W - PL - PR, ih = H - PT - PB;
+
+  // 值域：两条序列合起来取范围，留 5% 呼吸
+  const all = showBenchmark ? data.nav.concat(data.bm) : data.nav;
+  let lo = Math.min(...all), hi = Math.max(...all);
+  const pad = (hi - lo) * 0.08 || 0.01; lo -= pad; hi += pad;
+  const X = i => PL + iw * i / (data.dates.length - 1);
+  const Y = v => PT + ih * (1 - (v - lo) / (hi - lo));
+  const line = arr => arr.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+
+  // y 轴刻度：净值两位小数
+  const ticks = 4, tickVals = [];
+  for (let t = 0; t <= ticks; t++) tickVals.push(lo + (hi - lo) * t / ticks);
+  const grid = tickVals.map(v =>
+    `<line x1="${PL}" y1="${Y(v)}" x2="${W - PR}" y2="${Y(v)}" stroke="var(--vp-mint-200)" stroke-width="1"/>` +
+    `<text x="${PL - 8}" y="${Y(v) + 4}" text-anchor="end" class="axis-tick">${v.toFixed(2)}</text>`).join("");
+  const xLabels = data.dates.map((d, i) =>
+    `<text x="${X(i)}" y="${H - 6}" text-anchor="${i === 0 ? 'start' : i === data.dates.length - 1 ? 'end' : 'middle'}" class="axis-tick">${d}</text>`).join("");
+
+  const C_PORT = "var(--vp-green)", C_BM = "var(--vp-danger)";
+  const bm = showBenchmark
+    ? `<path d="${line(data.bm)}" fill="none" stroke="${C_BM}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"/>` : "";
+  const port = `<path d="${line(data.nav)}" fill="none" stroke="${C_PORT}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+
+  // 端点直标（选择性的：只标末端值；文字用文字色，不穿数据色）
+  const endY = Y(data.nav[data.nav.length - 1]);
+  const endLabel = `<circle cx="${X(data.nav.length - 1)}" cy="${endY}" r="4" fill="${C_PORT}" stroke="#fff" stroke-width="2"/>` +
+    `<text x="${W - PR + 8}" y="${endY + 4}" class="end-label">${data.nav[data.nav.length - 1].toFixed(3)}</text>`;
+  let bmEnd = "";
+  if (showBenchmark) {
+    const by = Y(data.bm[data.bm.length - 1]);
+    bmEnd = `<circle cx="${X(data.bm.length - 1)}" cy="${by}" r="4" fill="${C_BM}" stroke="#fff" stroke-width="2"/>` +
+      `<text x="${W - PR + 8}" y="${by + 4}" class="end-label">${data.bm[data.bm.length - 1].toFixed(3)}</text>`;
+  }
+
+  // 图例（双序列才有）
+  const legend = showBenchmark
+    ? `<div class="chart-legend"><span><i style="background:${C_PORT}"></i>模拟组合</span><span><i style="background:${C_BM}"></i>恒生指数</span></div>` : "";
+
+  host.innerHTML = legend +
+    `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">` +
+    grid + xLabels + bm + port + endLabel + bmEnd +
+    `<line id="crossV" y1="${PT}" y2="${H - PB}" stroke="var(--vp-gray-light)" stroke-width="1" style="display:none"/>` +
+    `<circle id="crossDot" r="4" fill="${C_PORT}" stroke="#fff" stroke-width="2" style="display:none"/>` +
+    (showBenchmark ? `<circle id="crossDotBm" r="4" fill="${C_BM}" stroke="#fff" stroke-width="2" style="display:none"/>` : "") +
+    `<rect id="hitLayer" x="${PL}" y="${PT}" width="${iw}" height="${ih}" fill="transparent"/>` +
+    `</svg><div id="chartTip" class="chart-tip" style="display:none"></div>`;
+
+  // hover：十字线吸附最近数据点，一个 tooltip 列出全部序列
+  const svg = host.querySelector("svg");
+  const hit = host.querySelector("#hitLayer");
+  const crossV = host.querySelector("#crossV"), dot = host.querySelector("#crossDot"),
+        dotBm = host.querySelector("#crossDotBm"), tip = host.querySelector("#chartTip");
+  hit.addEventListener("pointermove", e => {
+    const r = svg.getBoundingClientRect();
+    const xRatio = (e.clientX - r.left) / r.width * W;
+    let idx = Math.round((xRatio - PL) / iw * (data.dates.length - 1));
+    idx = Math.max(0, Math.min(data.dates.length - 1, idx));
+    crossV.style.display = ""; crossV.setAttribute("x1", X(idx)); crossV.setAttribute("x2", X(idx));
+    dot.style.display = ""; dot.setAttribute("cx", X(idx)); dot.setAttribute("cy", Y(data.nav[idx]));
+    if (dotBm) { dotBm.style.display = ""; dotBm.setAttribute("cx", X(idx)); dotBm.setAttribute("cy", Y(data.bm[idx])); }
+    const ret = ((data.nav[idx] / data.nav[0]) - 1) * 100;
+    const row = (color, name, v) => {
+      const el = document.createElement("div");
+      el.innerHTML = `<i style="background:${color}"></i>`;
+      const nameSpan = document.createElement("span"); nameSpan.textContent = name;
+      const valB = document.createElement("b");
+      valB.textContent = name === "模拟组合" ? v.toFixed(3) + `（${ret >= 0 ? "+" : ""}${ret.toFixed(1)}%）` : v.toFixed(3);
+      el.append(nameSpan, valB);
+      return el;
+    };
+    tip.textContent = "";
+    const d = document.createElement("div"); d.className = "tip-date";
+    d.textContent = (currentRange === "1Y" || currentRange === "MAX" ? "" : "2026-") + data.dates[idx];
+    tip.append(d, row(C_PORT, "模拟组合", data.nav[idx]));
+    if (showBenchmark) tip.append(row(C_BM, "恒生指数", data.bm[idx]));
+    tip.style.display = "";
+    const hostR = host.getBoundingClientRect();
+    const tipX = Math.min(e.clientX - hostR.left + 14, hostR.width - 150);
+    tip.style.left = tipX + "px"; tip.style.top = (e.clientY - hostR.top - 10) + "px";
+  });
+  hit.addEventListener("pointerleave", () => {
+    [crossV, dot, dotBm, tip].forEach(el => el && (el.style.display = "none"));
+  });
+
+  // 区间切换按钮
+  document.querySelectorAll("#rangeSeg .seg").forEach(b => {
+    b.classList.toggle("active", b.dataset.range === currentRange);
+    b.onclick = () => { currentRange = b.dataset.range; renderNavChart(); };
+  });
+  document.getElementById("bmToggle").onchange = e => { showBenchmark = e.target.checked; renderNavChart(); };
+}
+
+
+/* ===== 调仓记录 ===== */
+function renderRebalances() {
+  const body = document.getElementById("rebalanceBody");
+  const typeTag = t => t === "买入" ? "tag-green" : t === "卖出" ? "tag-danger" : "tag-blue";
+  body.innerHTML = REBALANCES.map(r =>
+    `<tr>
+      <td class="mono-num">${r.date}</td>
+      <td><span class="tag ${typeTag(r.type)}">${r.type}</span></td>
+      <td class="mono-num">${r.code}<br><span class="tiny">${r.name}</span></td>
+      <td class="num mono-num" style="color:${r.delta.startsWith("-") || r.delta.startsWith("+") ? (r.delta.startsWith("+") ? "var(--vp-danger)" : "var(--vp-green)") : "inherit"}">${r.delta}</td>
+      <td class="num mono-num">${r.price}</td>
+      <td class="num mono-num">${r.amt}</td>
+      <td class="num mono-num">${r.weight}</td>
+      <td>${r.op}</td>
+      <td class="tiny" style="max-width:180px">${r.note}</td>
+    </tr>`).join("");
+}
+
+function openRebalance() {
+  document.getElementById("rebalanceModal").style.display = "";
+  renderRbForm();
+}
+function closeRebalance() { document.getElementById("rebalanceModal").style.display = "none"; }
+function renderRbForm() {
+  const t = document.getElementById("rbType").value;
+  const stockRow = `<div class="mb-3"><div class="tiny mb-1">标的</div>
+    <select class="select" style="width:100%">
+      <option>00700.HK 腾讯控股</option><option>09988.HK 阿里巴巴</option>
+      <option>02382.HK 舜宇光学</option><option>06160.HK 百济神州</option>
+      <option>（从股票池新增标的…）</option>
+    </select></div>`;
+  const fields = {
+    buy: `<div class="flex gap-3"><div class="flex1"><div class="tiny mb-1">买入金额</div><input class="input" placeholder="万"></div>
+          <div class="flex1"><div class="tiny mb-1">目标权重（可选）</div><input class="input" placeholder="%"></div></div>`,
+    sell: `<div class="flex gap-3"><div class="flex1"><div class="tiny mb-1">卖出比例</div>
+          <select class="select" style="width:100%"><option>清仓 100%</option><option>减半 50%</option><option>自定义…</option></select></div>
+          <div class="flex1"><div class="tiny mb-1">目标权重（可选）</div><input class="input" placeholder="%"></div></div>`,
+    weight: `<div><div class="tiny mb-1">调整后权重</div><input class="input" placeholder="目标权重 %"></div>`,
+  };
+  document.getElementById("rbForm").innerHTML = stockRow + fields[t] +
+    `<div class="mt-3"><div class="tiny mb-1">备注</div><input class="input" style="width:100%" placeholder="调仓理由（会写入调仓记录）"></div>`;
+}
+
+/* ===== 指标库 ===== */
+/* 指标线配色：与组合绿/基准红区分的四色，已过 CVD/对比度校验；第 5 个起复用并靠图例+直标区分 */
+const IND_COLORS = ["#3E7CB1", "#C7A252", "#8A5FB0", "#D97B29"];
+
+/* 指标图时间区间：预设档 + 自定义（演示数据按月度插值） */
+let indRange = "6M";          // 6M / 1Y / 3Y / CUS
+let indDateFrom = "2026-02-15", indDateTo = "2026-08-15";
+
+/* 各区间的时间轴标签（演示数据，等距月份点） */
+function indTimeLabels() {
+  if (indRange === "1Y") return ["12月前","10月前","8月前","6月前","4月前","2月前","当前"];
+  if (indRange === "3Y") return ["36月前","30月前","24月前","18月前","12月前","6月前","当前"];
+  if (indRange === "CUS") {
+    const f = indDateFrom.replace(/-/g,"/"), t = indDateTo.replace(/-/g,"/");
+    const fmt = s => s.slice(2).replace(/^0/, "");
+    return [fmt(f), "区间中点", fmt(t)];
+  }
+  return ["6月前","5月前","4月前","3月前","2月前","1月前","当前"];
+}
+
+/* 按区间生成一条指标的演示序列：穿过四个真实锚点（6月前/3月前/1月前/当前），中间平滑插值 */
+function indSeries(ind) {
+  const n = indTimeLabels().length;
+  const anchors = [ind.m6, ind.m3, ind.m1, ind.value]; // 4 个真实值（时间正序）
+  // 锚点均匀映射到 n 个点上；两个锚点之间线性过渡
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const pos = i / (n - 1) * (anchors.length - 1);
+    const k = Math.min(Math.floor(pos), anchors.length - 2);
+    const r = pos - k;
+    out.push(anchors[k] + (anchors[k + 1] - anchors[k]) * r);
+  }
+  return out;
+}
+
+function renderIndicatorLib() {
+  const kw = (document.getElementById("indicatorSearch").value || "").trim();
+  const picked = Object.values(IND_POOL).flat().filter(i => i.picked);
+  document.getElementById("indicatorPicked").textContent = `已选 ${picked.length} 项 · 勾选即上图`;
+  const list = kw ? Object.values(IND_POOL).flat().filter(i => i.name.toLowerCase().includes(kw.toLowerCase()) || i.formula.includes(kw)) : picked;
+  const body = document.getElementById("indicatorBody");
+  if (!list.length) {
+    body.innerHTML = `<tr><td colspan="8" class="muted" style="text-align:center;padding:32px">${kw ? "没有匹配「" + kw + "」的指标" : "尚未选择指标 → 点右上角「选择指标」"}</td></tr>`;
+    renderIndChips(); renderIndChart();
+    return;
+  }
+  body.innerHTML = list.map(ind => {
+    const color = ind.picked ? IND_COLORS[picked.indexOf(ind) % IND_COLORS.length] : null;
+    return `<tr>
+        <td style="width:28px">${ind.picked ? `<i class="ind-key" style="background:${color}"></i>` : ""}</td>
+        <td class="bold">${ind.name}</td>
+        <td class="tiny">${ind.formula}</td>
+        <td class="num mono-num bold">${ind.fmt(ind.value)}</td>
+        <td class="num mono-num muted">${ind.fmt(ind.m1)}</td>
+        <td class="num mono-num muted">${ind.fmt(ind.m3)}</td>
+        <td class="num mono-num muted">${ind.fmt(ind.m6)}</td>
+        <td class="right"><button class="btn btn-ghost btn-sm" onclick="toggleIndicator('${ind.id}')">${ind.picked ? "移除" : "添加"}</button></td>
+      </tr>`;
+  }).join("");
+  renderIndChips();
+  renderIndChart();
+}
+
+/* ===== 图上方指标 chips：色点 + 名称 + ✕ 移除 ===== */
+function renderIndChips() {
+  const host = document.getElementById("indChips");
+  const picked = Object.values(IND_POOL).flat().filter(i => i.picked);
+  if (!picked.length) {
+    host.innerHTML = `<span class="tiny" style="color:var(--vp-gray-light)">暂无上图指标 — 从下方表格或「选择指标」添加</span>`;
+    return;
+  }
+  host.innerHTML = picked.slice(0, 8).map((ind, k) =>
+    `<span class="ind-chip"><i style="background:${IND_COLORS[k % IND_COLORS.length]}"></i>${ind.name}
+      <button title="从图中移除" onclick="toggleIndicator('${ind.id}')">✕</button></span>`
+  ).join("") + (picked.length > 8 ? `<span class="tiny" style="color:var(--vp-gray-light)">+${picked.length - 8} 个未上图（上限 8 条）</span>` : "");
+}
+
+/* ===== 指标多线走势图：十字线 tooltip · 时间区间联动 ===== */
+function renderIndChart() {
+  // 区间按钮态 + 自定义日期控件显隐
+  document.querySelectorAll("#indRangeSeg .seg").forEach(b => {
+    b.classList.toggle("active", b.dataset.ir === indRange);
+    b.onclick = () => {
+      indRange = b.dataset.ir;
+      document.getElementById("indCustomRange").style.display = indRange === "CUS" ? "" : "none";
+      renderIndChart();
+    };
+  });
+  document.getElementById("indCustomRange").style.display = indRange === "CUS" ? "" : "none";
+
+  const host = document.getElementById("indChart");
+  const picked = Object.values(IND_POOL).flat().filter(i => i.picked);
+  if (!picked.length) {
+    host.innerHTML = `<div class="muted" style="text-align:center;padding:28px 0">尚未选择指标 — 点右上角「选择指标」，勾选后各指标以不同颜色上图</div>`;
+    return;
+  }
+
+  const labels = indTimeLabels();
+  const n = labels.length;
+  const W = 760, H = 150, PL = 46, PR = 20, PT = 10, PB = 22;
+  const iw = W - PL - PR, ih = H - PT - PB;
+
+  // 各指标独立归一（量纲不同），曲线表达自身趋势形态
+  const seriesMap = new Map(); // id -> { pts, color, ind, lo, hi }
+  picked.slice(0, 8).forEach((ind, k) => {
+    const vals = indSeries(ind);
+    let lo = Math.min(...vals), hi = Math.max(...vals);
+    const pad = (hi - lo) * 0.15 || Math.abs(hi) * 0.02 || 0.1;
+    lo -= pad; hi += pad;
+    seriesMap.set(ind.id, { pts: vals.map(v => (v - lo) / (hi - lo)), raw: vals, color: IND_COLORS[k % IND_COLORS.length], ind, lo, hi });
+  });
+
+  const X = i => PL + iw * i / (n - 1);
+  const Y = t => PT + ih * (1 - t);
+
+  // 坐标轴：单指标时 y 轴直接标该指标的真实数值刻度；多指标时为相对位置（0%=各指标自身区间最低/100%=最高）
+  const single = seriesMap.size === 1;
+  const first = [...seriesMap.values()][0];
+  const fmtTick = t => single ? first.ind.fmt(first.lo + (first.hi - first.lo) * t) : Math.round(t * 100) + "%";
+  const yTicks = [0, 0.25, 0.5, 0.75, 1];
+  const grid = yTicks.map(t =>
+    `<line x1="${PL}" y1="${Y(t)}" x2="${W - PR}" y2="${Y(t)}" stroke="var(--vp-mint-200)" stroke-width="1"/>` +
+    `<text x="${PL - 6}" y="${Y(t) + 4}" text-anchor="end" class="axis-tick">${fmtTick(t)}</text>`).join("") +
+    `<line x1="${PL}" y1="${PT}" x2="${PL}" y2="${H - PB}" stroke="var(--vp-mint-300)" stroke-width="1"/>` +
+    `<line x1="${PL}" y1="${H - PB}" x2="${W - PR}" y2="${H - PB}" stroke="var(--vp-mint-300)" stroke-width="1"/>` +
+    labels.map((d, i) =>
+      `<text x="${X(i)}" y="${H - 6}" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}" class="axis-tick">${d}</text>`).join("");
+
+  let dots = "";
+  const paths = [...seriesMap.values()].map(s =>
+    `<path d="${s.pts.map((t, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(t).toFixed(1)}`).join("")}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`
+  ).join("");
+
+  host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" id="indSvg">` +
+    grid + paths + dots +
+    `<line id="indCross" y1="${PT}" y2="${H - PB}" stroke="var(--vp-gray-light)" stroke-width="1" style="display:none"/>` +
+    [...seriesMap.values()].map(s => `<circle class="ind-hover-dot" data-id="${s.ind.id}" r="4.5" fill="${s.color}" stroke="#fff" stroke-width="2" style="display:none"/>`).join("") +
+    `<rect id="indHit" x="${PL}" y="${PT}" width="${iw}" height="${ih}" fill="transparent" cursor="crosshair"/>` +
+    `</svg><div id="indTip" class="chart-tip" style="display:none"></div>` +
+    `<div class="tiny" style="color:var(--vp-gray-light);margin-top:4px">${single
+      ? "纵轴为该指标的真实数值刻度"
+      : "纵轴为各指标自身区间的相对位置（0%=区间最低 · 100%=区间最高），跨指标不比较绝对值"} · 悬停查看具体数值</div>`;
+
+  // 悬停：十字线吸附最近时间点，tooltip 列出全部指标该点数值
+  const svg = host.querySelector("#indSvg");
+  const hit = host.querySelector("#indHit");
+  const cross = host.querySelector("#indCross");
+  const tip = host.querySelector("#indTip");
+  const hoverDots = [...host.querySelectorAll(".ind-hover-dot")];
+  hit.addEventListener("pointermove", e => {
+    const r = svg.getBoundingClientRect();
+    const xRatio = (e.clientX - r.left) / r.width * W;
+    let idx = Math.round((xRatio - PL) / iw * (n - 1));
+    idx = Math.max(0, Math.min(n - 1, idx));
+    cross.style.display = ""; cross.setAttribute("x1", X(idx)); cross.setAttribute("x2", X(idx));
+    hoverDots.forEach(d => {
+      const s = seriesMap.get(d.dataset.id);
+      d.style.display = ""; d.setAttribute("cx", X(idx)); d.setAttribute("cy", Y(s.pts[idx]));
+    });
+    tip.textContent = "";
+    const dateEl = document.createElement("div"); dateEl.className = "tip-date";
+    dateEl.textContent = labels[idx] === "当前" ? "当前（" + indDateTo + "）" : labels[idx] === "区间中点" ? "区间中点" : labels[idx];
+    tip.append(dateEl);
+    [...seriesMap.values()].forEach(s => {
+      const row = document.createElement("div");
+      const key = document.createElement("i"); key.style.background = s.color;
+      const name = document.createElement("span"); name.textContent = s.ind.name;
+      const val = document.createElement("b"); val.textContent = s.ind.fmt(s.raw[idx]);
+      row.append(key, name, val); tip.append(row);
+    });
+    tip.style.display = "";
+    const hostR = host.getBoundingClientRect();
+    const rows = seriesMap.size + 1;
+    tip.style.left = Math.min(e.clientX - hostR.left + 14, hostR.width - 170) + "px";
+    tip.style.top = Math.max(4, Math.min(e.clientY - hostR.top - rows * 20 - 8, hostR.height - rows * 22 - 16)) + "px";
+  });
+  hit.addEventListener("pointerleave", () => {
+    cross.style.display = "none"; tip.style.display = "none";
+    hoverDots.forEach(d => d.style.display = "none");
+  });
+}
+
+function applyCustomRange() {
+  const f = document.getElementById("indDateFrom").value;
+  const t = document.getElementById("indDateTo").value;
+  if (!f || !t) { alert("请选择起止日期"); return; }
+  if (f >= t) { alert("开始日期需早于结束日期"); return; }
+  indDateFrom = f; indDateTo = t;
+  renderIndChart();
+}
+
+function toggleIndicator(id) {
+  const all = Object.values(IND_POOL).flat().find(i => i.id === id);
+  all.picked = !all.picked;
+  renderIndicatorLib();
+}
+
+/* ===== 指标选择弹层 ===== */
+function openIndicatorPick() {
+  document.getElementById("indicatorModal").style.display = "";
+  renderPickList();
+}
+function closeIndicatorPick() { document.getElementById("indicatorModal").style.display = "none"; }
+function renderPickList() {
+  const seg = document.getElementById("indCatSeg");
+  seg.innerHTML = IND_CATS.map(c =>
+    `<button class="seg${c === pickCat ? " active" : ""}" onclick="pickCat='${c}';renderPickList()">${c}</button>`).join("");
+  const list = document.getElementById("indPickList");
+  list.textContent = "";
+  IND_POOL[pickCat].forEach(ind => {
+    const label = document.createElement("label");
+    label.className = "pick-item";
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.checked = ind.picked;
+    cb.onchange = () => { ind.picked = cb.checked; updatePickCount(); };
+    const name = document.createElement("div");
+    const b = document.createElement("b"); b.textContent = ind.name;
+    const formula = document.createElement("div");
+    formula.className = "tiny"; formula.textContent = ind.formula;
+    name.append(b, formula);
+    label.append(cb, name);
+    list.append(label);
+  });
+  updatePickCount();
+}
+function updatePickCount() {
+  const n = Object.values(IND_POOL).flat().filter(i => i.picked).length;
+  document.getElementById("pickCount").textContent = n;
+}
+function applyIndicatorPick() {
+  closeIndicatorPick();
+  document.getElementById("indicatorSearch").value = "";
+  renderIndicatorLib();
+}
+
+/* ===== 时钟 ===== */
+function tick() {
+  const d = new Date(); const p = n => String(n).padStart(2,"0");
+  document.getElementById("clock").textContent = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+tick(); setInterval(tick, 30000);
+
+/* ===== 侧边栏折叠 ===== */
+const SIDEBAR_KEY = 'vp-sidebar-collapsed';
+function applySidebarState() {
+  const sidebar = document.querySelector('.sidebar');
+  const toggleBtn = document.querySelector('.sidebar-toggle');
+  if (!sidebar || !toggleBtn) return;
+  const collapsed = localStorage.getItem(SIDEBAR_KEY) === '1';
+  sidebar.classList.toggle('collapsed', collapsed);
+  toggleBtn.setAttribute('title', collapsed ? '展开菜单' : '收起菜单');
+  toggleBtn.textContent = collapsed ? '☰' : '☰';
+}
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  if (!sidebar) return;
+  const collapsed = sidebar.classList.toggle('collapsed');
+  localStorage.setItem(SIDEBAR_KEY, collapsed ? '1' : '0');
+  const toggleBtn = document.querySelector('.sidebar-toggle');
+  if (toggleBtn) toggleBtn.setAttribute('title', collapsed ? '展开菜单' : '收起菜单');
+}
+applySidebarState();
+
+/* ===== 初始化 ===== */
+renderPortfolios(); renderSharedPortfolios(); renderHoldings(); renderIndicators();
+</script>
+
+<style>
+.weight-bar{width:60px;height:6px;background:var(--vp-gray-100);border-radius:3px;overflow:hidden}
+.weight-fill{height:100%;background:var(--vp-green);border-radius:3px}
+.tag-lime{background:#E8F5E9;color:#1B5E20;font-size:11px;padding:2px 6px;border-radius:4px}
+/* 净值走势图 */
+.axis-tick{font-size:11px;fill:var(--vp-gray-light);font-variant-numeric:tabular-nums}
+.end-label{font-size:12px;font-weight:700;fill:var(--vp-ink,#15322B);font-variant-numeric:tabular-nums}
+.chart-legend{display:flex;gap:16px;font-size:12px;color:var(--vp-gray);margin-bottom:6px}
+.chart-legend span{display:inline-flex;align-items:center;gap:6px}
+.chart-legend i{display:inline-block;width:14px;height:3px;border-radius:2px}
+.chart-tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--vp-mint-200);
+  border-radius:8px;box-shadow:0 4px 14px rgba(21,50,43,.10);padding:8px 10px;font-size:12px;min-width:130px;z-index:30}
+.chart-tip .tip-date{color:var(--vp-gray-light);margin-bottom:4px;font-variant-numeric:tabular-nums}
+.chart-tip div:not(.tip-date){display:flex;align-items:center;gap:6px;margin-top:2px}
+.chart-tip i{display:inline-block;width:12px;height:3px;border-radius:2px;flex:none}
+.chart-tip span{color:var(--vp-gray)}
+.chart-tip b{margin-left:auto;color:var(--vp-ink,#15322B);font-variant-numeric:tabular-nums}
+/* 弹层 */
+.modal-mask{position:fixed;inset:0;background:rgba(10,55,38,.32);display:flex;align-items:center;justify-content:center;z-index:500}
+.modal-box{background:#fff;border-radius:12px;width:480px;max-width:92vw;max-height:86vh;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(21,50,43,.18)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--vp-mint-200)}
+.modal-body{padding:16px 18px;overflow:auto}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--vp-mint-200)}
+.flex1{flex:1}
+/* 指标选择列表 */
+.pick-list{max-height:300px;overflow:auto;border:1px solid var(--vp-mint-200);border-radius:8px}
+.pick-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--vp-mint-50);cursor:pointer}
+.pick-item:last-child{border-bottom:none}
+.pick-item:hover{background:var(--vp-mint-50)}
+.pick-item input{accent-color:var(--vp-green)}
+
+/* 详情区 KPI 一排四列 */
+#inlineDetail .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 1100px) { #inlineDetail .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+/* 持仓 + 调仓 并行两列：两卡等高定 5 行，边框对齐 */
+.duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--vp-space-5, 20px); align-items: stretch; }
+.duo-grid .card { margin-bottom: 0; min-width: 0; display: flex; flex-direction: column; }
+.duo-grid .card-body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.duo-scroll { overflow: auto; flex: 1; }
+/* 目标高度 = 表头 + 5 行（按实际行高测得） */
+.duo-grid .card { height: 332px; }
+/* 指标走势迷你线文字 */
+.spark-label{font-size:10px;font-weight:700;font-variant-numeric:tabular-nums}
+.duo-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.duo-scroll::-webkit-scrollbar-thumb { background: var(--vp-mint-300); border-radius: 3px; }
+/* 指标库多线图 */
+.ind-key{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle}
+/* 图上方指标 chips */
+.ind-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.ind-chip{display:inline-flex;align-items:center;gap:6px;background:var(--vp-mint-50,#F2F8F4);
+  border:1px solid var(--vp-mint-200);border-radius:999px;padding:3px 6px 3px 10px;font-size:12px;font-weight:600}
+.ind-chip i{display:inline-block;width:10px;height:4px;border-radius:2px}
+.ind-chip button{border:none;background:transparent;cursor:pointer;color:var(--vp-gray-light);
+  width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.ind-chip button:hover{background:var(--vp-mint-200);color:var(--vp-danger)}
+.ind-legend-name{font-size:11px;fill:var(--vp-gray,#5A6B61)}
+.ind-legend-val{font-size:11px;font-weight:700;fill:var(--vp-ink,#15322B);font-variant-numeric:tabular-nums}
+@media (max-width: 1100px) { .duo-grid { grid-template-columns: 1fr; } .duo-grid .card { height: auto; } .duo-scroll { max-height: 332px; } }
+/* 同页详情：列表定高 5 行滚动 */
+.list-scroll { max-height: 330px; overflow-y: auto; }
+.list-scroll::-webkit-scrollbar { width: 6px; }
+.list-scroll::-webkit-scrollbar-thumb { background: var(--vp-mint-300); border-radius: 3px; }
+.inline-detail-divider { display:flex; align-items:center; justify-content:space-between;
+  margin: 14px 0 10px; padding-top: 14px; border-top: 1px solid var(--vp-mint-200); }
+.inline-detail-divider span { font-size: 14px; font-weight: 700; color: var(--vp-green-dark); }
+#inlineDetail { background: var(--vp-mint-50); border: 1px solid var(--vp-mint-200); border-radius: 12px; padding: 4px 16px 16px; margin-top: 12px; }
+.row-selected td { background: var(--vp-green-bg) !important; }
+</style>
+</body>
+</html>

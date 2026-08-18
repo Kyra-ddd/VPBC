@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行业配置 · 研报管理</title>
+<link rel="stylesheet" href="vp.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ 左侧导航 ============ -->
+  <aside class="sidebar">
+    <nav class="side-nav">
+      <div class="side-label">主菜单</div>
+      <a class="side-item" href="05-research-report.html"><span class="ico">📄</span><span data-lang="zh">研报管理</span><span data-lang="en" style="display:none">Research</span></a>
+      <a class="side-item active" href="02-industry-analyst.html"><span class="ico">👥</span><span data-lang="zh">行业配置</span><span data-lang="en" style="display:none">Industries</span></a>
+      <a class="side-item" href="03-stock-pool.html"><span class="ico">📊</span><span>股票池</span></a>
+      <a class="side-item" href="04-portfolio.html"><span class="ico">📈</span><span>模拟组合</span></a>
+      <a class="side-item" href="01-config.html"><span class="ico">⚙️</span><span>配置</span></a>
+    </nav>
+  </aside>
+
+  <!-- ============ 主列 ============ -->
+  <div class="main-col">
+
+    <!-- 顶栏 -->
+    <header class="topbar">
+      <div class="flex items-center gap-3">
+        <button class="sidebar-toggle" onclick="toggleSidebar()" title="收起菜单">☰</button>
+        <div class="brand">
+          <div class="brand-logo">VPBC</div>
+          <span class="brand-name">研报管理</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="tiny" style="color:rgba(255,255,255,0.8)" id="clock"></span>
+        <div class="user-chip">
+          <div class="avatar">K</div>
+          <span>kyra-ddd</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="container">
+      <!-- 页面标题区 -->
+      <div class="page-head">
+        <div class="page-title"><span class="ti">☗</span>行业配置</div>
+        <div class="page-meta">最近更新：2026-08-12　|　主数据维护</div>
+      </div>
+
+      <!-- 权限提示 -->
+      <div class="notice">
+        <span class="ico">ⓘ</span>
+        <span>行业是一级大类，同一行业可覆盖多个市场；研究员按启用/停用维护，不再区分协助关系。上传 Excel 即可解析当前行业下的股票清单。</span>
+      </div>
+
+      <!-- 工具栏：市场分段 + 新增 -->
+      <div class="toolbar">
+        <div class="segmented" id="marketSeg"></div>
+        <div class="flex gap-2">
+          <button class="btn btn-secondary btn-sm" onclick="alert('原型：新增行业（需「行业增删」权限）')">＋ 新增行业</button>
+          <button class="btn btn-secondary btn-sm" onclick="alert('原型：新增市场')">＋ 新增市场</button>
+        </div>
+      </div>
+
+      <!-- 三级联动：行业列表 + 研究员管理 -->
+      <div class="split split-industry">
+        <!-- 左：行业列表 -->
+        <section class="card">
+          <div class="card-head">
+            <div class="card-title" id="industryListTitle">行业列表</div>
+            <span class="tiny" id="industryCount"></span>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="industry-table-wrap">
+              <table class="table" id="industryTable">
+                <thead>
+                  <tr>
+                    <th>行业</th>
+                    <th>研究员</th>
+                    <th>状态</th>
+                    <th class="right">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="industryBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 右：选中行业的研究员 -->
+        <section class="card">
+          <div class="card-head">
+            <div class="card-title" id="analystPanelTitle">请选择行业</div>
+            <button class="btn btn-primary btn-sm" onclick="alert('原型：添加研究员到「' + currentIndustryName + '」（按行业归属维护）')">＋ 添加研究员</button>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>研究员</th>
+                  <th>账号</th>
+                  <th>研究方向</th>
+                  <th>状态</th>
+                  <th class="right">操作</th>
+                </tr>
+              </thead>
+              <tbody id="analystBody">
+                <tr><td colspan="5" class="muted" style="text-align:center;padding:32px">← 在左侧选择一个行业查看挂载的研究员</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <section class="card import-record-panel" style="margin-top:16px;">
+        <div class="card-head import-record-head">
+          <div class="card-title">导入记录</div>
+          <div class="import-record-actions">
+            <input id="stockImportInput" type="file" accept=".xlsx,.xls,.csv" style="display:none">
+            <label class="btn btn-primary btn-sm file-upload-inline" for="stockImportInput">
+              ＋ 上传文件
+            </label>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0">
+          <div id="stockImportResult" class="tiny" style="margin:12px 16px 12px;color:var(--vp-green-dark)">当前行业未导入股票清单</div>
+          <div id="importHistoryList" style="margin-top:8px;display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+      </section>
+    </main>
+
+  </div>
+</div>
+
+<script>
+/* ===== 假数据：行业为一级大类，可跨多个市场 ===== */
+const DATA = {
+  HK: {
+    name: "港股",
+    industries: [
+      { code: "HK-RE",   name: "地产",   analysts: [
+        { id:"a01", name:"David",  acct:"davidw",  focus:"港股内房股",      status:"在职" },
+        { id:"a02", name:"Emma",  acct:"emma",     focus:"物业管理",        status:"在职" },
+        { id:"a03", name:"Eric",  acct:"ericc",   focus:"香港地产、REITs",  status:"在职" },
+      ]},
+      { code: "HK-FIN",  name: "金融",   analysts: [
+        { id:"a04", name:"Grace",  acct:"gracew",   focus:"中资银行、券商",   status:"在职" },
+        { id:"a03", name:"Eric",  acct:"ericc",   focus:"香港地产、金融",   status:"在职" },
+      ]},
+      { code: "HK-TECH", name: "科技",   analysts: [
+        { id:"a05", name:"Kyra", acct:"kyra",    focus:"互联网平台、消费电子", status:"在职" },
+        { id:"a06", name:"Kevin", acct:"kevinl",   focus:"半导体代工",       status:"在职" },
+      ]},
+      { code: "HK-CONS", name: "消费",   analysts: [
+        { id:"a02", name:"Emma",  acct:"emma",     focus:"消费、物业管理",   status:"在职" },
+      ]},
+    ]
+  },
+  US: {
+    name: "美股",
+    industries: [
+      { code: "US-SEM",  name: "半导体", analysts: [
+        { id:"a06", name:"Kevin", acct:"kevinl", focus:"美股半导体（跨市场）", status:"在职" },
+        { id:"a07", name:"Lily", acct:"lilyz",  focus:"AI 芯片",            status:"在职" },
+      ]},
+      { code: "US-BIO",  name: "生物科技", analysts: [
+        { id:"a08", name:"Nancy", acct:"nancym", focus:"创新药、CXO",        status:"在职" },
+      ]},
+      { code: "US-NET",  name: "互联网", analysts: [
+        { id:"a05", name:"Kyra", acct:"kyra", focus:"美股互联网（跨市场）", status:"在职" },
+      ]},
+      { code: "US-TECH", name: "科技", analysts: [
+        { id:"a05", name:"Kyra", acct:"kyra", focus:"AI 上游平台", status:"在职" },
+        { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片与硬件", status:"在职" },
+      ]},
+    ]
+  },
+  JP: {
+    name: "日股",
+    industries: [
+      { code: "JP-AUTO", name: "汽车", analysts: [
+        { id:"a09", name:"Tanaka", acct:"tanakak", focus:"日系整车厂", status:"在职" },
+      ]},
+      { code: "JP-ELE",  name: "电子", analysts: [
+        { id:"a10", name:"Sato", acct:"sato.t", focus:"电子元器件", status:"离职" },
+      ]},
+    ]
+  },
+  KR: {
+    name: "韩股",
+    industries: [
+      { code: "KR-TECH", name: "科技", analysts: [
+        { id:"a11", name:"Kim", acct:"kim", focus:"韩国科技巨头", status:"在职" },
+      ]},
+    ]
+  },
+};
+
+const INDUSTRY_IMPORTS = {
+  "科技": ["00700.HK", "NVDA.US", "AAPL.US", "MSFT.US"],
+  "地产": ["01109.HK", "00012.HK", "00016.HK"],
+  "金融": ["0939.HK", "1398.HK", "600036.SH"],
+  "消费": ["09988.HK", "0388.HK", "00093.HK"],
+  "半导体": ["NVDA.US", "AMD.US", "TSM.US"],
+  "互联网": ["BABA.US", "META.US", "PDD.US"],
+};
+const IMPORT_HISTORY_KEY = 'vp-industry-import-history';
+
+let currentMarket = "ALL";
+let currentIndustry = null;
+let currentIndustryName = "";
+
+function getImportHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(IMPORT_HISTORY_KEY) || '{}');
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveImportHistory(history) {
+  localStorage.setItem(IMPORT_HISTORY_KEY, JSON.stringify(history));
+}
+
+function getCurrentIndustryImportRecords() {
+  if (!currentIndustry) return [];
+  const history = getImportHistory();
+  return history[currentIndustry] || [];
+}
+
+function showImportAttachment(record) {
+  if (!record || !record.filename) {
+    alert('暂无附件');
+    return;
+  }
+  const details = Array.isArray(record.details) && record.details.length ? record.details.join('\n') : '无股票明细';
+  alert(`附件信息\n文件：${record.filename}\n导入人：${record.uploader}\n更新时间：${record.uploadedAt}\n\n股票明细：\n${details}`);
+}
+
+function renderImportHistory() {
+  const list = document.getElementById('importHistoryList');
+  if (!list) return;
+
+  const history = getImportHistory();
+  const records = Object.entries(history).flatMap(([industry, items]) =>
+    (items || []).map((rec, idx) => ({ ...rec, industry, index: idx + 1 }))
+  );
+
+  if (!records.length) {
+    list.innerHTML = '<div class="empty-state tiny">暂无导入记录</div>';
+    return;
+  }
+
+  list.innerHTML = `
+    <table class="table import-history-table" style="margin-top:8px;">
+      <thead>
+        <tr>
+          <th style="width:64px">序号</th>
+          <th>行业</th>
+          <th>更新人</th>
+          <th>更新时间</th>
+          <th style="width:92px">附件</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${records.map((rec, idx) => {
+          return `
+            <tr>
+              <td>${idx + 1}</td>
+              <td>${rec.industry || '未知行业'}</td>
+              <td>${rec.uploader || '—'}</td>
+              <td>${rec.uploadedAt || '—'}</td>
+              <td>
+                ${rec.filename ? `<button class="btn btn-ghost btn-sm" onclick="showImportAttachment(${JSON.stringify(rec).replace(/"/g, '&quot;')})">查看</button>` : '—'}
+              </td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function industriesInView() {
+  if (currentMarket !== "ALL") {
+    return DATA[currentMarket].industries.map(ind => ({ ...ind, marketNames: [DATA[currentMarket].name] }));
+  }
+
+  const grouped = new Map();
+  Object.entries(DATA).forEach(([marketCode, market]) => {
+    market.industries.forEach(ind => {
+      const key = ind.name;
+      if (!grouped.has(key)) {
+        grouped.set(key, { ...ind, marketNames: [market.name], analysts: [...ind.analysts] });
+        return;
+      }
+      const merged = grouped.get(key);
+      merged.marketNames = Array.from(new Set([...merged.marketNames, market.name]));
+      const seen = new Set(merged.analysts.map(a => a.id));
+      ind.analysts.forEach(a => {
+        if (!seen.has(a.id)) {
+          merged.analysts.push({ ...a });
+          seen.add(a.id);
+        }
+      });
+    });
+  });
+
+  return Array.from(grouped.values());
+}
+function viewLabel() { return currentMarket === "ALL" ? "全部市场" : DATA[currentMarket].name; }
+
+/* ===== 渲染市场分段 ===== */
+function renderMarkets() {
+  const seg = document.getElementById("marketSeg");
+  seg.innerHTML =
+    `<button class="seg${currentMarket === 'ALL' ? ' active' : ''}" onclick="switchMarket('ALL')">全部</button>` +
+    Object.keys(DATA).map(code =>
+      `<button class="seg${code === currentMarket ? ' active' : ''}" onclick="switchMarket('${code}')">${DATA[code].name}</button>`
+    ).join("");
+}
+
+/* ===== 渲染行业列表 ===== */
+function renderIndustries() {
+  const list = industriesInView();
+  document.getElementById("industryListTitle").textContent = viewLabel() + " · 行业列表";
+  document.getElementById("industryCount").textContent = list.length + " 个行业";
+  const body = document.getElementById("industryBody");
+  body.innerHTML = list.map(ind => {
+    const chips = ind.analysts.map(a => {
+      const cls = a.status === "在职" ? "tag tag-green" : "tag tag-gray";
+      return `<span class="${cls}" title="${a.name}（${a.acct}）${a.focus ? ' · ' + a.focus : ''}">${a.name}</span>`;
+    }).join("");
+    const marketText = ind.marketNames ? ind.marketNames.join(" / ") : "";
+    return `<tr class="${ind.code === currentIndustry ? 'row-selected' : ''}">
+      <td class="bold" style="cursor:pointer" onclick="selectIndustry('${ind.name}','${ind.name}')"><span class="ind-cell">${ind.name}</span><div class="tiny">${marketText || '默认市场'}</div></td>
+      <td><div class="chip-stack">${chips || '<span class="muted">—</span>'}</div></td>
+      <td><span class="tag ${ind.analysts.some(a => a.status === '在职') ? 'tag-green' : 'tag-gray'}">${ind.analysts.some(a => a.status === '在职') ? '启用' : '停用'}</span></td>
+      <td class="right nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：编辑行业「${ind.name}」')">编辑</button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();confirm('确定删除行业「${ind.name}」？') && alert('原型：删除行业「${ind.name}」')">删除</button>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+/* ===== 渲染研究员 ===== */
+function renderAnalysts() {
+  const ind = industriesInView().find(i => i.name === currentIndustry);
+  if (!ind) { clearAnalysts(); return; }
+  document.getElementById("analystPanelTitle").textContent = ind.name + "（" + (ind.marketNames || []).join(" / ") + "）";
+  const body = document.getElementById("analystBody");
+  body.innerHTML = ind.analysts.map(a => {
+    const statusTag = a.status === "在职" ? "tag-green" : "tag-gray";
+    const statusLabel = a.status === "在职" ? "启用" : "停用";
+    return `<tr>
+      <td class="bold">${a.name}</td>
+      <td class="muted">${a.acct}</td>
+      <td>${a.focus}</td>
+      <td><span class="tag ${statusTag}">${statusLabel}</span></td>
+      <td class="right nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：编辑研究员专业属性')">编辑</button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：从「${ind.name}」移除研究员（软删除）')">移除</button>
+      </td></tr>`;
+  }).join("");
+  refreshImportMeta();
+}
+
+function switchMarket(code) {
+  currentMarket = code; currentIndustry = null; currentIndustryName = "";
+  renderMarkets(); renderIndustries(); clearAnalysts();
+}
+function selectIndustry(code, name) {
+  currentIndustry = code; currentIndustryName = name;
+  renderIndustries(); renderAnalysts();
+}
+
+function refreshImportMeta() {
+  const stockInput = document.getElementById("stockImportInput");
+  const meta = document.getElementById("stockImportMeta");
+  const result = document.getElementById("stockImportResult");
+  const industry = industriesInView().find(i => i.name === currentIndustry) || null;
+  if (!industry) {
+    if (meta) meta.textContent = "";
+    result.textContent = "当前行业未导入股票清单";
+    if (stockInput) stockInput.value = "";
+    renderImportHistory();
+    return;
+  }
+  const history = getCurrentIndustryImportRecords();
+  const imported = history.length ? history[0].details : (INDUSTRY_IMPORTS[industry.name] || []);
+  if (imported.length) {
+    const preview = Array.isArray(imported) ? imported : imported.details || [];
+    if (meta) meta.textContent = history.length ? `已导入文件：${history[0].filename}` : "已导入文件：行业股票清单.xlsx";
+    result.textContent = `${industry.name} 已解析 ${preview.length} 只股票：${preview.slice(0, 5).join('、')}${preview.length > 5 ? '…' : ''}`;
+  } else {
+    if (meta) meta.textContent = "";
+    result.textContent = `${industry.name} 当前未导入股票清单`;
+  }
+  renderImportHistory();
+}
+
+function handleStockImport(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const industry = industriesInView().find(i => i.name === currentIndustry);
+  if (!industry) {
+    alert('请先选择一个行业');
+    return;
+  }
+
+  const fileReader = new FileReader();
+  fileReader.onload = function() {
+    const sampleCodes = INDUSTRY_IMPORTS[industry.name] || ["00700.HK", "02382.HK", "09988.HK"]; 
+    const details = [...sampleCodes].slice(0, 12);
+    const entry = {
+      uploadedAt: new Date().toLocaleString('zh-CN', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }),
+      uploader: 'kyra-ddd',
+      filename: file.name,
+      totalCount: details.length,
+      details,
+      fileData: fileReader.result
+    };
+
+    const history = getImportHistory();
+    if (!history[currentIndustry]) history[currentIndustry] = [];
+    history[currentIndustry].unshift(entry);
+    saveImportHistory(history);
+
+    document.getElementById('stockImportMeta').textContent = `已上传：${file.name}`;
+    document.getElementById('stockImportResult').textContent = `${industry.name} 已解析 ${details.length} 只股票：${details.slice(0, 6).join('、')}${details.length > 6 ? '…' : ''}`;
+    renderImportHistory();
+  };
+
+  fileReader.readAsDataURL(file);
+}
+
+function clearAnalysts() {
+  document.getElementById("analystPanelTitle").textContent = "请选择行业";
+  document.getElementById("analystBody").innerHTML =
+    '<tr><td colspan="5" class="muted" style="text-align:center;padding:32px">← 在左侧选择一个行业查看挂载的研究员</td></tr>';
+  const meta = document.getElementById("stockImportMeta");
+  if (meta) meta.textContent = "";
+  document.getElementById("stockImportResult").textContent = "当前行业未导入股票清单";
+  renderImportHistory();
+}
+
+/* ===== 顶部时钟 ===== */
+function tick() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, "0");
+  document.getElementById("clock").textContent =
+    `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+tick(); setInterval(tick, 30000);
+
+/* ===== 侧边栏折叠 ===== */
+const SIDEBAR_KEY = 'vp-sidebar-collapsed';
+function applySidebarState() {
+  const sidebar = document.querySelector('.sidebar');
+  const toggleBtn = document.querySelector('.sidebar-toggle');
+  if (!sidebar || !toggleBtn) return;
+  const collapsed = localStorage.getItem(SIDEBAR_KEY) === '1';
+  sidebar.classList.toggle('collapsed', collapsed);
+  toggleBtn.setAttribute('title', collapsed ? '展开菜单' : '收起菜单');
+  toggleBtn.textContent = collapsed ? '☰' : '☰';
+}
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  if (!sidebar) return;
+  const collapsed = sidebar.classList.toggle('collapsed');
+  localStorage.setItem(SIDEBAR_KEY, collapsed ? '1' : '0');
+  const toggleBtn = document.querySelector('.sidebar-toggle');
+  if (toggleBtn) toggleBtn.setAttribute('title', collapsed ? '展开菜单' : '收起菜单');
+}
+applySidebarState();
+
+/* ===== 初始化 ===== */
+const stockImportInput = document.getElementById('stockImportInput');
+if (stockImportInput) {
+  stockImportInput.addEventListener('change', handleStockImport);
+}
+renderImportHistory();
+renderMarkets();
+renderIndustries();
+</script>
+
+<style>
+/* 行业配置布局：左侧行业列表加宽（研究员标签要能舒展换行），右侧研究员表收窄 */
+.split-industry { grid-template-columns: minmax(420px, 5fr) 4fr; }
+.industry-table-wrap {
+  max-height: calc(5 * 52px + 38px);
+  overflow-y: auto;
+}
+#industryTable {
+  width: 100%;
+  table-layout: fixed;
+}
+#industryTable tbody tr {
+  height: 52px;
+}
+/* 左侧行业列：市场·行业 同行恒定展示，禁止换行 */
+#industryTable th:nth-child(1), #industryTable td:nth-child(1) { width: 160px; }
+.ind-cell { white-space: nowrap; display: inline-block; }
+#industryTable th:nth-child(2), #industryTable td:nth-child(2) { width: auto; }
+#industryTable .chip-stack { max-width: none; }
+/* 右侧研究员表：方向列收窄、操作列不换行 */
+.split-industry .table .tiny { white-space: normal; }
+.import-record-panel { margin-top: 16px; }
+.import-record-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.import-record-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.file-upload-inline {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 8px;
+  min-width: 104px;
+}
+.import-history-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+.import-history-table tbody tr:hover {
+  background: rgba(32, 160, 110, 0.04);
+}
+.empty-state {
+  padding: 18px 16px;
+  color: var(--vp-gray);
+  background: var(--vp-mint-50);
+  border-radius: 8px;
+  border: 1px dashed rgba(32, 160, 110, 0.25);
+  margin: 8px 16px 16px;
+}
+</style>
+</body>
+</html>
