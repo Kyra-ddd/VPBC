@@ -8,9 +8,9 @@
 
 <!-- 每次推进时更新这里，让任何设备拉下来一眼看到做到哪了 -->
 
-- **阶段**：原型设计
-- **最近更新**：2026-08-20 — 完成新增/编辑产品弹层，从列表页 New Product 和详情页 Edit Product 进入，支持 Basic / Dates / Providers / Investment / Risk & Limits 五个 tab
-- **下一步**：份额类别列表页 / 产品主数据 PRD 文档
+- **阶段**：原型设计 + PRD 文档
+- **最近更新**：2026-08-20 — 完成份额类别列表页原型（`03-share-class.html`）和产品主数据 PRD 文档（`docs/prd/01-product-masterdata.md`）
+- **下一步**：份额类别详情/编辑弹层 / 产品生命周期页面 / 费率结构页面 / 产品主数据 PRD 评审
 
 ### 历史进度
 
@@ -20,6 +20,8 @@
 - [x] 2026-08-20 完成产品管理菜单原型（`prototypes/01-product-management.html`），展示基金产品主数据核心字段
 - [x] 2026-08-20 完成产品管理详情页原型（`prototypes/02-product-detail.html`），从列表页 View 进入，展示完整主数据字段
 - [x] 2026-08-20 完成新增/编辑产品弹层（嵌入 01/02 页面），支持产品主数据全字段录入，分 5 个 tab
+- [x] 2026-08-20 完成份额类别列表页原型（`prototypes/03-share-class.html`），展示 ISIN、货币、费率、交易频率等核心字段
+- [x] 2026-08-20 完成产品主数据 PRD 文档（`docs/prd/01-product-masterdata.md`），含字段清单、校验规则、页面流程
 
 ---
 
