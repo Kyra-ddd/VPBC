@@ -1,6 +1,6 @@
-# 投研系统
+# Research Management
 
-> 基金公司投研业务 IT 产品设计。本仓库用于沉淀系统设计产出物（PRD、方案设计、SQL、原型）与 AI 协作上下文，支持多设备接续工作。
+> 基金公司投研业务 IT 产品设计（Research Management）。本仓库用于沉淀系统设计产出物（PRD、方案设计、SQL、原型）与 AI 协作上下文，支持多设备接续工作。
 
 ---
 
@@ -19,7 +19,7 @@
 - [x] 2026-08-11 完成 PRD-01 配置页面（多角色 RBAC + 通用自定义选项库）
 - [x] 2026-08-11 完成 PRD-02 行业-研究员维护（市场>行业>研究员，多对多可跨市场）
 - [x] 2026-08-11 完成 PRD-03 股票出入池（多命名池、出入池三模式审批可配置）
-- [x] 2026-08-12 接入 GitHub 远程（Kyra-ddd/invest-research-system · Private）
+- [x] 2026-08-12 接入 GitHub 远程（Kyra-ddd/Research-Management · Private）
 - [x] 2026-08-12 完成①②③静态原型（prototypes/，共用 vp.css，侧栏+顶栏框架）
 - [x] 2026-08-14 完成④模拟组合 PRD + 原型（docs/prd/04-portfolio.md + prototypes/04-portfolio.html）
 - [x] 2026-08-14 完成⑤研报 PRD + 原型（docs/prd/05-research-report.md + prototypes/05-research-report.html）
@@ -32,7 +32,7 @@
 ## 🗂 仓库结构
 
 ```
-invest-research-system/
+Research-Management/
 ├── README.md            ← 你在这里：总览 + 进度 + 多设备工作流
 ├── CLAUDE.md            ← 给 Claude 的项目指令（业务背景/术语/原则，跨设备自动加载）
 ├── docs/
@@ -68,8 +68,8 @@ B 设备干完   → git push
 ## 🔗 远程仓库
 
 - **平台**：GitHub
-- **地址**：https://github.com/Kyra-ddd/invest-research-system
-- **可见性**：Private（原型曾另建公开预览仓库 `invest-research-prototype` + Pages 链接，2026-08-17 已转 Private、Pages 已停用，待定是否恢复）
+- **地址**：https://github.com/Kyra-ddd/Research-Management
+- **可见性**：Private
 
 ---
 
