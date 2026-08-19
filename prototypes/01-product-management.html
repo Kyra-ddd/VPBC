@@ -437,6 +437,198 @@
     /* Empty / utility */
     .text-right { text-align: right; }
     .font-num { font-variant-numeric: tabular-nums; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 24px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background-color: var(--vp-white);
+      border-radius: var(--vp-radius);
+      box-shadow: 0 8px 24px rgba(16, 94, 62, 0.15);
+      width: 100%;
+      max-width: 900px;
+      max-height: calc(100vh - 48px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--vp-border);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--vp-gray-900);
+    }
+
+    .modal-close {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--vp-gray-500);
+      cursor: pointer;
+      border-radius: var(--vp-radius-sm);
+    }
+
+    .modal-close:hover {
+      background-color: var(--vp-gray-100);
+      color: var(--vp-gray-900);
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--vp-border);
+      background-color: var(--vp-gray-100);
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .tab {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--vp-gray-500);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .tab:hover { color: var(--vp-green); }
+
+    .tab.active {
+      color: var(--vp-green);
+      border-bottom-color: var(--vp-green);
+      background-color: var(--vp-white);
+    }
+
+    .tab-panel {
+      display: none;
+      padding: 20px;
+    }
+
+    .tab-panel.active { display: block; }
+
+    .form-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--vp-gray-700);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--vp-border);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group.span-2 { grid-column: span 2; }
+    .form-group.span-3 { grid-column: span 3; }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--vp-gray-700);
+    }
+
+    .form-label .required {
+      color: var(--vp-red);
+      margin-left: 2px;
+    }
+
+    .form-control {
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--vp-border);
+      border-radius: var(--vp-radius-sm);
+      font-size: 13px;
+      color: var(--vp-gray-900);
+      background-color: var(--vp-white);
+      font-family: inherit;
+      width: 100%;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--vp-green);
+      box-shadow: 0 0 0 3px var(--vp-green-light);
+    }
+
+    textarea.form-control {
+      height: auto;
+      padding: 10px 12px;
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    select.form-control { cursor: pointer; }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 36px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--vp-green);
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      font-size: 13px;
+      color: var(--vp-gray-700);
+      cursor: pointer;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--vp-border);
+      background-color: var(--vp-white);
+    }
   </style>
 </head>
 <body>
@@ -517,7 +709,7 @@
             <h1 class="page-title">Product Management</h1>
             <div class="page-subtitle">Manage fund masterdata, share classes and lifecycle</div>
           </div>
-          <button class="btn btn-primary">
+          <button class="btn btn-primary" onclick="openProductModal()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
@@ -717,5 +909,366 @@
       </div>
     </main>
   </div>
+
+  <!-- Product Modal -->
+  <div class="modal-overlay" id="productModal" onclick="closeProductModalOnOverlay(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">New Product</div>
+        <button class="modal-close" onclick="closeProductModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="tabs">
+          <div class="tab active" data-tab="basic" onclick="switchTab('basic')">Basic</div>
+          <div class="tab" data-tab="dates" onclick="switchTab('dates')">Dates</div>
+          <div class="tab" data-tab="providers" onclick="switchTab('providers')">Providers</div>
+          <div class="tab" data-tab="investment" onclick="switchTab('investment')">Investment</div>
+          <div class="tab" data-tab="risk" onclick="switchTab('risk')">Risk & Limits</div>
+        </div>
+
+        <form id="productForm">
+          <!-- Basic Tab -->
+          <div class="tab-panel active" id="tab-basic">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Fund Code<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="e.g. VP0010" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Fund Name (English)<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="Enter English fund name" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Fund Name (Traditional Chinese)<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="輸入繁體基金名稱" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Fund Name (Simplified Chinese)<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="输入简体基金名称" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fund Type<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select type</option>
+                  <option value="equity">Equity Fund</option>
+                  <option value="bond">Bond Fund</option>
+                  <option value="mixed">Mixed Asset Fund</option>
+                  <option value="money">Money Market Fund</option>
+                  <option value="index">Index Fund</option>
+                  <option value="etf">ETF</option>
+                  <option value="fof">Fund of Funds</option>
+                  <option value="structured">Structured Fund</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Domicile / Jurisdiction<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select domicile</option>
+                  <option value="HK">Hong Kong</option>
+                  <option value="LU">Luxembourg</option>
+                  <option value="IE">Ireland</option>
+                  <option value="KY">Cayman Islands</option>
+                  <option value="CN">Mainland China</option>
+                </select>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Primary Regulator<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="e.g. Securities and Futures Commission" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Base Currency</label>
+                <select class="form-control">
+                  <option value="">Select currency</option>
+                  <option value="USD">USD</option>
+                  <option value="HKD">HKD</option>
+                  <option value="CNY">CNY</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="JPY">JPY</option>
+                  <option value="AUD">AUD</option>
+                  <option value="SGD">SGD</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fund Status<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="draft">Draft</option>
+                  <option value="terminated">Terminated</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Launch Date<span class="required">*</span></label>
+                <input type="date" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Umbrella / OFC Name</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Sub Fund Code</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Registration Region</label>
+                <input type="text" class="form-control" placeholder="e.g. Hong Kong, Singapore, Taiwan">
+              </div>
+              <div class="form-group">
+                <div class="checkbox-group">
+                  <input type="checkbox" id="complexProduct" name="complexProduct">
+                  <label for="complexProduct">Complex Product</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="checkbox-group">
+                  <input type="checkbox" id="professionalOnly" name="professionalOnly">
+                  <label for="professionalOnly">Professional Investors Only</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dates Tab -->
+          <div class="tab-panel" id="tab-dates">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Application Submission Date</label>
+                <input type="date" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Authorization Date</label>
+                <input type="date" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Launch Date<span class="required">*</span></label>
+                <input type="date" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">IOP Start Date</label>
+                <input type="date" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Operation Start Date</label>
+                <input type="date" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Listing Date</label>
+                <input type="date" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Termination Date</label>
+                <input type="date" class="form-control">
+              </div>
+            </div>
+          </div>
+
+          <!-- Providers Tab -->
+          <div class="tab-panel" id="tab-providers">
+            <div class="form-grid">
+              <div class="form-group span-2">
+                <label class="form-label">Fund Manager<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="Enter fund manager name" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Fund Manager LEI<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="20-character LEI" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Sub Manager</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Investment Advisor</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Trustee / Administrator</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Custodian / Prime Broker</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Sub Custodian</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Auditor</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">LEI Number</label>
+                <input type="text" class="form-control" placeholder="20-character LEI">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">GIIN Number</label>
+                <input type="text" class="form-control" placeholder="XXXXXX.XXXXX.XX.XX">
+              </div>
+            </div>
+          </div>
+
+          <!-- Investment Tab -->
+          <div class="tab-panel" id="tab-investment">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Primary Instrument Type<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select type</option>
+                  <option value="equity">Equity Securities</option>
+                  <option value="bond">Debt Securities</option>
+                  <option value="derivative">Derivatives</option>
+                  <option value="mixed">Mixed Instruments</option>
+                  <option value="money">Money Market Instruments</option>
+                  <option value="structured">Structured Products</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Passive or Active Fund<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select</option>
+                  <option value="active">Active</option>
+                  <option value="passive">Passive</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Investment Market Focus<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select focus</option>
+                  <option value="global">Global</option>
+                  <option value="asia">Asia Pacific</option>
+                  <option value="china">Greater China</option>
+                  <option value="emerging">Emerging Markets</option>
+                  <option value="developed">Developed Markets</option>
+                </select>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Morningstar Category</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Benchmark</label>
+                <input type="text" class="form-control" placeholder="e.g. MSCI All Country Asia ex Japan Index">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Benchmark Code</label>
+                <input type="text" class="form-control" placeholder="e.g. MXASJNU">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hedging Policy (Fund Level)<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select policy</option>
+                  <option value="no">No Hedging</option>
+                  <option value="full">Fully Hedged</option>
+                  <option value="partial">Partially Hedged</option>
+                </select>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Asset Allocation Table</label>
+                <input type="file" class="form-control">
+              </div>
+              <div class="form-group span-3">
+                <label class="form-label">Investment Objective<span class="required">*</span></label>
+                <textarea class="form-control" placeholder="Describe the investment objective..." required></textarea>
+              </div>
+              <div class="form-group span-3">
+                <label class="form-label">Investment Strategy<span class="required">*</span></label>
+                <textarea class="form-control" placeholder="Describe the investment strategy..." required></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Risk Tab -->
+          <div class="tab-panel" id="tab-risk">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Risk Level</label>
+                <select class="form-control">
+                  <option value="">Select level</option>
+                  <option value="1">1 - Lowest</option>
+                  <option value="2">2 - Low</option>
+                  <option value="3">3 - Medium</option>
+                  <option value="4">4 - High</option>
+                  <option value="5">5 - Highest</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Max Leverage Ratio (%)<span class="required">*</span></label>
+                <input type="number" class="form-control" value="0" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Max Derivatives Ratio (%)<span class="required">*</span></label>
+                <input type="number" class="form-control" value="0" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Borrowing Limit (%)<span class="required">*</span></label>
+                <input type="number" class="form-control" value="0" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Stop Loss Limit</label>
+                <input type="number" class="form-control" placeholder="Optional" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Stop Loss Alert</label>
+                <input type="number" class="form-control" placeholder="Optional" step="0.01">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openProductModal(mode = 'new') {
+      const modal = document.getElementById('productModal');
+      const title = document.getElementById('modalTitle');
+      title.textContent = mode === 'edit' ? 'Edit Product' : 'New Product';
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeProductModal() {
+      const modal = document.getElementById('productModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeProductModalOnOverlay(event) {
+      if (event.target.id === 'productModal') {
+        closeProductModal();
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+      document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+    }
+
+    function saveProduct() {
+      const form = document.getElementById('productForm');
+      if (form.checkValidity()) {
+        alert('Product saved successfully! (Prototype only)');
+        closeProductModal();
+      } else {
+        form.reportValidity();
+      }
+    }
+  </script>
 </body>
 </html>
