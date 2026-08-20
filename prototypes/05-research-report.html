@@ -57,8 +57,9 @@
       <div class="card mb-4">
         <div class="card-body" style="padding:12px 16px">
           <div class="flex items-center gap-3 flex-wrap">
-            <input class="input" placeholder="标题/标签" style="width:140px">
-            <input class="input" placeholder="股票代码（含市场）" style="width:140px">
+            <input id="searchStock" class="input" placeholder="股票代码" style="width:120px" oninput="filterReports()">
+            <input id="searchCompany" class="input" placeholder="公司名" style="width:140px" oninput="filterReports()">
+            <input id="searchCreator" class="input" placeholder="创建人（研究员）" style="width:150px" oninput="filterReports()">
             <select class="select filter-select" style="min-width:86px">
               <option value="">全部市场</option>
               <option value="HK">港股</option>
@@ -286,22 +287,25 @@
 <script>
 /* ===== 研报数据 ===== */
 const REPORTS = [
-  { id:"R001", title:"港股科技行业深度报告：AI 驱动下的新机遇", market:"港股", industry:"科技", stock:"00700.HK", rating:"AAA+", ratingCls:"tag-green", creator:"David", time:"2026-08-10", attachment:{ name:"AI-港股科技深度报告.pdf", size:"2.3MB", type:"PDF" } },
-  { id:"R002", title:"阿里巴巴首次覆盖：电商+云双轮驱动", market:"港股", industry:"零售", stock:"09988.HK", rating:"AAA", ratingCls:"tag-green", creator:"Kyra", time:"2026-08-09", attachment:{ name:"Alibaba-cover.docx", size:"0.8MB", type:"DOCX" } },
-  { id:"R003", title:"美股科技 Q2 财报前瞻：AI 变现加速", market:"美股", industry:"科技", stock:"NVDA.US", rating:"AA+", ratingCls:"tag-blue", creator:"Kyra", time:"2026-08-08", attachment:{ name:"Q2-AI-earnings.pdf", size:"1.5MB", type:"PDF" } },
-  { id:"R004", title:"港股金融板块周报：降息预期升温", market:"港股", industry:"金融", stock:"0939.HK", rating:"AAA-", ratingCls:"tag-green", creator:"Grace", time:"2026-08-07", attachment:null },
-  { id:"R005", title:"固收专题：美债收益率曲线倒挂分析", market:"美股", industry:"宏观", stock:"—", rating:"BBB+", ratingCls:"tag-gray", creator:"Grace", time:"2026-08-05", attachment:{ name:"rates-curve.xlsx", size:"0.4MB", type:"XLSX" } },
-  { id:"R006", title:"腾讯控股跟踪报告：游戏回暖，广告提速", market:"港股", industry:"科技", stock:"00700.HK", rating:"AA+", ratingCls:"tag-blue", creator:"David", time:"2026-08-03", attachment:{ name:"Tencent-update.pdf", size:"1.1MB", type:"PDF" } },
+  { id:"R001", title:"港股科技行业深度报告：AI 驱动下的新机遇", market:"港股", industry:"科技", stock:"00700.HK", company:"腾讯控股", rating:"AAA+", ratingCls:"tag-green", creator:"David", time:"2026-08-10", attachment:{ name:"AI-港股科技深度报告.pdf", size:"2.3MB", type:"PDF" } },
+  { id:"R002", title:"阿里巴巴首次覆盖：电商+云双轮驱动", market:"港股", industry:"零售", stock:"09988.HK", company:"阿里巴巴", rating:"AAA", ratingCls:"tag-green", creator:"Kyra", time:"2026-08-09", attachment:{ name:"Alibaba-cover.docx", size:"0.8MB", type:"DOCX" } },
+  { id:"R003", title:"美股科技 Q2 财报前瞻：AI 变现加速", market:"美股", industry:"科技", stock:"NVDA.US", company:"英伟达", rating:"AA+", ratingCls:"tag-blue", creator:"Kyra", time:"2026-08-08", attachment:{ name:"Q2-AI-earnings.pdf", size:"1.5MB", type:"PDF" } },
+  { id:"R004", title:"港股金融板块周报：降息预期升温", market:"港股", industry:"金融", stock:"0939.HK", company:"建设银行", rating:"AAA-", ratingCls:"tag-green", creator:"Grace", time:"2026-08-07", attachment:null },
+  { id:"R005", title:"固收专题：美债收益率曲线倒挂分析", market:"美股", industry:"宏观", stock:"—", company:"—", rating:"BBB+", ratingCls:"tag-gray", creator:"Grace", time:"2026-08-05", attachment:{ name:"rates-curve.xlsx", size:"0.4MB", type:"XLSX" } },
+  { id:"R006", title:"腾讯控股跟踪报告：游戏回暖，广告提速", market:"港股", industry:"科技", stock:"00700.HK", company:"腾讯控股", rating:"AA+", ratingCls:"tag-blue", creator:"David", time:"2026-08-03", attachment:{ name:"Tencent-update.pdf", size:"1.1MB", type:"PDF" } },
 ];
 
-function renderReports() {
+function renderReports(data = REPORTS) {
   const body = document.getElementById("reportBody");
-  body.innerHTML = REPORTS.map(r => {
+  body.innerHTML = data.map(r => {
     const att = r.attachment ? `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();showAttachment('${r.id}')">查看</button>` : '';
     return `
       <tr style="cursor:pointer" onclick="showDetail('${r.id}')">
         <td class="mono-num muted">${r.stock || '—'}</td>
-        <td><div class="bold" style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</div></td>
+        <td>
+          <div class="bold" style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</div>
+          <div class="tiny muted">${r.company || '—'}</div>
+        </td>
         <td>${r.market} · ${r.industry}</td>
         <td><span class="tag ${r.ratingCls}">${r.rating}</span></td>
         <td>${r.creator}</td>
@@ -313,6 +317,21 @@ function renderReports() {
         </td>
       </tr>`;
   }).join("");
+}
+
+function filterReports() {
+  const stock = document.getElementById("searchStock")?.value.trim().toLowerCase() || "";
+  const company = document.getElementById("searchCompany")?.value.trim().toLowerCase() || "";
+  const creator = document.getElementById("searchCreator")?.value.trim().toLowerCase() || "";
+
+  const filtered = REPORTS.filter(r => {
+    const matchStock = !stock || (r.stock || "—").toLowerCase().includes(stock);
+    const matchCompany = !company || (r.company || "—").toLowerCase().includes(company);
+    const matchCreator = !creator || (r.creator || "").toLowerCase().includes(creator);
+    return matchStock && matchCompany && matchCreator;
+  });
+
+  renderReports(filtered);
 }
 
 /* ===== 弹窗控制 ===== */
