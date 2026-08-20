@@ -490,10 +490,10 @@ const originalTextNodes = [];
 let currentLang = 'en';
 
 function saveOriginalTexts() {
-  const app = document.querySelector('.app');
-  if (!app) return;
+  const root = document.body;
+  if (!root) return;
 
-  const walker = document.createTreeWalker(app, NodeFilter.SHOW_TEXT, null, false);
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
   let node;
   while (node = walker.nextNode()) {
     const parent = node.parentElement;
