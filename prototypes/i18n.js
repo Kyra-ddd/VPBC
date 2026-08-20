@@ -164,8 +164,10 @@ const translations = {
     'Dates': '关键日期',
     'Providers': '服务机构',
     'Investment': '投资概况',
+    'Risk & Limits': '风险与限额',
 
     // Modal labels
+    'Fund Code': '基金代码',
     'Fund Name (English)': '基金名称（英文）',
     'Fund Name (Traditional Chinese)': '基金名称（繁中）',
     'Fund Name (Simplified Chinese)': '基金名称（简中）',
@@ -176,6 +178,7 @@ const translations = {
     'Select currency': '选择货币',
     'Fund Status': '基金状态',
     'Select status': '选择状态',
+    'Launch Date': '成立日期',
     'Umbrella / OFC Name': '伞形/OFC名称',
     'Optional': '可选',
     'Sub Fund Code': '子基金代码',
@@ -220,6 +223,7 @@ const translations = {
     'Describe the investment objective...': '描述投资目标...',
     'Investment Strategy': '投资策略',
     'Describe the investment strategy...': '描述投资策略...',
+    'Risk Level': '风险等级',
     'Select level': '选择等级',
     '1 - Lowest': '1 - 最低',
     '2 - Low': '2 - 低',
@@ -393,8 +397,10 @@ const translations = {
     'Dates': '關鍵日期',
     'Providers': '服務機構',
     'Investment': '投資概況',
+    'Risk & Limits': '風險與限額',
 
     // Modal labels
+    'Fund Code': '基金代碼',
     'Fund Name (English)': '基金名稱（英文）',
     'Fund Name (Traditional Chinese)': '基金名稱（繁中）',
     'Fund Name (Simplified Chinese)': '基金名稱（簡中）',
@@ -405,6 +411,7 @@ const translations = {
     'Select currency': '選擇貨幣',
     'Fund Status': '基金狀態',
     'Select status': '選擇狀態',
+    'Launch Date': '成立日期',
     'Umbrella / OFC Name': '傘形/OFC名稱',
     'Optional': '可選',
     'Sub Fund Code': '子基金代碼',
@@ -449,6 +456,7 @@ const translations = {
     'Describe the investment objective...': '描述投資目標...',
     'Investment Strategy': '投資策略',
     'Describe the investment strategy...': '描述投資策略...',
+    'Risk Level': '風險等級',
     'Select level': '選擇等級',
     '1 - Lowest': '1 - 最低',
     '2 - Low': '2 - 低',
@@ -477,7 +485,47 @@ const placeholderTranslations = {
   'Describe the investment strategy...': { 'zh-CN': '描述投资策略...', 'zh-HK': '描述投資策略...' }
 };
 
+const LANG_STORAGE_KEY = 'productCenterLang';
+const originalTextNodes = [];
 let currentLang = 'en';
+
+function saveOriginalTexts() {
+  const app = document.querySelector('.app');
+  if (!app) return;
+
+  const walker = document.createTreeWalker(app, NodeFilter.SHOW_TEXT, null, false);
+  let node;
+  while (node = walker.nextNode()) {
+    const parent = node.parentElement;
+    if (!parent) continue;
+    const parentTag = parent.tagName;
+    if (parentTag === 'SCRIPT' || parentTag === 'STYLE') continue;
+
+    const trimmed = node.textContent.trim();
+    if (trimmed) {
+      originalTextNodes.push({ node, original: node.textContent });
+    }
+  }
+}
+
+function restoreOriginalTexts() {
+  originalTextNodes.forEach(({ node, original }) => {
+    if (node.parentElement) {
+      node.textContent = original;
+    }
+  });
+}
+
+function applyTranslations(lang) {
+  if (lang === 'en') return;
+  originalTextNodes.forEach(({ node, original }) => {
+    if (!node.parentElement) return;
+    const trimmed = original.trim();
+    if (translations[lang] && translations[lang][trimmed]) {
+      node.textContent = original.replace(trimmed, translations[lang][trimmed]);
+    }
+  });
+}
 
 function translatePlaceholders(lang) {
   document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(el => {
@@ -493,47 +541,9 @@ function translatePlaceholders(lang) {
   });
 }
 
-function saveOriginalTexts() {
-  document.querySelectorAll('.app *').forEach(el => {
-    if (el.childNodes.length === 1 && el.childNodes[0].nodeType === 3) {
-      const trimmed = el.textContent.trim();
-      if (trimmed) {
-        el.setAttribute('data-i18n-original-text', trimmed);
-      }
-    }
-  });
-}
-
-function restoreOriginalTexts() {
-  document.querySelectorAll('[data-i18n-original-text]').forEach(el => {
-    const original = el.getAttribute('data-i18n-original-text');
-    if (el.childNodes.length > 0 && el.childNodes[0].nodeType === 3) {
-      el.childNodes[0].textContent = original;
-    } else {
-      el.textContent = original;
-    }
-  });
-}
-
-function applyTranslations(lang) {
-  if (lang === 'en') return;
-  const app = document.querySelector('.app');
-  const walker = document.createTreeWalker(app, NodeFilter.SHOW_TEXT, null, false);
-  const textNodes = [];
-  let node;
-  while (node = walker.nextNode()) {
-    textNodes.push(node);
-  }
-  textNodes.forEach(node => {
-    const trimmed = node.textContent.trim();
-    if (translations[lang] && translations[lang][trimmed]) {
-      node.textContent = node.textContent.replace(trimmed, translations[lang][trimmed]);
-    }
-  });
-}
-
 function setLanguage(lang) {
   currentLang = lang;
+  localStorage.setItem(LANG_STORAGE_KEY, lang);
   document.documentElement.lang = lang === 'en' ? 'en' : (lang === 'zh-CN' ? 'zh-CN' : 'zh-HK');
 
   document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -541,16 +551,17 @@ function setLanguage(lang) {
   });
 
   const app = document.querySelector('.app');
-  app.style.display = 'none';
+  if (app) app.style.display = 'none';
   restoreOriginalTexts();
   applyTranslations(lang);
   translatePlaceholders(lang);
-  app.style.display = '';
+  if (app) app.style.display = '';
 }
 
 function initI18n() {
   saveOriginalTexts();
-  setLanguage('en');
+  const savedLang = localStorage.getItem(LANG_STORAGE_KEY) || 'en';
+  setLanguage(savedLang);
 }
 
 if (document.readyState === 'loading') {
