@@ -558,8 +558,28 @@ function setLanguage(lang) {
   if (app) app.style.display = '';
 }
 
+const SIDEBAR_STORAGE_KEY = 'productCenterSidebarCollapsed';
+
+function toggleSidebar() {
+  const app = document.querySelector('.app');
+  if (!app) return;
+  app.classList.toggle('sidebar-collapsed');
+  const isCollapsed = app.classList.contains('sidebar-collapsed');
+  localStorage.setItem(SIDEBAR_STORAGE_KEY, isCollapsed ? '1' : '0');
+}
+
+function initSidebar() {
+  const app = document.querySelector('.app');
+  if (!app) return;
+  const saved = localStorage.getItem(SIDEBAR_STORAGE_KEY);
+  if (saved === '1') {
+    app.classList.add('sidebar-collapsed');
+  }
+}
+
 function initI18n() {
   saveOriginalTexts();
+  initSidebar();
   const savedLang = localStorage.getItem(LANG_STORAGE_KEY) || 'en';
   setLanguage(savedLang);
 }

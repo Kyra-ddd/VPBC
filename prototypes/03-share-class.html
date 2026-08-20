@@ -449,6 +449,73 @@
       box-shadow: 0 1px 2px rgba(0,0,0,0.08);
     }
 
+    /* Sidebar Collapse */
+    .sidebar-toggle {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--vp-border);
+      background-color: var(--vp-white);
+      color: var(--vp-gray-700);
+      border-radius: var(--vp-radius-sm);
+      cursor: pointer;
+      margin-right: 12px;
+    }
+
+    .sidebar-toggle:hover {
+      border-color: var(--vp-green);
+      color: var(--vp-green);
+    }
+
+    .app.sidebar-collapsed .sidebar {
+      width: 60px;
+    }
+
+    .app.sidebar-collapsed .logo-text,
+    .app.sidebar-collapsed .nav-label {
+      display: none;
+    }
+
+    .app.sidebar-collapsed .nav-icon {
+      margin-right: 0;
+      opacity: 1;
+    }
+
+    .app.sidebar-collapsed .logo {
+      justify-content: center;
+      padding: 0;
+    }
+
+    .app.sidebar-collapsed .logo-mark {
+      margin-right: 0;
+    }
+
+    .app.sidebar-collapsed .nav {
+      padding: 16px 12px;
+    }
+
+    .app.sidebar-collapsed .nav-section {
+      margin-bottom: 16px;
+    }
+
+    .app.sidebar-collapsed .main {
+      margin-left: 60px;
+    }
+
+    .app.sidebar-collapsed .topbar {
+      padding-left: 16px;
+    }
+
+    /* Show icon-only nav items when collapsed */
+    .app.sidebar-collapsed .nav-item {
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      font-size: 0;
+    }
+
   </style>
 </head>
 <body>
@@ -512,6 +579,13 @@
     <!-- Main Content -->
     <main class="main">
       <header class="topbar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
         <div class="breadcrumb">
           <a href="01-product-management.html">Product Center</a>
           <span class="breadcrumb-separator">/</span>
