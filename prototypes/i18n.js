@@ -1,5 +1,5 @@
 // Product Center - Shared i18n
-// Supported languages: en, zh-CN, zh-HK
+// Supported languages: en, zh-CN
 
 const translations = {
   en: {}, // English is the default/source language
@@ -236,253 +236,19 @@ const translations = {
     'Stop Loss Limit': '止损限额',
     'Stop Loss Alert': '止损预警'
   },
-  'zh-HK': {
-    // Sidebar
-    'Product Center': '產品中心',
-    'Product Management': '產品管理',
-    'Share Class': '份額類別',
-    'Lifecycle': '生命週期',
-    'Fee Structure': '費率結構',
-    'System': '系統',
-    'Settings': '設置',
-
-    // Common actions
-    'New Product': '新增產品',
-    'New Share Class': '新增份額類別',
-    'Edit Product': '編輯產品',
-    'View Share Classes': '查看份額類別',
-    'Search': '搜索',
-    'Reset': '重置',
-    'View': '查看',
-    'Cancel': '取消',
-    'Save Product': '儲存產品',
-
-    // Page titles / subtitles
-    'Manage fund masterdata, share classes and lifecycle': '管理基金主數據、份額類別和生命週期',
-    'Manage fund share classes, identifiers and dealing terms': '管理基金份額類別、標識符和交易條款',
-
-    // Breadcrumb
-    'Product Center': '產品中心',
-    'Product Management': '產品管理',
-    'Share Class': '份額類別',
-
-    // Filters
-    'Fund Code': '基金代碼',
-    'Fund Name': '基金名稱',
-    'Share Class Name': '份額類別名稱',
-    'ISIN': 'ISIN',
-    'Fund Type': '基金類型',
-    'Class Currency': '類別貨幣',
-    'All Currencies': '全部貨幣',
-    'Status': '狀態',
-    'Domicile': '註冊地',
-    'All Types': '全部類型',
-    'All Status': '全部狀態',
-    'All': '全部',
-
-    // Options
-    'Equity Fund': '股票基金',
-    'Bond Fund': '債券基金',
-    'Mixed Asset Fund': '混合資產基金',
-    'Money Market Fund': '貨幣基金',
-    'Index Fund': '指數基金',
-    'ETF': 'ETF',
-    'Fund of Funds': '基金中的基金',
-    'Structured Fund': '結構型基金',
-    'Other': '其他',
-    'Active': '運作中',
-    'Inactive': '暫停',
-    'Draft': '草稿',
-    'Terminated': '終止',
-    'Closed': '已關閉',
-    'Hong Kong': '香港',
-    'Luxembourg': '盧森堡',
-    'Ireland': '愛爾蘭',
-    'Cayman Islands': '開曼群島',
-    'Mainland China': '中國內地',
-
-    // Placeholders
-    'e.g. VP0001': '例如 VP0001',
-    'Search name...': '搜索名稱...',
-    'e.g. HK0000012345': '例如 HK0000012345',
-
-    // Table headers - product
-    'Fund Name (EN)': '基金名稱（英文）',
-    'Fund Name (TC)': '基金名稱（繁中）',
-    'Type': '類型',
-    'Launch Date': '成立日期',
-    'Base Currency': '基礎貨幣',
-    'Fund Manager': '基金管理人',
-    'Risk Level': '風險等級',
-    'Actions': '操作',
-
-    // Table headers - share class
-    'Share Class Name (EN)': '份額類別名稱（英文）',
-    'VPFS Class ID': 'VPFS Class ID',
-    'Currency': '貨幣',
-    'Class Status': '類別狀態',
-    'Cutoff Time': '截止時間',
-    'Dealing Frequency': '交易頻率',
-    'Mgmt Fee (%)': '管理費(%)',
-    'Redeem Settlement': '贖回結算',
-
-    // Pagination
-    'Showing 1-7 of 24 products': '顯示 1-7 條，共 24 條產品',
-    'Showing 1-6 of 18 share classes': '顯示 1-6 條，共 18 條份額類別',
-
-    // Detail page card titles
-    'Basic Information': '基本信息',
-    'Key Dates': '關鍵日期',
-    'Identification Codes': '標識碼',
-    'Service Providers': '服務機構',
-    'Investment Profile': '投資概況',
-    'Risk & Limits': '風險與限額',
-    'Investor Restrictions': '投資者限制',
-
-    // Detail labels
-    'Fund Code:': '基金代碼：',
-    'Fund Name (English):': '基金名稱（英文）：',
-    'Fund Name (Traditional Chinese):': '基金名稱（繁中）：',
-    'Fund Name (Simplified Chinese):': '基金名稱（簡中）：',
-    'Fund Type:': '基金類型：',
-    'Umbrella / OFC Name:': '傘形/OFC名稱：',
-    'Sub Fund Code:': '子基金代碼：',
-    'Domicile / Jurisdiction:': '註冊地/司法管轄區：',
-    'Primary Regulator:': '主要監管機構：',
-    'Base Currency:': '基礎貨幣：',
-    'Fund Status:': '基金狀態：',
-    'Complex Product:': '複雜產品：',
-    'Professional Investors Only:': '僅專業投資者：',
-    'Application Submission Date:': '申請提交日期：',
-    'Authorization Date:': '授權日期：',
-    'IOP Start Date:': 'IOP開始日期：',
-    'Operation Start Date:': '運作開始日期：',
-    'Listing Date:': '上市日期：',
-    'Termination Date:': '終止日期：',
-    'LEI Number:': 'LEI編號：',
-    'GIIN Number:': 'GIIN編號：',
-    'Fund Manager:': '基金管理人：',
-    'Fund Manager LEI:': '基金管理人LEI：',
-    'Sub Manager:': '副管理人：',
-    'Investment Advisor:': '投資顧問：',
-    'Trustee / Administrator:': '受托人/行政管理人：',
-    'Custodian / Prime Broker:': '托管人/主經紀商：',
-    'Sub Custodian:': '分托管人：',
-    'Auditor:': '審計師：',
-    'Primary Instrument Type:': '主要投資工具類型：',
-    'Passive or Active Fund:': '被動或主動基金：',
-    'Investment Market Focus:': '投資市場重點：',
-    'Morningstar Category:': 'Morningstar分類：',
-    'Benchmark:': '基準指數：',
-    'Benchmark Code:': '基準指數代碼：',
-    'Hedging Policy (Fund Level):': '對沖政策（基金層面）：',
-    'Asset Allocation Table:': '資產配置表：',
-    'Investment Objective:': '投資目標：',
-    'Investment Strategy:': '投資策略：',
-    'Risk Level:': '風險等級：',
-    'Max Leverage Ratio (%):': '最高槓桿比率(%)：',
-    'Max Derivatives Ratio (%):': '最高衍生品比率(%)：',
-    'Borrowing Limit (%):': '借款限額(%)：',
-    'Stop Loss Limit:': '止損限額：',
-    'Stop Loss Alert:': '止損預警：',
-    'Restriction on Investor\'s Nationality:': '投資者國籍限制：',
-    'Restriction on Investor\'s Residency:': '投資者居住地限制：',
-    'Registration Region:': '註冊地區：',
-    'No': '否',
-    'Yes': '是',
-    'View Asset Allocation Document': '查看資產配置文檔',
-
-    // Modal tabs
-    'Basic': '基本信息',
-    'Dates': '關鍵日期',
-    'Providers': '服務機構',
-    'Investment': '投資概況',
-    'Risk & Limits': '風險與限額',
-
-    // Modal labels
-    'Fund Code': '基金代碼',
-    'Fund Name (English)': '基金名稱（英文）',
-    'Fund Name (Traditional Chinese)': '基金名稱（繁中）',
-    'Fund Name (Simplified Chinese)': '基金名稱（簡中）',
-    'Select type': '選擇類型',
-    'Domicile / Jurisdiction': '註冊地/司法管轄區',
-    'Select domicile': '選擇註冊地',
-    'Primary Regulator': '主要監管機構',
-    'Select currency': '選擇貨幣',
-    'Fund Status': '基金狀態',
-    'Select status': '選擇狀態',
-    'Launch Date': '成立日期',
-    'Umbrella / OFC Name': '傘形/OFC名稱',
-    'Optional': '可選',
-    'Sub Fund Code': '子基金代碼',
-    'Registration Region': '註冊地區',
-    'Complex Product': '複雜產品',
-    'Professional Investors Only': '僅專業投資者',
-    'Application Submission Date': '申請提交日期',
-    'Authorization Date': '授權日期',
-    'IOP Start Date': 'IOP開始日期',
-    'Operation Start Date': '運作開始日期',
-    'Listing Date': '上市日期',
-    'Termination Date': '終止日期',
-    'Enter fund manager name': '輸入基金管理人名稱',
-    'Fund Manager LEI': '基金管理人LEI',
-    '20-character LEI': '20位LEI編碼',
-    'Sub Manager': '副管理人',
-    'Investment Advisor': '投資顧問',
-    'Trustee / Administrator': '受托人/行政管理人',
-    'Custodian / Prime Broker': '托管人/主經紀商',
-    'Sub Custodian': '分托管人',
-    'Auditor': '審計師',
-    'LEI Number': 'LEI編號',
-    'GIIN Number': 'GIIN編號',
-    'XXXXXX.XXXXX.XX.XX': 'XXXXXX.XXXXX.XX.XX',
-    'Primary Instrument Type': '主要投資工具類型',
-    'Passive or Active Fund': '被動或主動基金',
-    'Select': '請選擇',
-    'Investment Market Focus': '投資市場重點',
-    'Select focus': '選擇市場重點',
-    'Morningstar Category': 'Morningstar分類',
-    'Benchmark': '基準指數',
-    'e.g. MSCI All Country Asia ex Japan Index': '例如 MSCI 所有國家亞洲除日本指數',
-    'Benchmark Code': '基準指數代碼',
-    'e.g. MXASJNU': '例如 MXASJNU',
-    'Hedging Policy (Fund Level)': '對沖政策（基金層面）',
-    'Select policy': '選擇對沖政策',
-    'No Hedging': '不對沖',
-    'Fully Hedged': '完全對沖',
-    'Partially Hedged': '部分對沖',
-    'Asset Allocation Table': '資產配置表',
-    'Investment Objective': '投資目標',
-    'Describe the investment objective...': '描述投資目標...',
-    'Investment Strategy': '投資策略',
-    'Describe the investment strategy...': '描述投資策略...',
-    'Risk Level': '風險等級',
-    'Select level': '選擇等級',
-    '1 - Lowest': '1 - 最低',
-    '2 - Low': '2 - 低',
-    '3 - Medium': '3 - 中',
-    '4 - High': '4 - 高',
-    '5 - Highest': '5 - 最高',
-    'Max Leverage Ratio (%)': '最高槓桿比率(%)',
-    'Max Derivatives Ratio (%)': '最高衍生品比率(%)',
-    'Borrowing Limit (%)': '借款限額(%)',
-    'Stop Loss Limit': '止損限額',
-    'Stop Loss Alert': '止損預警'
-  }
 };
 
 const placeholderTranslations = {
-  'e.g. VP0001': { 'zh-CN': '例如 VP0001', 'zh-HK': '例如 VP0001' },
-  'Search name...': { 'zh-CN': '搜索名称...', 'zh-HK': '搜索名稱...' },
-  'e.g. HK0000012345': { 'zh-CN': '例如 HK0000012345', 'zh-HK': '例如 HK0000012345' },
-  'Enter English fund name': { 'zh-CN': '输入英文基金名称', 'zh-HK': '輸入英文基金名稱' },
-  '輸入繁體基金名稱': { 'zh-CN': '输入繁体基金名称', 'zh-HK': '輸入繁體基金名稱' },
-  '输入简体基金名称': { 'zh-CN': '输入简体基金名称', 'zh-HK': '輸入簡體基金名稱' },
-  'Enter fund manager name': { 'zh-CN': '输入基金管理人名称', 'zh-HK': '輸入基金管理人名稱' },
-  'e.g. MSCI All Country Asia ex Japan Index': { 'zh-CN': '例如 MSCI 所有国家亚洲除日本指数', 'zh-HK': '例如 MSCI 所有國家亞洲除日本指數' },
-  'e.g. MXASJNU': { 'zh-CN': '例如 MXASJNU', 'zh-HK': '例如 MXASJNU' },
-  'Describe the investment objective...': { 'zh-CN': '描述投资目标...', 'zh-HK': '描述投資目標...' },
-  'Describe the investment strategy...': { 'zh-CN': '描述投资策略...', 'zh-HK': '描述投資策略...' }
+  'e.g. VP0001': { 'zh-CN': '例如 VP0001' },
+  'Search name...': { 'zh-CN': '搜索名称...' },
+  'e.g. HK0000012345': { 'zh-CN': '例如 HK0000012345' },
+  'Enter English fund name': { 'zh-CN': '输入英文基金名称' },
+  '输入简体基金名称': { 'zh-CN': '输入简体基金名称' },
+  'Enter fund manager name': { 'zh-CN': '输入基金管理人名称' },
+  'e.g. MSCI All Country Asia ex Japan Index': { 'zh-CN': '例如 MSCI 所有国家亚洲除日本指数' },
+  'e.g. MXASJNU': { 'zh-CN': '例如 MXASJNU' },
+  'Describe the investment objective...': { 'zh-CN': '描述投资目标...' },
+  'Describe the investment strategy...': { 'zh-CN': '描述投资策略...' }
 };
 
 const LANG_STORAGE_KEY = 'productCenterLang';
@@ -544,7 +310,7 @@ function translatePlaceholders(lang) {
 function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem(LANG_STORAGE_KEY, lang);
-  document.documentElement.lang = lang === 'en' ? 'en' : (lang === 'zh-CN' ? 'zh-CN' : 'zh-HK');
+  document.documentElement.lang = lang === 'en' ? 'en' : 'zh-CN';
 
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === lang);
