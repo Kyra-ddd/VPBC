@@ -574,6 +574,11 @@
       margin-left: 2px;
     }
 
+    /* Custom/added fields (not from old system) — blue label */
+    .custom-field .form-label {
+      color: #2563EB;
+    }
+
     .form-control {
       height: 36px;
       padding: 0 12px;
@@ -844,36 +849,58 @@
                 <label class="form-label">Fund Type</label>
                 <select class="form-control">
                   <option value="">All Types</option>
-                  <option value="equity">Equity Fund</option>
-                  <option value="bond">Bond Fund</option>
-                  <option value="mixed">Mixed Asset Fund</option>
-                  <option value="money">Money Market Fund</option>
-                  <option value="index">Index Fund</option>
-                  <option value="etf">ETF</option>
-                  <option value="fof">Fund of Funds</option>
-                  <option value="structured">Structured Fund</option>
-                  <option value="other">Other</option>
+                  <option value="SFC-UT">SFC Authorized Fund（UT）</option>
+                  <option value="SFC-OFC">SFC Authorized Fund（OFC）</option>
+                  <option value="SFC-Cayman">SFC Authorized Fund（Cayman）</option>
+                  <option value="SFC-ICAV">SFC Authorized Fund（ICAV）</option>
+                  <option value="PF-Cayman">Private Fund（Cayman）</option>
+                  <option value="PF-Mainland">Private Fund（Chinese Mainland）</option>
+                  <option value="IA-Offshore">Investment Advisory（Offshore）</option>
+                  <option value="IA-Mainland">Investment Advisory（Chinese Mainland）</option>
+                  <option value="Other">Other Mutual Fund</option>
                 </select>
               </div>
               <div class="form-group">
                 <label class="form-label">Status</label>
                 <select class="form-control">
                   <option value="">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="draft">Draft</option>
-                  <option value="terminated">Terminated</option>
+                  <option value="In Offering">In Offering</option>
+                  <option value="Active">Active</option>
+                  <option value="In Liquidation">In Liquidation</option>
+                  <option value="Liquidated">Liquidated</option>
                 </select>
               </div>
               <div class="form-group">
                 <label class="form-label">Domicile</label>
                 <select class="form-control">
                   <option value="">All</option>
-                  <option value="HK">Hong Kong</option>
-                  <option value="LU">Luxembourg</option>
-                  <option value="IE">Ireland</option>
-                  <option value="KY">Cayman Islands</option>
-                  <option value="CN">Mainland China</option>
+                  <option value="HK">HK — Hong Kong</option>
+                  <option value="IE">IE — Ireland</option>
+                  <option value="KY">KY — Cayman Islands</option>
+                  <option value="CN">CN — Mainland China</option>
+                  <option value="SG">SG — Singapore</option>
+                  <option value="LU">LU — Luxembourg</option>
+                  <option value="GB">GB — United Kingdom</option>
+                  <option value="US">US — United States</option>
+                  <option value="CH">CH — Switzerland</option>
+                  <option value="DE">DE — Germany</option>
+                  <option value="FR">FR — France</option>
+                  <option value="JP">JP — Japan</option>
+                  <option value="BM">BM — Bermuda</option>
+                  <option value="VG">VG — British Virgin Islands</option>
+                  <option value="AU">AU — Australia</option>
+                  <option value="NL">NL — Netherlands</option>
+                  <option value="TW">TW — Taiwan</option>
+                  <option value="MO">MO — Macau</option>
+                  <option value="MY">MY — Malaysia</option>
+                  <option value="KR">KR — South Korea</option>
+                  <option value="IN">IN — India</option>
+                  <option value="IT">IT — Italy</option>
+                  <option value="ES">ES — Spain</option>
+                  <option value="SE">SE — Sweden</option>
+                  <option value="FI">FI — Finland</option>
+                  <option value="DK">DK — Denmark</option>
+                  <option value="NO">NO — Norway</option>
                 </select>
               </div>
               <div class="filter-actions">
@@ -1065,26 +1092,48 @@
                 <label class="form-label">Fund Type<span class="required">*</span></label>
                 <select class="form-control" required>
                   <option value="">Select type</option>
-                  <option value="equity">Equity Fund</option>
-                  <option value="bond">Bond Fund</option>
-                  <option value="mixed">Mixed Asset Fund</option>
-                  <option value="money">Money Market Fund</option>
-                  <option value="index">Index Fund</option>
-                  <option value="etf">ETF</option>
-                  <option value="fof">Fund of Funds</option>
-                  <option value="structured">Structured Fund</option>
-                  <option value="other">Other</option>
+                  <option value="SFC-UT">SFC Authorized Fund（UT）</option>
+                  <option value="SFC-OFC">SFC Authorized Fund（OFC）</option>
+                  <option value="SFC-Cayman">SFC Authorized Fund（Cayman）</option>
+                  <option value="SFC-ICAV">SFC Authorized Fund（ICAV）</option>
+                  <option value="PF-Cayman">Private Fund（Cayman）</option>
+                  <option value="PF-Mainland">Private Fund（Chinese Mainland）</option>
+                  <option value="IA-Offshore">Investment Advisory（Offshore）</option>
+                  <option value="IA-Mainland">Investment Advisory（Chinese Mainland）</option>
+                  <option value="Other">Other Mutual Fund</option>
                 </select>
               </div>
               <div class="form-group">
                 <label class="form-label">Domicile / Jurisdiction<span class="required">*</span></label>
                 <select class="form-control" required>
                   <option value="">Select domicile</option>
-                  <option value="HK">Hong Kong</option>
-                  <option value="LU">Luxembourg</option>
-                  <option value="IE">Ireland</option>
-                  <option value="KY">Cayman Islands</option>
-                  <option value="CN">Mainland China</option>
+                  <option value="HK">HK — Hong Kong</option>
+                  <option value="IE">IE — Ireland</option>
+                  <option value="KY">KY — Cayman Islands</option>
+                  <option value="CN">CN — Mainland China</option>
+                  <option value="SG">SG — Singapore</option>
+                  <option value="LU">LU — Luxembourg</option>
+                  <option value="GB">GB — United Kingdom</option>
+                  <option value="US">US — United States</option>
+                  <option value="CH">CH — Switzerland</option>
+                  <option value="DE">DE — Germany</option>
+                  <option value="FR">FR — France</option>
+                  <option value="JP">JP — Japan</option>
+                  <option value="BM">BM — Bermuda</option>
+                  <option value="VG">VG — British Virgin Islands</option>
+                  <option value="AU">AU — Australia</option>
+                  <option value="NL">NL — Netherlands</option>
+                  <option value="TW">TW — Taiwan</option>
+                  <option value="MO">MO — Macau</option>
+                  <option value="MY">MY — Malaysia</option>
+                  <option value="KR">KR — South Korea</option>
+                  <option value="IN">IN — India</option>
+                  <option value="IT">IT — Italy</option>
+                  <option value="ES">ES — Spain</option>
+                  <option value="SE">SE — Sweden</option>
+                  <option value="FI">FI — Finland</option>
+                  <option value="DK">DK — Denmark</option>
+                  <option value="NO">NO — Norway</option>
                 </select>
               </div>
               <div class="form-group span-2">
@@ -1095,24 +1144,29 @@
                 <label class="form-label">Base Currency</label>
                 <select class="form-control">
                   <option value="">Select currency</option>
-                  <option value="USD">USD</option>
                   <option value="HKD">HKD</option>
-                  <option value="CNY">CNY</option>
+                  <option value="USD">USD</option>
                   <option value="EUR">EUR</option>
+                  <option value="CNY">CNY</option>
+                  <option value="CNH">CNH（离岸）</option>
                   <option value="GBP">GBP</option>
                   <option value="JPY">JPY</option>
-                  <option value="AUD">AUD</option>
                   <option value="SGD">SGD</option>
+                  <option value="CHF">CHF</option>
+                  <option value="AUD">AUD</option>
+                  <option value="CAD">CAD</option>
+                  <option value="NZD">NZD</option>
+                  <option value="RMB">RMB</option>
                 </select>
               </div>
               <div class="form-group">
                 <label class="form-label">Fund Status<span class="required">*</span></label>
                 <select class="form-control" required>
                   <option value="">Select status</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="draft">Draft</option>
-                  <option value="terminated">Terminated</option>
+                  <option value="In Offering">In Offering</option>
+                  <option value="Active">Active</option>
+                  <option value="In Liquidation">In Liquidation</option>
+                  <option value="Liquidated">Liquidated</option>
                 </select>
               </div>
               <div class="form-group">
@@ -1127,9 +1181,9 @@
                 <label class="form-label">Sub Fund Code</label>
                 <input type="text" class="form-control" placeholder="Optional">
               </div>
-              <div class="form-group span-2">
-                <label class="form-label">Registration Region</label>
-                <input type="text" class="form-control" placeholder="e.g. Hong Kong, Singapore, Taiwan">
+              <div class="form-group span-2 custom-field">
+                <label class="form-label">Registration Region <span style="font-size:10px;color:#2563EB;">(custom)</span></label>
+                <input type="text" class="form-control" placeholder="Not in old system — e.g. Hong Kong, Singapore, Taiwan">
               </div>
               <div class="form-group">
                 <div class="checkbox-group">
@@ -1233,13 +1287,13 @@
                 <label class="form-label">Primary Instrument Type<span class="required">*</span></label>
                 <select class="form-control" required>
                   <option value="">Select type</option>
-                  <option value="equity">Equity Securities</option>
-                  <option value="bond">Debt Securities</option>
-                  <option value="derivative">Derivatives</option>
-                  <option value="mixed">Mixed Instruments</option>
-                  <option value="money">Money Market Instruments</option>
-                  <option value="structured">Structured Products</option>
-                  <option value="other">Other</option>
+                  <option value="Equity">Equity</option>
+                  <option value="Fixed Income">Fixed Income</option>
+                  <option value="Multi-Assets">Multi-Assets</option>
+                  <option value="Money Market (Liquidity)">Money Market (Liquidity)</option>
+                  <option value="Alternative (Private) Assets">Alternative (Private) Assets</option>
+                  <option value="Commodities">Commodities</option>
+                  <option value="Digital Assets">Digital Assets</option>
                 </select>
               </div>
               <div class="form-group">
@@ -1254,11 +1308,11 @@
                 <label class="form-label">Investment Market Focus<span class="required">*</span></label>
                 <select class="form-control" required>
                   <option value="">Select focus</option>
-                  <option value="global">Global</option>
-                  <option value="asia">Asia Pacific</option>
-                  <option value="china">Greater China</option>
-                  <option value="emerging">Emerging Markets</option>
-                  <option value="developed">Developed Markets</option>
+                  <option value="Global">Global</option>
+                  <option value="Asia Pacific">Asia Pacific</option>
+                  <option value="America">America</option>
+                  <option value="Europe">Europe</option>
+                  <option value="Emerging Markets">Emerging Markets</option>
                 </select>
               </div>
               <div class="form-group span-2">
@@ -1277,9 +1331,9 @@
                 <label class="form-label">Hedging Policy (Fund Level)<span class="required">*</span></label>
                 <select class="form-control" required>
                   <option value="">Select policy</option>
-                  <option value="no">No Hedging</option>
-                  <option value="full">Fully Hedged</option>
-                  <option value="partial">Partially Hedged</option>
+                  <option value="Hedge to Base Currency">Hedge to Base Currency</option>
+                  <option value="Optional">Optional</option>
+                  <option value="N/A">N/A</option>
                 </select>
               </div>
               <div class="form-group span-2">
@@ -1323,13 +1377,13 @@
                 <label class="form-label">Borrowing Limit (%)<span class="required">*</span></label>
                 <input type="number" class="form-control" value="0" min="0" required>
               </div>
-              <div class="form-group">
-                <label class="form-label">Stop Loss Limit</label>
-                <input type="number" class="form-control" placeholder="Optional" step="0.01">
+              <div class="form-group custom-field">
+                <label class="form-label">Stop Loss Limit <span style="font-size:10px;color:#2563EB;">(custom)</span></label>
+                <input type="number" class="form-control" placeholder="Not in old system" step="0.01">
               </div>
-              <div class="form-group">
-                <label class="form-label">Stop Loss Alert</label>
-                <input type="number" class="form-control" placeholder="Optional" step="0.01">
+              <div class="form-group custom-field">
+                <label class="form-label">Stop Loss Alert <span style="font-size:10px;color:#2563EB;">(custom)</span></label>
+                <input type="number" class="form-control" placeholder="Not in old system" step="0.01">
               </div>
             </div>
           </div>
