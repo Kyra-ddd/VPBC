@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>股票池 · 研报管理</title>
+<link rel="stylesheet" href="vp.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ 左侧导航 ============ -->
+  <aside class="sidebar">
+    <nav class="side-nav">
+      <div class="side-label">主菜单</div>
+      <a class="side-item" href="02-industry-analyst.html"><span class="ico">👥</span><span data-lang="zh">行业配置</span><span data-lang="en" style="display:none">Industries</span></a>
+      <a class="side-item" href="05-research-report.html"><span class="ico">📄</span><span data-lang="zh">研报管理</span><span data-lang="en" style="display:none">Research</span></a>
+      <a class="side-item active" href="03-stock-pool.html"><span class="ico">📊</span><span>股票池</span></a>
+      <a class="side-item" href="04-portfolio.html"><span class="ico">📈</span><span>模拟组合</span></a>
+      <a class="side-item" href="01-config.html"><span class="ico">⚙️</span><span>配置</span></a>
+    </nav>
+  </aside>
+
+  <!-- ============ 主列 ============ -->
+  <div class="main-col">
+
+    <!-- 顶栏 -->
+    <header class="topbar">
+      <div class="flex items-center gap-3">
+        <button class="sidebar-toggle" onclick="toggleSidebar()" title="收起菜单">☰</button>
+        <div class="brand">
+          <div class="brand-logo">VPBC</div>
+          <span class="brand-name">研报管理</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="tiny" style="color:rgba(255,255,255,0.8)" id="clock"></span>
+        <div class="user-chip">
+          <div class="avatar">K</div>
+          <span>kyra-ddd</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="container">
+      <!-- 页面标题区 -->
+      <div class="page-head">
+        <div class="page-title"><span class="ti">📊</span>股票池管理</div>
+        <div class="page-meta">最近更新：2026-08-12　|　多命名池 · 出入池可配置审批</div>
+      </div>
+
+      <!-- KPI 区 -->
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-icon">🗂️</div>
+          <div><div class="kpi-num">4</div><div class="kpi-label">股票池</div></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-icon">📈</div>
+          <div><div class="kpi-num">51</div><div class="kpi-label">在池股票（去重）</div></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-icon">⏳</div>
+          <div><div class="kpi-num" style="color:var(--vp-gold)">3</div><div class="kpi-label">待审申请</div></div>
+        </div>
+      </div>
+
+      <!-- 工具栏 -->
+      <div class="toolbar">
+        <div class="card-title">股票池列表</div>
+        <button class="btn btn-primary btn-sm" onclick="alert('原型：新建股票池（名称/绑定市场/入池模式/出池模式/审批人）')">＋ 新建池</button>
+      </div>
+
+      <!-- 池卡片网格 -->
+      <div class="grid-3 mb-5" id="poolGrid"></div>
+
+      <!-- 选中池详情 -->
+      <section class="card" id="poolDetail">
+        <div class="card-head">
+          <div class="flex items-center gap-3">
+            <div class="card-title" id="detailTitle">核心池</div>
+            <span class="tag tag-blue" id="detailMarket">全局池</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+              <span class="tiny">入池模式</span>
+              <div class="segmented" id="inMode"></div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="tiny">出池模式</span>
+              <div class="segmented" id="outMode"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="flex items-center justify-between mb-3">
+            <div class="card-title" style="font-size:14px">池内股票 <span class="tiny" id="stockCount"></span></div>
+            <div class="flex gap-2">
+              <button class="btn btn-primary btn-sm" onclick="alert('原型：入池（选股票加入，按入池模式走审批）')">＋ 入池</button>
+              <button class="btn btn-secondary btn-sm" onclick="alert('原型：批量出池')">批量出池</button>
+            </div>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>代码</th><th>名称</th><th>市场</th><th>行业</th>
+                <th class="num">最新价</th><th class="num">涨跌</th>
+                <th>入池理由</th><th>入池时间</th><th>状态</th><th class="right">操作</th>
+              </tr>
+            </thead>
+            <tbody id="stockBody"></tbody>
+          </table>
+
+          <!-- 待审申请 -->
+          <div class="flex items-center justify-between mt-5 mb-3">
+            <div class="card-title" style="font-size:14px">出入池申请单</div>
+            <span class="tag tag-gold">3 待审</span>
+          </div>
+          <table class="table">
+            <thead>
+              <tr><th>申请单号</th><th>股票</th><th>方向</th><th>模式</th><th>申请人</th><th>申请时间</th><th>状态</th><th class="right">操作</th></tr>
+            </thead>
+            <tbody id="reqBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="notice mt-4">
+        <span class="ico">ⓘ</span>
+        <span>出入池三模式：<strong>免审批</strong>（即时）、<strong>自动审批</strong>（按规则）、<strong>人工审批</strong>（走审批流）；入池/出池可分别配置。<strong>港式涨跌色</strong>：涨红跌绿。</span>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+/* ===== 池数据 ===== */
+const POOLS = [
+  { id:"P01", name:"核心池",         market:"全局",   inMode:"人工", outMode:"人工", count:12 },
+  { id:"P02", name:"观察池",         market:"全局",   inMode:"免审批", outMode:"免审批", count:28 },
+  { id:"P03", name:"港股地产专项池",  market:"香港",   inMode:"免审批", outMode:"人工",  count:6  },
+  { id:"P04", name:"美股半导体池",    market:"美国",   inMode:"自动",  outMode:"人工",  count:5  },
+];
+
+/* 每个池的股票（港式涨跌：chg 正=涨=红，负=跌=绿） */
+const STOCKS = {
+  P01: [
+    { code:"00700.HK", name:"腾讯控股",  market:"香港", industry:"科技",  price:389.20, chg:+1.82, reason:"核心资产",     inTime:"2026-07-15", status:"在池" },
+    { code:"AAPL",     name:"Apple",     market:"美国", industry:"科技",  price:228.50, chg:+0.65, reason:"现金流稳健",   inTime:"2026-06-30", status:"在池" },
+    { code:"0939.HK",  name:"建行H",     market:"香港", industry:"金融",  price:5.93,   chg:-0.34, reason:"高股息",       inTime:"2026-07-01", status:"在池" },
+    { code:"600519",   name:"贵州茅台",  market:"A股",  industry:"消费",  price:1432.0, chg:+0.21, reason:"品牌护城河",   inTime:"2026-05-20", status:"在池" },
+    { code:"NVDA",     name:"NVIDIA",    market:"美国", industry:"半导体",price:128.40, chg:+2.15, reason:"AI 算力龙头",  inTime:"2026-08-01", status:"在池" },
+    { code:"1299.HK",  name:"友邦",      market:"香港", industry:"金融",  price:58.10,  chg:-0.52, reason:"估值回落",     inTime:"2026-07-22", status:"已出池" },
+  ],
+  P02: [
+    { code:"1810.HK", name:"小米",      market:"香港", industry:"科技",  price:18.60, chg:+3.25, reason:"观察汽车放量",  inTime:"2026-08-05", status:"在池" },
+    { code:"TSLA",    name:"Tesla",     market:"美国", industry:"汽车",  price:215.0, chg:-1.80, reason:"观察机器人",    inTime:"2026-08-02", status:"在池" },
+    { code:"3690.HK", name:"美团",      market:"香港", industry:"科技",  price:112.3, chg:+0.95, reason:"观察即时零售",  inTime:"2026-07-28", status:"在池" },
+  ],
+  P03: [
+    { code:"0001.HK", name:"长和",      market:"香港", industry:"地产", price:43.50, chg:+0.46, reason:"地产复苏受益", inTime:"2026-07-10", status:"在池" },
+    { code:"1113.HK", name:"长实",      market:"香港", industry:"地产", price:39.20, chg:-0.38, reason:"低估",         inTime:"2026-07-12", status:"在池" },
+    { code:"0288.HK", name:"万洲",      market:"香港", industry:"消费", price:25.60, chg:+0.12, reason:"观察",         inTime:"2026-08-01", status:"在池" },
+  ],
+  P04: [
+    { code:"NVDA",    name:"NVIDIA",    market:"美国", industry:"半导体", price:128.40, chg:+2.15, reason:"AI 算力",       inTime:"2026-08-01", status:"在池" },
+    { code:"AMD",     name:"AMD",       market:"美国", industry:"半导体", price:142.30, chg:+1.10, reason:"份额提升",     inTime:"2026-07-25", status:"在池" },
+    { code:"TSM",     name:"台积电",    market:"美国", industry:"半导体", price:178.90, chg:-0.75, reason:"代工龙头",     inTime:"2026-07-20", status:"在池" },
+  ],
+};
+
+/* 申请单（全池通用示例，显示在选中池下） */
+const REQUESTS = [
+  { id:"R-2026-0042", stock:"0700.HK 腾讯", dir:"出池", mode:"人工", applicant:"Kyra",  time:"2026-08-11 14:20", status:"待审" },
+  { id:"R-2026-0041", stock:"BABA 阿里",    dir:"入池", mode:"人工", applicant:"David",   time:"2026-08-11 11:05", status:"待审" },
+  { id:"R-2026-0040", stock:"1299.HK 友邦", dir:"出池", mode:"人工", applicant:"Grace",   time:"2026-08-10 16:40", status:"待审" },
+];
+
+let curPool = "P01";
+const MODES = ["免审批","自动","人工"];
+
+/* ===== 渲染池卡片 ===== */
+function renderPools() {
+  const grid = document.getElementById("poolGrid");
+  grid.innerHTML = POOLS.map(p => {
+    const sel = p.id === curPool;
+    const mkTag = p.market === "全局" ? "tag-blue" : "tag-gray";
+    const style = sel ? 'style="border-color:var(--vp-green);box-shadow:var(--vp-shadow-md)"' : '';
+    return `<div class="card card-pad card-hover" ${style} onclick="selectPool('${p.id}')">
+      <div class="flex items-center justify-between mb-3">
+        <div class="card-title">${p.name}</div>
+        <span class="tag ${mkTag}">${p.market === "全局" ? "全局池" : p.market}</span>
+      </div>
+      <div class="flex items-center gap-3 mb-3">
+        <div class="kpi-num" style="font-size:28px">${p.count}</div>
+        <div class="kpi-label">只股票</div>
+      </div>
+      <div class="flex gap-2" style="flex-wrap:wrap">
+        <span class="tag tag-green">入：${p.inMode}</span>
+        <span class="tag tag-green">出：${p.outMode}</span>
+      </div></div>`;
+  }).join("");
+}
+
+/* ===== 渲染选中池详情 ===== */
+function renderDetail() {
+  const p = POOLS.find(x => x.id === curPool);
+  document.getElementById("detailTitle").textContent = p.name;
+  document.getElementById("detailMarket").textContent = p.market === "全局" ? "全局池（跨市场）" : p.market + " 市场";
+  // 模式分段
+  const inEl = document.getElementById("inMode"), outEl = document.getElementById("outMode");
+  inEl.innerHTML = MODES.map(m => `<button class="seg ${m===p.inMode?'active':''}">${m}</button>`).join("");
+  outEl.innerHTML = MODES.map(m => `<button class="seg ${m===p.outMode?'active':''}">${m}</button>`).join("");
+  // 股票
+  const stocks = STOCKS[curPool] || [];
+  document.getElementById("stockCount").textContent = "（" + stocks.filter(s=>s.status==="在池").length + " 在池 / " + stocks.length + " 总）";
+  const body = document.getElementById("stockBody");
+  body.innerHTML = stocks.map(s => {
+    const up = s.chg >= 0;
+    const cls = s.status === "在池" ? "tag-green" : "tag-gray";
+    return `<tr ${s.status==='已出池'?'style="opacity:0.55"':''}>
+        <td class="mono-num muted">${s.code}</td>
+        <td class="bold">${s.name}</td>
+        <td>${s.market}</td>
+        <td>${s.industry}</td>
+        <td class="num mono-num">${s.price.toFixed(2)}</td>
+        <td class="num mono-num ${up?'tag-up':'tag-down'}">${up?'+':''}${s.chg.toFixed(2)}%</td>
+        <td class="tiny">${s.reason}</td>
+        <td class="tiny mono-num">${s.inTime}</td>
+        <td><span class="tag ${cls}">${s.status}</span></td>
+        <td class="right nowrap">
+          ${s.status==='在池'
+            ? `<button class="btn btn-ghost btn-sm" onclick="alert('原型：申请出池「${s.name}」（按出池模式走流程）')">出池</button>`
+            : `<span class="tiny">已出池</span>`}
+        </td>
+      </tr>`;
+  }).join("");
+  // 申请单
+  const rb = document.getElementById("reqBody");
+  rb.innerHTML = REQUESTS.map(r => {
+    const dirTag = r.dir === "入池" ? "tag-blue" : "tag-danger";
+    const stTag = r.status === "待审" ? "tag-gold" : r.status === "通过" ? "tag-green" : "tag-danger";
+    return `<tr>
+        <td class="mono-num muted">${r.id}</td>
+        <td class="bold">${r.stock}</td>
+        <td><span class="tag ${dirTag}">${r.dir}</span></td>
+        <td class="tiny">${r.mode}</td>
+        <td>${r.applicant}</td>
+        <td class="tiny mono-num">${r.time}</td>
+        <td><span class="tag ${stTag}">${r.status}</span></td>
+        <td class="right nowrap">
+          <button class="btn btn-primary btn-sm" onclick="alert('原型：通过申请 ${r.id}')">通过</button>
+          <button class="btn btn-ghost btn-sm" onclick="alert('原型：驳回申请 ${r.id}')">驳回</button>
+        </td>
+      </tr>`;
+  }).join("");
+}
+
+function selectPool(id) { curPool = id; renderPools(); renderDetail(); }
+
+/* ===== 时钟 ===== */
+function tick() {
+  const d = new Date(); const p = n => String(n).padStart(2,"0");
+  document.getElementById("clock").textContent = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+tick(); setInterval(tick, 30000);
+
+/* ===== 侧边栏折叠 ===== */
+const SIDEBAR_KEY = 'vp-sidebar-collapsed';
+function applySidebarState() {
+  const sidebar = document.querySelector('.sidebar');
+  const toggleBtn = document.querySelector('.sidebar-toggle');
+  if (!sidebar || !toggleBtn) return;
+  const collapsed = localStorage.getItem(SIDEBAR_KEY) === '1';
+  sidebar.classList.toggle('collapsed', collapsed);
+  toggleBtn.setAttribute('title', collapsed ? '展开菜单' : '收起菜单');
+  toggleBtn.textContent = collapsed ? '☰' : '☰';
+}
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  if (!sidebar) return;
+  const collapsed = sidebar.classList.toggle('collapsed');
+  localStorage.setItem(SIDEBAR_KEY, collapsed ? '1' : '0');
+  const toggleBtn = document.querySelector('.sidebar-toggle');
+  if (toggleBtn) toggleBtn.setAttribute('title', collapsed ? '展开菜单' : '收起菜单');
+}
+applySidebarState();
+
+/* ===== 初始化 ===== */
+renderPools(); renderDetail();
+</script>
+</body>
+</html>
