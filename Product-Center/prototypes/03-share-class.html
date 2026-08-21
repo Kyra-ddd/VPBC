@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Center - Share Class</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --vp-green: #20A06E;
+      --vp-green-dark: #178A5C;
+      --vp-green-light: #E8F5EE;
+      --vp-lime: #BDD646;
+      --vp-red: #B23A48;
+      --vp-mint-50: #F2F8F4;
+      --vp-white: #FFFFFF;
+      --vp-gray-900: #1A1A1A;
+      --vp-gray-700: #4A4A4A;
+      --vp-gray-500: #737373;
+      --vp-gray-300: #D1D5DB;
+      --vp-gray-100: #F3F4F6;
+      --vp-border: #E5E7EB;
+      --vp-shadow: 0 1px 3px rgba(16, 94, 62, 0.08);
+      --vp-radius: 6px;
+      --vp-radius-sm: 4px;
+      --vp-sidebar-width: 240px;
+      --vp-topbar-height: 56px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Open Sans', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background-color: var(--vp-mint-50);
+      color: var(--vp-gray-900);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Poppins', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      font-weight: 600;
+    }
+
+    .app { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: var(--vp-sidebar-width);
+      background-color: var(--vp-white);
+      border-right: 1px solid var(--vp-border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      z-index: 100;
+    }
+
+    .logo {
+      height: var(--vp-topbar-height);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--vp-border);
+    }
+
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--vp-green) 0%, var(--vp-lime) 100%);
+      border-radius: var(--vp-radius-sm);
+      margin-right: 10px;
+    }
+
+    .logo-text {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--vp-gray-900);
+    }
+
+    .nav {
+      flex: 1;
+      padding: 16px 12px;
+      overflow-y: auto;
+    }
+
+    .nav-section { margin-bottom: 24px; }
+
+    .nav-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--vp-gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 12px;
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: var(--vp-radius-sm);
+      color: var(--vp-gray-700);
+      cursor: pointer;
+      margin-bottom: 2px;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .nav-item:hover {
+      background-color: var(--vp-green-light);
+      color: var(--vp-green-dark);
+    }
+
+    .nav-item.active {
+      background-color: var(--vp-green-light);
+      color: var(--vp-green);
+      font-weight: 600;
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
+      opacity: 0.7;
+    }
+
+    .nav-item.active .nav-icon { opacity: 1; }
+
+    .main {
+      flex: 1;
+      margin-left: var(--vp-sidebar-width);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      height: var(--vp-topbar-height);
+      background-color: var(--vp-white);
+      border-bottom: 1px solid var(--vp-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      color: var(--vp-gray-500);
+      font-size: 13px;
+    }
+
+    .breadcrumb a {
+      color: var(--vp-gray-500);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { color: var(--vp-green); }
+
+    .breadcrumb-separator {
+      margin: 0 8px;
+      color: var(--vp-gray-300);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: var(--vp-green-light);
+      color: var(--vp-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .content {
+      flex: 1;
+      padding: 24px;
+      overflow: auto;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--vp-gray-900);
+    }
+
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--vp-gray-500);
+      margin-top: 2px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--vp-radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--vp-green);
+      color: var(--vp-white);
+    }
+
+    .btn-primary:hover { background-color: var(--vp-green-dark); }
+
+    .btn-secondary {
+      background-color: var(--vp-white);
+      color: var(--vp-gray-700);
+      border: 1px solid var(--vp-border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--vp-green);
+      color: var(--vp-green);
+    }
+
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    .card {
+      background-color: var(--vp-white);
+      border-radius: var(--vp-radius);
+      box-shadow: var(--vp-shadow);
+      border: 1px solid var(--vp-border);
+      margin-bottom: 20px;
+    }
+
+    .card-body { padding: 20px; }
+
+    .filter-bar {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--vp-gray-700);
+    }
+
+    .form-control {
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--vp-border);
+      border-radius: var(--vp-radius-sm);
+      font-size: 13px;
+      color: var(--vp-gray-900);
+      background-color: var(--vp-white);
+      min-width: 160px;
+      font-family: inherit;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--vp-green);
+      box-shadow: 0 0 0 3px var(--vp-green-light);
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .table-container { overflow-x: auto; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .data-table thead th {
+      background-color: var(--vp-gray-100);
+      color: var(--vp-gray-700);
+      font-weight: 600;
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--vp-border);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .data-table tbody td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--vp-border);
+      color: var(--vp-gray-900);
+      vertical-align: middle;
+    }
+
+    .data-table tbody tr:hover { background-color: var(--vp-mint-50); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+
+    .cell-code {
+      font-family: 'SF Mono', Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      color: var(--vp-green);
+    }
+
+    .cell-name { font-weight: 500; }
+    .cell-muted { color: var(--vp-gray-500); }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .tag-green {
+      background-color: var(--vp-green-light);
+      color: var(--vp-green);
+    }
+
+    .tag-gray {
+      background-color: var(--vp-gray-100);
+      color: var(--vp-gray-500);
+    }
+
+    .tag-red {
+      background-color: #FCE8EA;
+      color: var(--vp-red);
+    }
+
+    .tag-blue {
+      background-color: #E6F2FF;
+      color: #2563EB;
+    }
+
+    .text-right { text-align: right; }
+    .font-num { font-variant-numeric: tabular-nums; }
+
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-top: 1px solid var(--vp-border);
+    }
+
+    .pagination-info {
+      font-size: 13px;
+      color: var(--vp-gray-500);
+    }
+
+    .pagination { display: flex; gap: 4px; }
+
+    .page-btn {
+      min-width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--vp-border);
+      background-color: var(--vp-white);
+      color: var(--vp-gray-700);
+      border-radius: var(--vp-radius-sm);
+      font-size: 13px;
+      cursor: pointer;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .page-btn:hover {
+      border-color: var(--vp-green);
+      color: var(--vp-green);
+    }
+
+    .page-btn.active {
+      background-color: var(--vp-green);
+      border-color: var(--vp-green);
+      color: var(--vp-white);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Language Switcher */
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background-color: var(--vp-gray-100);
+      border-radius: var(--vp-radius-sm);
+      padding: 2px;
+    }
+
+    .lang-btn {
+      padding: 5px 10px;
+      border: none;
+      background: transparent;
+      color: var(--vp-gray-500);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 3px;
+      font-family: inherit;
+    }
+
+    .lang-btn:hover { color: var(--vp-green); }
+
+    .lang-btn.active {
+      background-color: var(--vp-white);
+      color: var(--vp-green);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    /* Sidebar Collapse */
+    .sidebar-toggle {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--vp-border);
+      background-color: var(--vp-white);
+      color: var(--vp-gray-700);
+      border-radius: var(--vp-radius-sm);
+      cursor: pointer;
+      margin-right: 12px;
+    }
+
+    .sidebar-toggle:hover {
+      border-color: var(--vp-green);
+      color: var(--vp-green);
+    }
+
+    .app.sidebar-collapsed .sidebar {
+      width: 60px;
+    }
+
+    .app.sidebar-collapsed .logo-text,
+    .app.sidebar-collapsed .nav-label {
+      display: none;
+    }
+
+    .app.sidebar-collapsed .nav-icon {
+      margin-right: 0;
+      opacity: 1;
+    }
+
+    .app.sidebar-collapsed .logo {
+      justify-content: center;
+      padding: 0;
+    }
+
+    .app.sidebar-collapsed .logo-mark {
+      margin-right: 0;
+    }
+
+    .app.sidebar-collapsed .nav {
+      padding: 16px 12px;
+    }
+
+    .app.sidebar-collapsed .nav-section {
+      margin-bottom: 16px;
+    }
+
+    .app.sidebar-collapsed .main {
+      margin-left: 60px;
+    }
+
+    .app.sidebar-collapsed .topbar {
+      padding-left: 16px;
+    }
+
+    /* Show icon-only nav items when collapsed */
+    .app.sidebar-collapsed .nav-item {
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      font-size: 0;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 24px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background-color: var(--vp-white);
+      border-radius: var(--vp-radius);
+      box-shadow: 0 8px 24px rgba(16, 94, 62, 0.15);
+      width: 100%;
+      max-width: 980px;
+      max-height: calc(100vh - 48px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--vp-border);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--vp-gray-900);
+    }
+
+    .modal-close {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--vp-gray-500);
+      cursor: pointer;
+      border-radius: var(--vp-radius-sm);
+    }
+
+    .modal-close:hover {
+      background-color: var(--vp-gray-100);
+      color: var(--vp-gray-900);
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--vp-border);
+      background-color: var(--vp-gray-100);
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .tab {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--vp-gray-500);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .tab:hover { color: var(--vp-green); }
+
+    .tab.active {
+      color: var(--vp-green);
+      border-bottom-color: var(--vp-green);
+      background-color: var(--vp-white);
+    }
+
+    .tab-panel {
+      display: none;
+      padding: 20px;
+    }
+
+    .tab-panel.active { display: block; }
+
+    .form-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--vp-gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--vp-border);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group.span-2 { grid-column: span 2; }
+    .form-group.span-3 { grid-column: span 3; }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--vp-gray-700);
+    }
+
+    .form-label .required {
+      color: var(--vp-red);
+      margin-left: 2px;
+    }
+
+    .form-control {
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--vp-border);
+      border-radius: var(--vp-radius-sm);
+      font-size: 13px;
+      color: var(--vp-gray-900);
+      background-color: var(--vp-white);
+      font-family: inherit;
+      width: 100%;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--vp-green);
+      box-shadow: 0 0 0 3px var(--vp-green-light);
+    }
+
+    textarea.form-control {
+      height: auto;
+      padding: 10px 12px;
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    select.form-control { cursor: pointer; }
+
+    input.form-control:disabled,
+    select.form-control:disabled,
+    textarea.form-control:disabled {
+      background-color: var(--vp-gray-100);
+      color: var(--vp-gray-500);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 36px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--vp-green);
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      font-size: 13px;
+      color: var(--vp-gray-700);
+      cursor: pointer;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--vp-border);
+      background-color: var(--vp-white);
+    }
+
+    /* composite time+tz */
+    .time-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .time-group .form-control:first-child {
+      flex: 0 0 80px;
+    }
+
+    .time-group .form-control:last-child {
+      flex: 1;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-mark"></div>
+        <div class="logo-text">Value Partners</div>
+      </div>
+      <nav class="nav">
+        <div class="nav-section">
+          <div class="nav-label">Product Center</div>
+          <a href="01-product-management.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Product Management
+          </a>
+          <a href="03-share-class.html" class="nav-item active">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+            Share Class
+          </a>
+          <div class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Lifecycle
+          </div>
+          <div class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3v18h18"/>
+              <path d="M18 17V9"/>
+              <path d="M13 17V5"/>
+              <path d="M8 17v-3"/>
+            </svg>
+            Fee Structure
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-label">System</div>
+          <div class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            Settings
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <header class="topbar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div class="breadcrumb">
+          <a href="01-product-management.html">Product Center</a>
+          <span class="breadcrumb-separator">/</span>
+          <span style="color: var(--vp-gray-900); font-weight: 500;">Share Class</span>
+        </div>
+        <div class="topbar-actions">
+          <div class="lang-switcher">
+            <button class="lang-btn active" data-lang="en" onclick="setLanguage('en')">EN</button>
+            <button class="lang-btn" data-lang="zh-CN" onclick="setLanguage('zh-CN')">简</button>
+          </div>
+          <div class="user-avatar">KW</div>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Share Class</h1>
+            <div class="page-subtitle">Manage fund share classes, identifiers and dealing terms</div>
+          </div>
+          <button class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            New Share Class
+          </button>
+        </div>
+
+        <!-- Filter Card -->
+        <div class="card">
+          <div class="card-body">
+            <div class="filter-bar">
+              <div class="form-group">
+                <label class="form-label">Fund Code</label>
+                <input type="text" class="form-control" placeholder="e.g. VP0010">
+              </div>
+              <div class="form-group">
+                <label class="form-label">ISIN</label>
+                <input type="text" class="form-control" placeholder="e.g. HK0000012345">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Share Class Name</label>
+                <input type="text" class="form-control" placeholder="Search name...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Class Currency</label>
+                <select class="form-control">
+                  <option value="">All Currencies</option>
+                  <option value="USD">USD</option>
+                  <option value="HKD">HKD</option>
+                  <option value="CNY">CNY</option>
+                  <option value="CNH">CNH</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="JPY">JPY</option>
+                  <option value="SGD">SGD</option>
+                  <option value="CHF">CHF</option>
+                  <option value="AUD">AUD</option>
+                  <option value="CAD">CAD</option>
+                  <option value="NZD">NZD</option>
+                  <option value="RMB">RMB</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-control">
+                  <option value="">All Status</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Terminated">Terminated</option>
+                </select>
+              </div>
+              <div class="filter-actions">
+                <button class="btn btn-secondary btn-sm">Reset</button>
+                <button class="btn btn-primary btn-sm">Search</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="card">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Fund Code</th>
+                  <th>Share Class Name (EN)</th>
+                  <th>VPFS Class ID</th>
+                  <th>ISIN</th>
+                  <th>Currency</th>
+                  <th>Status</th>
+                  <th>Launch Date</th>
+                  <th>Cutoff Time</th>
+                  <th>Dealing Frequency</th>
+                  <th>Mgmt Fee (%)</th>
+                  <th>Redeem Settlement</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="cell-code">VP0010</span></td>
+                  <td><span class="cell-name">Class A USD Acc</span></td>
+                  <td class="font-num">VP0010-A-USD-ACC</td>
+                  <td class="font-num">HK0000012345</td>
+                  <td>USD</td>
+                  <td><span class="tag tag-green">Active</span></td>
+                  <td class="font-num">1993/04/01</td>
+                  <td class="font-num">16:00 HKT</td>
+                  <td>Daily</td>
+                  <td class="font-num">1.25</td>
+                  <td class="font-num">T+3</td>
+                  <td class="text-right">
+                    <button class="btn btn-secondary btn-sm">View</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="cell-code">VP0010</span></td>
+                  <td><span class="cell-name">Class A HKD Acc</span></td>
+                  <td class="font-num">VP0010-A-HKD-ACC</td>
+                  <td class="font-num">HK0000012346</td>
+                  <td>HKD</td>
+                  <td><span class="tag tag-green">Active</span></td>
+                  <td class="font-num">1993/04/01</td>
+                  <td class="font-num">16:00 HKT</td>
+                  <td>Daily</td>
+                  <td class="font-num">1.25</td>
+                  <td class="font-num">T+3</td>
+                  <td class="text-right">
+                    <button class="btn btn-secondary btn-sm">View</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="cell-code">VP0010</span></td>
+                  <td><span class="cell-name">Class A USD Inc</span></td>
+                  <td class="font-num">VP0010-A-USD-INC</td>
+                  <td class="font-num">HK0000012347</td>
+                  <td>USD</td>
+                  <td><span class="tag tag-green">Active</span></td>
+                  <td class="font-num">1995/06/15</td>
+                  <td class="font-num">16:00 HKT</td>
+                  <td>Daily</td>
+                  <td class="font-num">1.25</td>
+                  <td class="font-num">T+3</td>
+                  <td class="text-right">
+                    <button class="btn btn-secondary btn-sm">View</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="cell-code">VP0010</span></td>
+                  <td><span class="cell-name">Class I USD Acc</span></td>
+                  <td class="font-num">VP0010-I-USD-ACC</td>
+                  <td class="font-num">HK0000012348</td>
+                  <td>USD</td>
+                  <td><span class="tag tag-blue">Inactive</span></td>
+                  <td class="font-num">2001/03/20</td>
+                  <td class="font-num">16:00 HKT</td>
+                  <td>Daily</td>
+                  <td class="font-num">0.85</td>
+                  <td class="font-num">T+3</td>
+                  <td class="text-right">
+                    <button class="btn btn-secondary btn-sm">View</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="cell-code">VP0021</span></td>
+                  <td><span class="cell-name">Class A USD Acc</span></td>
+                  <td class="font-num">VP0021-A-USD-ACC</td>
+                  <td class="font-num">HK0000023456</td>
+                  <td>USD</td>
+                  <td><span class="tag tag-green">Active</span></td>
+                  <td class="font-num">2005/08/15</td>
+                  <td class="font-num">15:00 HKT</td>
+                  <td>Daily</td>
+                  <td class="font-num">1.50</td>
+                  <td class="font-num">T+3</td>
+                  <td class="text-right">
+                    <button class="btn btn-secondary btn-sm">View</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="cell-code">VP0033</span></td>
+                  <td><span class="cell-name">Class A CNY Acc</span></td>
+                  <td class="font-num">VP0033-A-CNY-ACC</td>
+                  <td class="font-num">HK0000034567</td>
+                  <td>CNY</td>
+                  <td><span class="tag tag-red">Terminated</span></td>
+                  <td class="font-num">2010/11/22</td>
+                  <td class="font-num">15:00 HKT</td>
+                  <td>Daily</td>
+                  <td class="font-num">1.75</td>
+                  <td class="font-num">T+3</td>
+                  <td class="text-right">
+                    <button class="btn btn-secondary btn-sm">View</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination-bar">
+            <div class="pagination-info">Showing 1-6 of 18 share classes</div>
+            <div class="pagination">
+              <button class="page-btn" disabled>←</button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">→</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- New Share Class Modal -->
+  <div class="modal-overlay" id="shareClassModal" onclick="closeModalOnOverlay(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">New Share Class</div>
+        <button class="modal-close" onclick="closeModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="tabs">
+          <div class="tab active" data-tab="fund-info" onclick="switchTab('fund-info')">Fund Info</div>
+          <div class="tab" data-tab="class-info" onclick="switchTab('class-info')">Class Info</div>
+          <div class="tab" data-tab="dealing" onclick="switchTab('dealing')">Dealing &amp; Valuation</div>
+          <div class="tab" data-tab="fees" onclick="switchTab('fees')">Fees</div>
+        </div>
+
+        <form id="shareClassForm">
+          <!-- Tab 1: Fund Info -->
+          <div class="tab-panel active" id="tab-fund-info">
+            <div class="form-section-title">Fund Information</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Fund Code<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select fund</option>
+                  <option value="VP0010">VP0010 — Value Partners Classic Fund</option>
+                  <option value="VP0021">VP0021 — Value Partners High-Dividend Stocks Fund</option>
+                  <option value="VP0033">VP0033 — Value Partners China A-Share Fund</option>
+                  <option value="VP0045">VP0045 — Value Partners Asian Bond Fund</option>
+                </select>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Fund Name (EN)</label>
+                <input type="text" class="form-control" value="" disabled placeholder="Auto-populated from Fund Code">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Fund Name (TC)</label>
+                <input type="text" class="form-control" value="" disabled placeholder="Auto-populated from Fund Code">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Fund Name (SC)</label>
+                <input type="text" class="form-control" value="" disabled placeholder="Auto-populated from Fund Code">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Class Info -->
+          <div class="tab-panel" id="tab-class-info">
+            <div class="form-section-title">Class Identity</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">VPFS Class ID<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="e.g. VP0010-A-USD-ACC" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fund Class Status<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select status</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Terminated">Terminated</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Class Currency<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select currency</option>
+                  <option value="USD">USD</option>
+                  <option value="HKD">HKD</option>
+                  <option value="CNY">CNY</option>
+                  <option value="CNH">CNH（离岸人民币）</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="JPY">JPY</option>
+                  <option value="SGD">SGD</option>
+                  <option value="CHF">CHF</option>
+                  <option value="AUD">AUD</option>
+                  <option value="CAD">CAD</option>
+                  <option value="NZD">NZD</option>
+                  <option value="RMB">RMB</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Launch Date<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="YYYY/MM/DD" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">End of IOP Date</label>
+                <input type="text" class="form-control" placeholder="YYYY/MM/DD">
+              </div>
+            </div>
+
+            <div class="form-section-title" style="margin-top: 20px;">Class Names</div>
+            <div class="form-grid">
+              <div class="form-group span-2">
+                <label class="form-label">Share Class Name (EN) — Official<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="Official English name of this share class" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Share Class Name (TC) — Official<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="Traditional Chinese name" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Share Class Name (SC) — Official<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="官方简体名称" required>
+              </div>
+            </div>
+
+            <div class="form-section-title" style="margin-top: 20px;">Identifiers</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">ISIN Code</label>
+                <input type="text" class="form-control" placeholder="e.g. HK0000012345" maxlength="12" style="font-family: monospace;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">CUSIP</label>
+                <input type="text" class="form-control" placeholder="9-digit" maxlength="9" style="font-family: monospace;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">SEDOL</label>
+                <input type="text" class="form-control" placeholder="7-character" maxlength="7" style="font-family: monospace;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Bloomberg Ticker</label>
+                <input type="text" class="form-control" placeholder="e.g. VP0010A UH">
+              </div>
+              <div class="form-group">
+                <label class="form-label">BBG ID Equity</label>
+                <input type="text" class="form-control" placeholder="e.g. EQ0010A">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Stock Code</label>
+                <input type="text" class="form-control" placeholder="1–5 digits" maxlength="5" style="font-family: monospace;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Valor Code</label>
+                <input type="text" class="form-control" placeholder="e.g. 1234567">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Lipper Code</label>
+                <input type="text" class="form-control" placeholder="e.g. 65012345">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Morningstar Fund ID</label>
+                <input type="text" class="form-control" placeholder="e.g. F00000XXXXX">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Morningstar Sec ID</label>
+                <input type="text" class="form-control" placeholder="e.g. 0P0000XXXX">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Morningstar Performance ID</label>
+                <input type="text" class="form-control" placeholder="e.g. 60012345">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Dealing & Valuation -->
+          <div class="tab-panel" id="tab-dealing">
+            <div class="form-section-title">Trading Terms</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Distribution Policy<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select policy</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Quarterly">Quarterly</option>
+                  <option value="Annually">Annually</option>
+                  <option value="N/A">N/A</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hedged<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select</option>
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hedging Currency</label>
+                <select class="form-control">
+                  <option value="">Auto (same as class currency)</option>
+                  <option value="USD">USD</option>
+                  <option value="HKD">HKD</option>
+                  <option value="CNY">CNY</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Unit Precision<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select precision</option>
+                  <option value="2">2 decimal places</option>
+                  <option value="3">3 decimal places</option>
+                  <option value="4">4 decimal places</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">NAV Precision<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select precision</option>
+                  <option value="0">0 decimal places</option>
+                  <option value="2">2 decimal places</option>
+                  <option value="4">4 decimal places</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-section-title" style="margin-top: 20px;">Business Day &amp; Calendar</div>
+            <div class="form-grid">
+              <div class="form-group span-2">
+                <label class="form-label">Business Day Definition<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="e.g. Any day that is not a Saturday, Sunday or public holiday in Hong Kong" required>
+              </div>
+              <div class="form-group span-3">
+                <label class="form-label">Business Calendar<span class="required">*</span></label>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0;">
+                  <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" value="Hong Kong"> Hong Kong
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" value="Taiwan"> Taiwan
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" value="Japan"> Japan
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" value="PRC - Stock Exchange"> PRC — Stock Exchange
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" value="PRC - Bank"> PRC — Bank
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" value="Ireland"> Ireland
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" value="UK"> UK
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" value="Relevant Market as per Prospectus"> Relevant Market as per Prospectus
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section-title" style="margin-top: 20px;">Dealing &amp; Valuation Times</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Cutoff Time<span class="required">*</span></label>
+                <div class="time-group">
+                  <input type="time" class="form-control" value="17:00" required>
+                  <select class="form-control" required>
+                    <option value="HKG">HKG</option>
+                    <option value="IRL">IRL</option>
+                    <option value="CHN">CHN</option>
+                    <option value="JPN">JPN</option>
+                    <option value="GBR">GBR</option>
+                    <option value="USA">USA</option>
+                    <option value="SGP">SGP</option>
+                    <option value="CHE">CHE</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Dealing Cut-off<span class="required">*</span></label>
+                <div class="time-group">
+                  <input type="time" class="form-control" value="16:00" required>
+                  <select class="form-control" required>
+                    <option value="HKG">HKG</option>
+                    <option value="IRL">IRL</option>
+                    <option value="CHN">CHN</option>
+                    <option value="JPN">JPN</option>
+                    <option value="GBR">GBR</option>
+                    <option value="USA">USA</option>
+                    <option value="SGP">SGP</option>
+                    <option value="CHE">CHE</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Valuation Point<span class="required">*</span></label>
+                <div class="time-group">
+                  <input type="time" class="form-control" value="09:30" required>
+                  <select class="form-control" required>
+                    <option value="IRL">IRL</option>
+                    <option value="HKG">HKG</option>
+                    <option value="CHN">CHN</option>
+                    <option value="JPN">JPN</option>
+                    <option value="GBR">GBR</option>
+                    <option value="USA">USA</option>
+                    <option value="SGP">SGP</option>
+                    <option value="CHE">CHE</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Dealing Frequency<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select frequency</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Quarterly">Quarterly</option>
+                  <option value="Yearly">Yearly</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Valuation Frequency<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="">Select frequency</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Quarterly">Quarterly</option>
+                  <option value="Yearly">Yearly</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-section-title" style="margin-top: 20px;">Settlement &amp; Pricing</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Subscription Settlement (T+)<span class="required">*</span></label>
+                <input type="number" class="form-control" value="3" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Redemption Settlement (T+)<span class="required">*</span></label>
+                <input type="number" class="form-control" value="3" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Contract Note Delivery Day (T+)</label>
+                <input type="number" class="form-control" placeholder="e.g. 3" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Valuation Delivery Time</label>
+                <input type="number" class="form-control" placeholder="Hours after valuation" min="0">
+              </div>
+              <div class="form-group span-3">
+                <label class="form-label">Pricing Methodology<span class="required">*</span></label>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0;">
+                  <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" value="Amortization"> Amortization
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" value="Cost"> Cost
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" value="Mark to Market"> Mark to Market
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 4: Fees -->
+          <div class="tab-panel" id="tab-fees">
+            <div class="form-section-title">Subscription &amp; Redemption</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Min Initial Subscription<span class="required">*</span></label>
+                <input type="number" class="form-control" placeholder="e.g. 10000" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Min Subsequent Subscription<span class="required">*</span></label>
+                <input type="number" class="form-control" placeholder="e.g. 1000" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Minimum Redemption<span class="required">*</span></label>
+                <input type="number" class="form-control" placeholder="e.g. 500" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Minimum Holding</label>
+                <input type="number" class="form-control" placeholder="e.g. 1000" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Redemption Charge</label>
+                <input type="number" class="form-control" placeholder="e.g. 0.5" min="0" step="0.01">
+              </div>
+            </div>
+
+            <div class="form-section-title" style="margin-top: 20px;">Management &amp; Performance Fees</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Management Fee (%)</label>
+                <input type="number" class="form-control" placeholder="e.g. 1.25" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Performance Fee (%)</label>
+                <input type="number" class="form-control" placeholder="e.g. 15.00" min="0" step="0.01">
+              </div>
+            </div>
+
+            <div class="form-section-title" style="margin-top: 20px;">TER (Total Expense Ratio)</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Latest TER Date</label>
+                <input type="text" class="form-control" placeholder="YYYY/MM（仅填月份）"
+              </div>
+              <div class="form-group">
+                <label class="form-label">Latest TER Rate (%)</label>
+                <input type="number" class="form-control" placeholder="e.g. 1.65" min="0" step="0.01">
+              </div>
+            </div>
+
+            <div class="form-section-title" style="margin-top: 20px;">Financial Year &amp; Other</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Financial Year End</label>
+                <select class="form-control">
+                  <option value="">Select month</option>
+                  <option value="31-March">31 March</option>
+                  <option value="30-June">30 June</option>
+                  <option value="31-December">31 December</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Security Lending</label>
+                <select class="form-control">
+                  <option value="">Select</option>
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="saveShareClass()">Save Share Class</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('shareClassModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('shareClassModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOnOverlay(event) {
+      if (event.target.id === 'shareClassModal') closeModal();
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector('.tab[data-tab="' + tabId + '"]').classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    function saveShareClass() {
+      const form = document.getElementById('shareClassForm');
+      if (form.checkValidity()) {
+        alert('Share class saved successfully! (Prototype only)');
+        closeModal();
+      } else {
+        form.reportValidity();
+      }
+    }
+
+    // Wire up the New Share Class button
+    document.querySelector('.btn-primary').addEventListener('click', openModal);
+  </script>
+  <script src="i18n.js"></script>
+</body>
+</html>

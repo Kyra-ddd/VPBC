@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Center - Product Detail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --vp-green: #20A06E;
+      --vp-green-dark: #178A5C;
+      --vp-green-light: #E8F5EE;
+      --vp-lime: #BDD646;
+      --vp-red: #B23A48;
+      --vp-mint-50: #F2F8F4;
+      --vp-white: #FFFFFF;
+      --vp-gray-900: #1A1A1A;
+      --vp-gray-700: #4A4A4A;
+      --vp-gray-500: #737373;
+      --vp-gray-300: #D1D5DB;
+      --vp-gray-100: #F3F4F6;
+      --vp-border: #E5E7EB;
+      --vp-shadow: 0 1px 3px rgba(16, 94, 62, 0.08);
+      --vp-radius: 6px;
+      --vp-radius-sm: 4px;
+      --vp-sidebar-width: 240px;
+      --vp-topbar-height: 56px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Open Sans', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background-color: var(--vp-mint-50);
+      color: var(--vp-gray-900);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Poppins', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      font-weight: 600;
+    }
+
+    .app { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: var(--vp-sidebar-width);
+      background-color: var(--vp-white);
+      border-right: 1px solid var(--vp-border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      z-index: 100;
+    }
+
+    .logo {
+      height: var(--vp-topbar-height);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--vp-border);
+    }
+
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--vp-green) 0%, var(--vp-lime) 100%);
+      border-radius: var(--vp-radius-sm);
+      margin-right: 10px;
+    }
+
+    .logo-text {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--vp-gray-900);
+    }
+
+    .nav {
+      flex: 1;
+      padding: 16px 12px;
+      overflow-y: auto;
+    }
+
+    .nav-section { margin-bottom: 24px; }
+
+    .nav-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--vp-gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 12px;
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: var(--vp-radius-sm);
+      color: var(--vp-gray-700);
+      cursor: pointer;
+      margin-bottom: 2px;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .nav-item:hover {
+      background-color: var(--vp-green-light);
+      color: var(--vp-green-dark);
+    }
+
+    .nav-item.active {
+      background-color: var(--vp-green-light);
+      color: var(--vp-green);
+      font-weight: 600;
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
+      opacity: 0.7;
+    }
+
+    .nav-item.active .nav-icon { opacity: 1; }
+
+    .main {
+      flex: 1;
+      margin-left: var(--vp-sidebar-width);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      height: var(--vp-topbar-height);
+      background-color: var(--vp-white);
+      border-bottom: 1px solid var(--vp-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      color: var(--vp-gray-500);
+      font-size: 13px;
+    }
+
+    .breadcrumb a {
+      color: var(--vp-gray-500);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { color: var(--vp-green); }
+
+    .breadcrumb-separator {
+      margin: 0 8px;
+      color: var(--vp-gray-300);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: var(--vp-green-light);
+      color: var(--vp-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .content {
+      flex: 1;
+      padding: 24px;
+      overflow: auto;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 16px;
+    }
+
+    .page-header-left { display: flex; align-items: center; gap: 16px; }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--vp-radius-sm);
+      border: 1px solid var(--vp-border);
+      background-color: var(--vp-white);
+      color: var(--vp-gray-700);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      border-color: var(--vp-green);
+      color: var(--vp-green);
+    }
+
+    .page-title-block { display: flex; flex-direction: column; gap: 4px; }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--vp-gray-900);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--vp-gray-500);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--vp-radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--vp-green);
+      color: var(--vp-white);
+    }
+
+    .btn-primary:hover { background-color: var(--vp-green-dark); }
+
+    .btn-secondary {
+      background-color: var(--vp-white);
+      color: var(--vp-gray-700);
+      border: 1px solid var(--vp-border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--vp-green);
+      color: var(--vp-green);
+    }
+
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .tag-green {
+      background-color: var(--vp-green-light);
+      color: var(--vp-green);
+    }
+
+    .tag-blue {
+      background-color: #E6F2FF;
+      color: #2563EB;
+    }
+
+    .card {
+      background-color: var(--vp-white);
+      border-radius: var(--vp-radius);
+      box-shadow: var(--vp-shadow);
+      border: 1px solid var(--vp-border);
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--vp-border);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--vp-gray-900);
+    }
+
+    .card-body { padding: 20px; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .detail-label {
+      font-size: 12px;
+      color: var(--vp-gray-500);
+      font-weight: 500;
+    }
+
+    .detail-value {
+      font-size: 14px;
+      color: var(--vp-gray-900);
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    .detail-value.muted {
+      color: var(--vp-gray-500);
+    }
+
+    .detail-value.code {
+      font-family: 'SF Mono', Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+      color: var(--vp-green);
+      font-weight: 600;
+    }
+
+    .detail-value.num {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .detail-value.large {
+      font-size: 18px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .detail-value.block {
+      line-height: 1.6;
+    }
+
+    .detail-item.full-width { grid-column: span 4; }
+    .detail-item.span-2 { grid-column: span 2; }
+    .detail-item.span-3 { grid-column: span 3; }
+
+    .section-divider {
+      height: 1px;
+      background-color: var(--vp-border);
+      margin: 24px 0;
+    }
+
+    .boolean-yes {
+      color: var(--vp-green);
+      font-weight: 600;
+    }
+
+    .boolean-no {
+      color: var(--vp-gray-500);
+    }
+
+    .file-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--vp-green);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .file-link:hover { text-decoration: underline; }
+
+    @media (max-width: 1200px) {
+      .detail-grid { grid-template-columns: repeat(3, 1fr); }
+      .detail-item.full-width { grid-column: span 3; }
+      .detail-item.span-2 { grid-column: span 2; }
+      .detail-item.span-3 { grid-column: span 3; }
+    }
+
+    @media (max-width: 768px) {
+      .detail-grid { grid-template-columns: repeat(2, 1fr); }
+      .detail-item.full-width,
+      .detail-item.span-2,
+      .detail-item.span-3 { grid-column: span 2; }
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 24px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background-color: var(--vp-white);
+      border-radius: var(--vp-radius);
+      box-shadow: 0 8px 24px rgba(16, 94, 62, 0.15);
+      width: 100%;
+      max-width: 900px;
+      max-height: calc(100vh - 48px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--vp-border);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--vp-gray-900);
+    }
+
+    .modal-close {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--vp-gray-500);
+      cursor: pointer;
+      border-radius: var(--vp-radius-sm);
+    }
+
+    .modal-close:hover {
+      background-color: var(--vp-gray-100);
+      color: var(--vp-gray-900);
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--vp-border);
+      background-color: var(--vp-gray-100);
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .tab {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--vp-gray-500);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .tab:hover { color: var(--vp-green); }
+
+    .tab.active {
+      color: var(--vp-green);
+      border-bottom-color: var(--vp-green);
+      background-color: var(--vp-white);
+    }
+
+    .tab-panel {
+      display: none;
+      padding: 20px;
+    }
+
+    .tab-panel.active { display: block; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group.span-2 { grid-column: span 2; }
+    .form-group.span-3 { grid-column: span 3; }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--vp-gray-700);
+    }
+
+    .form-label .required {
+      color: var(--vp-red);
+      margin-left: 2px;
+    }
+
+    .form-control {
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--vp-border);
+      border-radius: var(--vp-radius-sm);
+      font-size: 13px;
+      color: var(--vp-gray-900);
+      background-color: var(--vp-white);
+      font-family: inherit;
+      width: 100%;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--vp-green);
+      box-shadow: 0 0 0 3px var(--vp-green-light);
+    }
+
+    textarea.form-control {
+      height: auto;
+      padding: 10px 12px;
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    select.form-control { cursor: pointer; }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 36px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--vp-green);
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      font-size: 13px;
+      color: var(--vp-gray-700);
+      cursor: pointer;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--vp-border);
+      background-color: var(--vp-white);
+    }
+
+    /* Language Switcher */
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background-color: var(--vp-gray-100);
+      border-radius: var(--vp-radius-sm);
+      padding: 2px;
+    }
+
+    .lang-btn {
+      padding: 5px 10px;
+      border: none;
+      background: transparent;
+      color: var(--vp-gray-500);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 3px;
+      font-family: inherit;
+    }
+
+    .lang-btn:hover { color: var(--vp-green); }
+
+    .lang-btn.active {
+      background-color: var(--vp-white);
+      color: var(--vp-green);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    /* Sidebar Collapse */
+    .sidebar-toggle {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--vp-border);
+      background-color: var(--vp-white);
+      color: var(--vp-gray-700);
+      border-radius: var(--vp-radius-sm);
+      cursor: pointer;
+      margin-right: 12px;
+    }
+
+    .sidebar-toggle:hover {
+      border-color: var(--vp-green);
+      color: var(--vp-green);
+    }
+
+    .app.sidebar-collapsed .sidebar {
+      width: 60px;
+    }
+
+    .app.sidebar-collapsed .logo-text,
+    .app.sidebar-collapsed .nav-label {
+      display: none;
+    }
+
+    .app.sidebar-collapsed .nav-icon {
+      margin-right: 0;
+      opacity: 1;
+    }
+
+    .app.sidebar-collapsed .logo {
+      justify-content: center;
+      padding: 0;
+    }
+
+    .app.sidebar-collapsed .logo-mark {
+      margin-right: 0;
+    }
+
+    .app.sidebar-collapsed .nav {
+      padding: 16px 12px;
+    }
+
+    .app.sidebar-collapsed .nav-section {
+      margin-bottom: 16px;
+    }
+
+    .app.sidebar-collapsed .main {
+      margin-left: 60px;
+    }
+
+    .app.sidebar-collapsed .topbar {
+      padding-left: 16px;
+    }
+
+    /* Show icon-only nav items when collapsed */
+    .app.sidebar-collapsed .nav-item {
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      font-size: 0;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-mark"></div>
+        <div class="logo-text">Value Partners</div>
+      </div>
+      <nav class="nav">
+        <div class="nav-section">
+          <div class="nav-label">Product Center</div>
+          <a href="01-product-management.html" class="nav-item active">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Product Management
+          </a>
+          <a href="03-share-class.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+            Share Class
+          </a>
+          <div class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Lifecycle
+          </div>
+          <div class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3v18h18"/>
+              <path d="M18 17V9"/>
+              <path d="M13 17V5"/>
+              <path d="M8 17v-3"/>
+            </svg>
+            Fee Structure
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-label">System</div>
+          <div class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            Settings
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <header class="topbar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div class="breadcrumb">
+          <a href="01-product-management.html">Product Center</a>
+          <span class="breadcrumb-separator">/</span>
+          <a href="01-product-management.html">Product Management</a>
+          <span class="breadcrumb-separator">/</span>
+          <span style="color: var(--vp-gray-900); font-weight: 500;">VP0010</span>
+        </div>
+        <div class="topbar-actions">
+          <div class="lang-switcher">
+            <button class="lang-btn active" data-lang="en" onclick="setLanguage('en')">EN</button>
+            <button class="lang-btn" data-lang="zh-CN" onclick="setLanguage('zh-CN')">简</button>
+          </div>
+          <div class="user-avatar">KW</div>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-header-left">
+            <a href="01-product-management.html" class="back-link" title="Back to list">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"/>
+                <polyline points="12 19 5 12 12 5"/>
+              </svg>
+            </a>
+            <div class="page-title-block">
+              <h1 class="page-title">
+                Value Partners Classic Fund
+                <span class="tag tag-green">Active</span>
+              </h1>
+              <div class="page-subtitle">Fund Code: VP0010 · Base Currency: USD · Domicile: Hong Kong</div>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary">View Share Classes</button>
+            <button class="btn btn-primary" onclick="openProductModal('edit')">Edit Product</button>
+          </div>
+        </div>
+
+        <!-- Basic Information -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Basic Information</div>
+          </div>
+          <div class="card-body">
+            <div class="detail-grid">
+              <div class="detail-item">
+                <div class="detail-label">Fund Code</div>
+                <div class="detail-value code">VP0010</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Fund Name (English)</div>
+                <div class="detail-value">Value Partners Classic Fund</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Fund Type</div>
+                <div class="detail-value">Equity Fund</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Fund Name (Traditional Chinese)</div>
+                <div class="detail-value">惠理價值基金</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Fund Name (Simplified Chinese)</div>
+                <div class="detail-value">惠理价值基金</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Umbrella / OFC Name</div>
+                <div class="detail-value muted">—</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Sub Fund Code</div>
+                <div class="detail-value muted">—</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Domicile / Jurisdiction</div>
+                <div class="detail-value">Hong Kong (HK)</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Primary Regulator</div>
+                <div class="detail-value">Securities and Futures Commission</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Base Currency</div>
+                <div class="detail-value">USD</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Fund Status</div>
+                <div class="detail-value"><span class="tag tag-green">Active</span></div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Complex Product</div>
+                <div class="detail-value"><span class="boolean-no">No</span></div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Professional Investors Only</div>
+                <div class="detail-value"><span class="boolean-no">No</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Dates -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Key Dates</div>
+          </div>
+          <div class="card-body">
+            <div class="detail-grid">
+              <div class="detail-item">
+                <div class="detail-label">Application Submission Date</div>
+                <div class="detail-value num">1992/09/14</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Authorization Date</div>
+                <div class="detail-value num">1993/02/20</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Launch Date</div>
+                <div class="detail-value num large">1993-04-01</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Operation Start Date</div>
+                <div class="detail-value num">1993-04-01</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">IOP Start Date</div>
+                <div class="detail-value muted">—</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Listing Date</div>
+                <div class="detail-value muted">—</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Termination Date</div>
+                <div class="detail-value muted">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Identification Codes -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Identification Codes</div>
+          </div>
+          <div class="card-body">
+            <div class="detail-grid">
+              <div class="detail-item span-2">
+                <div class="detail-label">LEI Number</div>
+                <div class="detail-value code">549300ABCDEFGHIJKLMN</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">GIIN Number</div>
+                <div class="detail-value code">XXXXXX.XXXXX.XX.XX</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Providers -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Service Providers</div>
+          </div>
+          <div class="card-body">
+            <div class="detail-grid">
+              <div class="detail-item span-2">
+                <div class="detail-label">Fund Manager</div>
+                <div class="detail-value">Value Partners Group</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Fund Manager LEI</div>
+                <div class="detail-value code">549300XXXXXXXXXXXXXX</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Sub Manager</div>
+                <div class="detail-value muted">—</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Investment Advisor</div>
+                <div class="detail-value muted">—</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Trustee / Administrator</div>
+                <div class="detail-value">HSBC Institutional Trust Services (Asia) Limited</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Custodian / Prime Broker</div>
+                <div class="detail-value">HSBC</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Sub Custodian</div>
+                <div class="detail-value muted">—</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Auditor</div>
+                <div class="detail-value">PricewaterhouseCoopers</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Investment Profile -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Investment Profile</div>
+          </div>
+          <div class="card-body">
+            <div class="detail-grid">
+              <div class="detail-item">
+                <div class="detail-label">Primary Instrument Type</div>
+                <div class="detail-value">Equity Securities</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Passive or Active Fund</div>
+                <div class="detail-value">Active</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Investment Market Focus</div>
+                <div class="detail-value">Asia Pacific</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Morningstar Category</div>
+                <div class="detail-value">Asia ex-Japan Equity</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Benchmark</div>
+                <div class="detail-value">MSCI All Country Asia ex Japan Index (NTR)</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Benchmark Code</div>
+                <div class="detail-value code">MXASJNU</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Hedging Policy (Fund Level)</div>
+                <div class="detail-value">No Hedging</div>
+              </div>
+              <div class="detail-item span-3">
+                <div class="detail-label">Asset Allocation Table</div>
+                <div class="detail-value">
+                  <a href="#" class="file-link">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    View Asset Allocation Document
+                  </a>
+                </div>
+              </div>
+              <div class="detail-item full-width">
+                <div class="detail-label">Investment Objective</div>
+                <div class="detail-value block">
+                  The Fund aims to achieve long-term capital growth by investing primarily in equity securities of companies listed or traded in the Asia Pacific region (excluding Japan). The Fund will invest in companies which the Investment Manager believes to be undervalued and which have strong fundamentals and growth potential.
+                </div>
+              </div>
+              <div class="detail-item full-width">
+                <div class="detail-label">Investment Strategy</div>
+                <div class="detail-value block">
+                  The Fund adopts a value-oriented, bottom-up investment approach. The Investment Manager seeks to identify companies trading below their intrinsic value with strong balance sheets, competent management and sustainable competitive advantages. The portfolio is concentrated in the Investment Manager's highest conviction ideas.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Risk & Limits -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Risk & Limits</div>
+          </div>
+          <div class="card-body">
+            <div class="detail-grid">
+              <div class="detail-item">
+                <div class="detail-label">Risk Level</div>
+                <div class="detail-value num large">4</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Max Leverage Ratio (%)</div>
+                <div class="detail-value num">0</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Max Derivatives Ratio (%)</div>
+                <div class="detail-value num">0</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Borrowing Limit (%)</div>
+                <div class="detail-value num">0</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Stop Loss Limit</div>
+                <div class="detail-value muted">—</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Stop Loss Alert</div>
+                <div class="detail-value muted">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Investor Restrictions -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Investor Restrictions</div>
+          </div>
+          <div class="card-body">
+            <div class="detail-grid">
+              <div class="detail-item span-2">
+                <div class="detail-label">Restriction on Investor's Nationality</div>
+                <div class="detail-value muted">—</div>
+              </div>
+              <div class="detail-item span-2">
+                <div class="detail-label">Restriction on Investor's Residency</div>
+                <div class="detail-value muted">—</div>
+              </div>
+              <div class="detail-item full-width">
+                <div class="detail-label">Registration Region</div>
+                <div class="detail-value">Hong Kong, Singapore, Taiwan, Malaysia, Switzerland</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Product Modal -->
+  <div class="modal-overlay" id="productModal" onclick="closeProductModalOnOverlay(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Edit Product</div>
+        <button class="modal-close" onclick="closeProductModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="tabs">
+          <div class="tab active" data-tab="basic" onclick="switchTab('basic')">Basic</div>
+          <div class="tab" data-tab="dates" onclick="switchTab('dates')">Dates</div>
+          <div class="tab" data-tab="providers" onclick="switchTab('providers')">Providers</div>
+          <div class="tab" data-tab="investment" onclick="switchTab('investment')">Investment</div>
+          <div class="tab" data-tab="risk" onclick="switchTab('risk')">Risk & Limits</div>
+        </div>
+
+        <form id="productForm">
+          <!-- Basic Tab -->
+          <div class="tab-panel active" id="tab-basic">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Fund Code<span class="required">*</span></label>
+                <input type="text" class="form-control" value="VP0010" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Fund Name (English)<span class="required">*</span></label>
+                <input type="text" class="form-control" value="Value Partners Classic Fund" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Fund Name (Traditional Chinese)<span class="required">*</span></label>
+                <input type="text" class="form-control" value="惠理價值基金" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Fund Name (Simplified Chinese)<span class="required">*</span></label>
+                <input type="text" class="form-control" value="惠理价值基金" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fund Type<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="equity" selected>Equity Fund</option>
+                  <option value="bond">Bond Fund</option>
+                  <option value="mixed">Mixed Asset Fund</option>
+                  <option value="money">Money Market Fund</option>
+                  <option value="index">Index Fund</option>
+                  <option value="etf">ETF</option>
+                  <option value="fof">Fund of Funds</option>
+                  <option value="structured">Structured Fund</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Domicile / Jurisdiction<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="HK" selected>Hong Kong</option>
+                  <option value="LU">Luxembourg</option>
+                  <option value="IE">Ireland</option>
+                  <option value="KY">Cayman Islands</option>
+                  <option value="CN">Mainland China</option>
+                </select>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Primary Regulator<span class="required">*</span></label>
+                <input type="text" class="form-control" value="Securities and Futures Commission" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Base Currency</label>
+                <select class="form-control">
+                  <option value="USD" selected>USD</option>
+                  <option value="HKD">HKD</option>
+                  <option value="CNY">CNY</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="JPY">JPY</option>
+                  <option value="AUD">AUD</option>
+                  <option value="SGD">SGD</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fund Status<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="active" selected>Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="draft">Draft</option>
+                  <option value="terminated">Terminated</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Launch Date<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="YYYY/MM/DD" value="1993/04/01" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Umbrella / OFC Name</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Sub Fund Code</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Registration Region</label>
+                <input type="text" class="form-control" value="Hong Kong, Singapore, Taiwan, Malaysia, Switzerland">
+              </div>
+              <div class="form-group">
+                <div class="checkbox-group">
+                  <input type="checkbox" id="complexProduct" name="complexProduct">
+                  <label for="complexProduct">Complex Product</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="checkbox-group">
+                  <input type="checkbox" id="professionalOnly" name="professionalOnly">
+                  <label for="professionalOnly">Professional Investors Only</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dates Tab -->
+          <div class="tab-panel" id="tab-dates">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Application Submission Date</label>
+                <input type="text" class="form-control" placeholder="YYYY/MM/DD" value="1992/09/14">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Authorization Date</label>
+                <input type="text" class="form-control" placeholder="YYYY/MM/DD" value="1993/02/20">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Launch Date<span class="required">*</span></label>
+                <input type="text" class="form-control" placeholder="YYYY/MM/DD" value="1993/04/01" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">IOP Start Date</label>
+                <input type="text" class="form-control" placeholder="YYYY/MM/DD">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Operation Start Date</label>
+                <input type="text" class="form-control" placeholder="YYYY/MM/DD" value="1993/04/01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Listing Date</label>
+                <input type="text" class="form-control" placeholder="YYYY/MM/DD">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Termination Date</label>
+                <input type="text" class="form-control" placeholder="YYYY/MM/DD">
+              </div>
+            </div>
+          </div>
+
+          <!-- Providers Tab -->
+          <div class="tab-panel" id="tab-providers">
+            <div class="form-grid">
+              <div class="form-group span-2">
+                <label class="form-label">Fund Manager<span class="required">*</span></label>
+                <input type="text" class="form-control" value="Value Partners Group" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Fund Manager LEI<span class="required">*</span></label>
+                <input type="text" class="form-control" value="549300XXXXXXXXXXXXXX" required>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Sub Manager</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Investment Advisor</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Trustee / Administrator</label>
+                <input type="text" class="form-control" value="HSBC Institutional Trust Services (Asia) Limited">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Custodian / Prime Broker</label>
+                <input type="text" class="form-control" value="HSBC">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Sub Custodian</label>
+                <input type="text" class="form-control" placeholder="Optional">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Auditor</label>
+                <input type="text" class="form-control" value="PricewaterhouseCoopers">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">LEI Number</label>
+                <input type="text" class="form-control" value="549300ABCDEFGHIJKLMN">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">GIIN Number</label>
+                <input type="text" class="form-control" value="XXXXXX.XXXXX.XX.XX">
+              </div>
+            </div>
+          </div>
+
+          <!-- Investment Tab -->
+          <div class="tab-panel" id="tab-investment">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Primary Instrument Type<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="equity" selected>Equity Securities</option>
+                  <option value="bond">Debt Securities</option>
+                  <option value="derivative">Derivatives</option>
+                  <option value="mixed">Mixed Instruments</option>
+                  <option value="money">Money Market Instruments</option>
+                  <option value="structured">Structured Products</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Passive or Active Fund<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="active" selected>Active</option>
+                  <option value="passive">Passive</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Investment Market Focus<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="global">Global</option>
+                  <option value="asia" selected>Asia Pacific</option>
+                  <option value="china">Greater China</option>
+                  <option value="emerging">Emerging Markets</option>
+                  <option value="developed">Developed Markets</option>
+                </select>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Morningstar Category</label>
+                <input type="text" class="form-control" value="Asia ex-Japan Equity">
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Benchmark</label>
+                <input type="text" class="form-control" value="MSCI All Country Asia ex Japan Index (NTR)">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Benchmark Code</label>
+                <input type="text" class="form-control" value="MXASJNU">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hedging Policy (Fund Level)<span class="required">*</span></label>
+                <select class="form-control" required>
+                  <option value="no" selected>No Hedging</option>
+                  <option value="full">Fully Hedged</option>
+                  <option value="partial">Partially Hedged</option>
+                </select>
+              </div>
+              <div class="form-group span-2">
+                <label class="form-label">Asset Allocation Table</label>
+                <input type="file" class="form-control">
+              </div>
+              <div class="form-group span-3">
+                <label class="form-label">Investment Objective<span class="required">*</span></label>
+                <textarea class="form-control" required>The Fund aims to achieve long-term capital growth by investing primarily in equity securities of companies listed or traded in the Asia Pacific region (excluding Japan).</textarea>
+              </div>
+              <div class="form-group span-3">
+                <label class="form-label">Investment Strategy<span class="required">*</span></label>
+                <textarea class="form-control" required>The Fund adopts a value-oriented, bottom-up investment approach. The Investment Manager seeks to identify companies trading below their intrinsic value with strong balance sheets, competent management and sustainable competitive advantages.</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Risk Tab -->
+          <div class="tab-panel" id="tab-risk">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Risk Level</label>
+                <select class="form-control">
+                  <option value="">Select level</option>
+                  <option value="1">1 - Lowest</option>
+                  <option value="2">2 - Low</option>
+                  <option value="3">3 - Medium</option>
+                  <option value="4" selected>4 - High</option>
+                  <option value="5">5 - Highest</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Max Leverage Ratio (%)<span class="required">*</span></label>
+                <input type="number" class="form-control" value="0" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Max Derivatives Ratio (%)<span class="required">*</span></label>
+                <input type="number" class="form-control" value="0" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Borrowing Limit (%)<span class="required">*</span></label>
+                <input type="number" class="form-control" value="0" min="0" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Stop Loss Limit</label>
+                <input type="number" class="form-control" placeholder="Optional" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Stop Loss Alert</label>
+                <input type="number" class="form-control" placeholder="Optional" step="0.01">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openProductModal(mode = 'new') {
+      const modal = document.getElementById('productModal');
+      const title = document.getElementById('modalTitle');
+      title.textContent = mode === 'edit' ? 'Edit Product' : 'New Product';
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeProductModal() {
+      const modal = document.getElementById('productModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeProductModalOnOverlay(event) {
+      if (event.target.id === 'productModal') {
+        closeProductModal();
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+      document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+    }
+
+    function saveProduct() {
+      const form = document.getElementById('productForm');
+      if (form.checkValidity()) {
+        alert('Product saved successfully! (Prototype only)');
+        closeProductModal();
+      } else {
+        form.reportValidity();
+      }
+    }
+  </script>
+  <script src="i18n.js"></script>
+</body>
+</html>
