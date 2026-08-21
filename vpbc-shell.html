@@ -240,6 +240,51 @@
     .perm-row input { width: 16px; height: 16px; accent-color: var(--vp-green); }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
+
+    /* Product Center - Share Class */
+    .share-class-modal .modal { max-width: 980px; }
+    .sc-tabs { display: flex; border-bottom: 1px solid var(--vp-border); background: var(--vp-gray-100); padding: 0 20px; position: sticky; top: 0; z-index: 10; }
+    .sc-tab { padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--vp-gray-500); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+    .sc-tab:hover { color: var(--vp-green); }
+    .sc-tab.active { color: var(--vp-green); border-bottom-color: var(--vp-green); background: var(--vp-white); }
+    .sc-panel { display: none; padding: 20px; }
+    .sc-panel.active { display: block; }
+    .sc-section-title { font-size: 13px; font-weight: 700; color: var(--vp-gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--vp-border); }
+    .sc-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .sc-form-group { display: flex; flex-direction: column; gap: 5px; }
+    .sc-form-group.span-2 { grid-column: span 2; }
+    .sc-form-group.span-3 { grid-column: span 3; }
+    .sc-form-label { font-size: 12px; font-weight: 600; color: var(--vp-gray-700); }
+    .sc-form-label .req { color: var(--vp-red); margin-left: 2px; }
+    .sc-input { height: 36px; padding: 0 12px; border: 1px solid var(--vp-border); border-radius: var(--vp-radius-sm); font-size: 13px; color: var(--vp-gray-900); background: var(--vp-white); font-family: inherit; width: 100%; }
+    .sc-input:focus { outline: none; border-color: var(--vp-green); box-shadow: 0 0 0 3px var(--vp-green-light); }
+    .sc-input:disabled { background: var(--vp-gray-100); color: var(--vp-gray-500); }
+    textarea.sc-input { height: auto; min-height: 70px; resize: vertical; }
+    .sc-checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0; }
+    .sc-checkbox-group label { display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer; }
+    .sc-checkbox-group input { accent-color: var(--vp-green); width: 16px; height: 16px; }
+    .sc-time-group { display: flex; gap: 6px; }
+    .sc-time-group .sc-input:first-child { flex: 0 0 80px; }
+    .sc-time-group .sc-input:last-child { flex: 1; }
+    .sc-modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--vp-border); }
+
+    /* Product Center - Lifecycle */
+    .lifecycle-step { display: flex; align-items: center; gap: 0; margin-bottom: 24px; }
+    .lifecycle-step-item { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+    .lifecycle-step-item::before { content: ''; position: absolute; top: 18px; left: 50%; right: -50%; height: 2px; background: var(--vp-gray-200); z-index: 0; }
+    .lifecycle-step-item:last-child::before { display: none; }
+    .lifecycle-step-item.done::before { background: var(--vp-green); }
+    .lifecycle-step-item.active::before { background: var(--vp-green); }
+    .lifecycle-step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--vp-gray-100); border: 2px solid var(--vp-gray-200); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--vp-gray-500); z-index: 1; position: relative; }
+    .lifecycle-step-item.done .lifecycle-step-circle { background: var(--vp-green); border-color: var(--vp-green); color: #fff; }
+    .lifecycle-step-item.active .lifecycle-step-circle { background: var(--vp-green); border-color: var(--vp-green); color: #fff; box-shadow: 0 0 0 4px var(--vp-green-light); }
+    .lifecycle-step-label { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--vp-gray-500); text-align: center; }
+    .lifecycle-step-item.done .lifecycle-step-label, .lifecycle-step-item.active .lifecycle-step-label { color: var(--vp-green); }
+    .lifecycle-step-date { font-size: 12px; color: var(--vp-gray-400); margin-top: 2px; }
+    .timeline-table { width: 100%; border-collapse: collapse; }
+    .timeline-table th { background: var(--vp-gray-100); color: var(--vp-gray-700); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--vp-border); font-size: 12px; }
+    .timeline-table td { padding: 12px 14px; border-bottom: 1px solid var(--vp-border); font-size: 13px; }
+    .timeline-table tr:last-child td { border-bottom: none; }
   </style>
 </head>
 <body>
@@ -343,6 +388,9 @@ function renderContent(html) {
   if (activeTabKey === 'stock-pool') { poolRenderGrid(); poolRenderDetail(); }
   if (activeTabKey === 'portfolio') { portRenderPortfolios(); portRenderShared(); portRenderHoldings(); portRenderRebalances(); portRenderIndicatorLib(); portRenderNavChart(); }
   if (activeTabKey === 'config') { cfgSwitchTab('users'); }
+  if (activeTabKey === 'share-class') { scRender(); }
+  if (activeTabKey === 'lifecycle') { lcRender(); }
+  if (activeTabKey === 'fee') { feeRender(); }
 }
 function updateBreadcrumb(text) { document.getElementById('topbarBreadcrumb').textContent = text; }
 
@@ -365,13 +413,17 @@ function updateSidebarActive(key) {
 
 // ========== Product Data ==========
 const PRODUCTS = [
-  { code: 'VP0010', name: 'Value Partners Classic Fund', type: 'SFC-UT', status: 'Active', date: '1993/04/01', currency: 'USD', manager: 'Value Partners Group' },
-  { code: 'VP0021', name: 'Value Partners High-Dividend Stocks Fund', type: 'SFC-UT', status: 'Active', date: '2005/08/15', currency: 'USD', manager: 'Value Partners Group' },
-  { code: 'VP0033', name: 'Value Partners China A-Share Fund', type: 'SFC-OFC', status: 'Active', date: '2010/11/22', currency: 'CNY', manager: 'Value Partners Group' },
-  { code: 'VP0045', name: 'Value Partners Balanced Fund', type: 'SFC-UT', status: 'In Offering', date: '2024/03/01', currency: 'USD', manager: 'Value Partners Group' },
-  { code: 'VP0056', name: 'Value Partners Bond Fund', type: 'SFC-Cayman', status: 'Active', date: '2018/06/20', currency: 'USD', manager: 'Value Partners Group' },
+  { code:'VP0010', name:'Value Partners 经典基金',       type:'股票型基金',   domicile:'香港', status:'运作中',   date:'1993/04/01', currency:'USD', manager:'Value Partners Group' },
+  { code:'VP0021', name:'Value Partners 高股息股票基金',   type:'股票型基金',   domicile:'香港', status:'运作中',   date:'2005/08/15', currency:'USD', manager:'Value Partners Group' },
+  { code:'VP0033', name:'Value Partners A股基金',         type:'混合资产基金', domicile:'香港', status:'运作中',   date:'2010/11/22', currency:'CNY', manager:'Value Partners Group' },
+  { code:'VP0045', name:'Value Partners 平衡基金',       type:'混合资产基金', domicile:'开曼', status:'募集中',   date:'2024/03/01', currency:'USD', manager:'Value Partners Group' },
+  { code:'VP0056', name:'Value Partners 债券基金',       type:'债券型基金',   domicile:'开曼', status:'运作中',   date:'2018/06/20', currency:'USD', manager:'Value Partners Group' },
+  { code:'VP0067', name:'Value Partners 货币市场基金',   type:'货币市场基金', domicile:'香港', status:'运作中',   date:'2020/01/10', currency:'HKD', manager:'Value Partners Group' },
+  { code:'VP0078', name:'Value Partners 指数基金',       type:'指数基金',     domicile:'香港', status:'已终止',   date:'2015/06/30', currency:'USD', manager:'Value Partners Group' },
+  { code:'VP0089', name:'Value Partners 优选增长基金',   type:'股票型基金',   domicile:'卢森堡', status:'运作中', date:'2022/09/01', currency:'EUR', manager:'Value Partners Group' },
 ];
-const STATUS_COLORS = { 'Active': 'tag-green', 'In Offering': 'tag-blue', 'Liquidated': 'tag-red', 'In Liquidation': 'tag-gray' };
+const PROD_STATUS_TAG = { '运作中':'tag-green', '募集中':'tag-blue', '已终止':'tag-red', '清盘中':'tag-gray', '已停用':'tag-gray' };
+const PROD_TYPE_OPTIONS = ['股票型基金','债券型基金','混合资产基金','货币市场基金','指数基金','ETF','基金中基金','结构型基金','其他'];
 
 // ========== Industry Data ==========
 const IND_DATA = {
@@ -703,6 +755,150 @@ function poolRenderDetail() {
   }).join("");
 }
 
+// ========== Product Center Data ==========
+// --- Share Class ---
+const SC_RECORDS = [
+  { fund:"VP0010", className:"A类 美元 accumulation", vpid:"VP0010-A-USD-ACC", isin:"HK0000012345", ccy:"USD", status:"运行中", launch:"1993/04/01", cutoff:"16:00 HKT", freq:"每日", mgmtFee:"1.25%", ter:"1.65%", settle:"T+3" },
+  { fund:"VP0010", className:"A类 港币 accumulation", vpid:"VP0010-A-HKD-ACC", isin:"HK0000012346", ccy:"HKD", status:"运行中", launch:"1993/04/01", cutoff:"16:00 HKT", freq:"每日", mgmtFee:"1.25%", ter:"1.65%", settle:"T+3" },
+  { fund:"VP0010", className:"A类 美元 income", vpid:"VP0010-A-USD-INC", isin:"HK0000012347", ccy:"USD", status:"运行中", launch:"1995/06/15", cutoff:"16:00 HKT", freq:"每日", mgmtFee:"1.25%", ter:"1.65%", settle:"T+3" },
+  { fund:"VP0010", className:"I类 美元 accumulation", vpid:"VP0010-I-USD-ACC", isin:"HK0000012348", ccy:"USD", status:"已停用", launch:"2001/03/20", cutoff:"16:00 HKT", freq:"每日", mgmtFee:"0.85%", ter:"1.20%", settle:"T+3" },
+  { fund:"VP0021", className:"A类 美元 accumulation", vpid:"VP0021-A-USD-ACC", isin:"HK0000023456", ccy:"USD", status:"运行中", launch:"2005/08/15", cutoff:"15:00 HKT", freq:"每日", mgmtFee:"1.50%", ter:"1.85%", settle:"T+3" },
+  { fund:"VP0033", className:"A类 人民币 accumulation", vpid:"VP0033-A-CNY-ACC", isin:"HK0000034567", ccy:"CNY", status:"已终止", launch:"2010/11/22", cutoff:"15:00 HKT", freq:"每日", mgmtFee:"1.75%", ter:"2.10%", settle:"T+3" },
+];
+const SC_STATUS_TAG = { "运行中":"tag-green", "已停用":"tag-blue", "已终止":"tag-red" };
+
+function scRender() {
+  const body = document.getElementById("scBody");
+  if (!body) return;
+  const kw = document.getElementById("scSearch")?.value.trim().toLowerCase() || "";
+  const ccy = document.getElementById("scCcy")?.value || "";
+  const st = document.getElementById("scSt")?.value || "";
+  const rows = SC_RECORDS.filter(r => {
+    const match = !kw || r.fund.toLowerCase().includes(kw) || r.className.toLowerCase().includes(kw) || r.vpid.toLowerCase().includes(kw) || r.isin.toLowerCase().includes(kw);
+    const matchCcy = !ccy || r.ccy === ccy;
+    const matchSt = !st || r.status === st;
+    return match && matchCcy && matchSt;
+  });
+  body.innerHTML = rows.length === 0
+    ? `<tr><td colspan="12" class="muted" style="text-align:center;padding:32px">暂无符合条件的份额类别</td></tr>`
+    : rows.map(r => {
+      const stTag = `<span class="tag ${SC_STATUS_TAG[r.status] || 'tag-gray'}">${r.status}</span>`;
+      return `<tr>
+        <td><span class="cell-code">${r.fund}</span></td>
+        <td><div class="cell-name">${r.className}</div></td>
+        <td class="cell-muted">${r.vpid}</td>
+        <td class="cell-muted">${r.isin}</td>
+        <td>${r.ccy}</td>
+        <td>${stTag}</td>
+        <td class="cell-muted">${r.launch}</td>
+        <td class="cell-muted">${r.cutoff}</td>
+        <td>${r.freq}</td>
+        <td class="cell-muted">${r.mgmtFee}</td>
+        <td class="cell-muted">${r.settle}</td>
+        <td class="right"><button class="btn btn-secondary btn-sm" onclick="scOpenDetail('${r.vpid}')">查看</button></td>
+      </tr>`;
+    }).join("");
+}
+
+function scOpenModal() { document.getElementById("scModal").classList.add("show"); document.body.style.overflow = "hidden"; }
+function scCloseModal() { document.getElementById("scModal").classList.remove("show"); document.body.style.overflow = ""; }
+function scOpenDetail(id) { alert("查看份额类别详情：" + id); }
+function scSwitchTab(tab) {
+  document.querySelectorAll(".sc-tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".sc-panel").forEach(p => p.classList.remove("active"));
+  document.querySelector(".sc-tab[data-tab='" + tab + "']").classList.add("active");
+  document.getElementById("scPanel-" + tab).classList.add("active");
+}
+
+// --- Lifecycle ---
+const LC_FUNDS = [
+  { code:"VP0010", name:"Value Partners Classic Fund", phase:"运作中", phaseDate:"1993/04/01" },
+  { code:"VP0021", name:"Value Partners High-Dividend Stocks Fund", phase:"运作中", phaseDate:"2005/08/15" },
+  { code:"VP0033", name:"Value Partners China A-Share Fund", phase:"运作中", phaseDate:"2010/11/22" },
+  { code:"VP0045", name:"Value Partners Balanced Fund", phase:"募集期", phaseDate:"2024/03/01" },
+  { code:"VP0056", name:"Value Partners Bond Fund", phase:"清盘中", phaseDate:"2023/01/15" },
+];
+const LC_PHASES = ["申请提交","授权","募集","成立","运作","封闭","清盘"];
+const LC_TIMELINE = [
+  { phase:"申请提交", date:"1992/11/01", actor:"产品团队", note:"内部审批完成，提交监管申请" },
+  { phase:"授权", date:"1993/02/15", actor:"SFC", note:"获取监管授权" },
+  { phase:"募集", date:"1993/03/01", actor:"销售团队", note:"首次发售期（IOP），募集目标1亿美元" },
+  { phase:"成立", date:"1993/04/01", actor:"行政管理人", note:"满足成立条件，正式运作" },
+  { phase:"运作", date:"1993/04/01", actor:"—", note:"进入正常运作状态" },
+];
+
+function lcRender() {
+  const body = document.getElementById("lcBody");
+  if (!body) return;
+  const rows = LC_FUNDS.map(f => {
+    const ph = f.phase;
+    const phTag = ph === "运作中" ? "tag-green" : ph === "募集期" ? "tag-blue" : ph === "清盘中" ? "tag-red" : "tag-gray";
+    return `<tr style="cursor:pointer" onclick="lcShowDetail('${f.code}')">
+      <td><span class="cell-code">${f.code}</span></td>
+      <td class="cell-name">${f.name}</td>
+      <td><span class="tag ${phTag}">${ph}</span></td>
+      <td class="cell-muted">${f.phaseDate}</td>
+      <td class="right"><button class="btn btn-ghost btn-sm">详情</button></td>
+    </tr>`;
+  }).join("");
+  body.innerHTML = rows;
+}
+
+function lcShowDetail(code) {
+  const fund = LC_FUNDS.find(f => f.code === code);
+  if (!fund) return;
+  const titleEl = document.getElementById("lcDetailTitle");
+  if (titleEl) titleEl.textContent = fund.code + " — " + fund.name;
+  const body = document.getElementById("lcTimelineBody");
+  if (!body) return;
+  body.innerHTML = LC_TIMELINE.map((t, i) => {
+    const isLast = i === LC_TIMELINE.length - 1;
+    const isActive = t.phase === fund.phase;
+    return `<tr>
+      <td class="cell-muted">${t.date}</td>
+      <td><span class="tag ${isActive ? 'tag-green' : 'tag-gray'}">${t.phase}</span></td>
+      <td>${t.actor}</td>
+      <td class="cell-muted">${t.note}</td>
+    </tr>`;
+  }).join("");
+  document.getElementById("lcDetail").style.display = "";
+}
+
+function lcCloseDetail() { document.getElementById("lcDetail").style.display = "none"; }
+
+// --- Fee Structure ---
+const FEE_RECORDS = [
+  { fund:"VP0010", class:"A类 美元 ACC", feeType:"管理费", rate:"1.25%", minAmt:"—", maxAmt:"—", effective:"1993/04/01" },
+  { fund:"VP0010", class:"A类 美元 ACC", feeType:"表现费", rate:"—", minAmt:"—", maxAmt:"高水位 10%", effective:"1993/04/01" },
+  { fund:"VP0010", class:"A类 美元 ACC", feeType:"申购费", rate:"3.00%", minAmt:"USD 10,000", maxAmt:"USD 5,000,000", effective:"1993/04/01" },
+  { fund:"VP0010", class:"A类 美元 ACC", feeType:"赎回费", rate:"0.50%", minAmt:"—", maxAmt:"—", effective:"1993/04/01" },
+  { fund:"VP0010", class:"A类 美元 ACC", feeType:"转换费", rate:"1.00%", minAmt:"—", maxAmt:"—", effective:"1993/04/01" },
+  { fund:"VP0021", class:"A类 美元 ACC", feeType:"管理费", rate:"1.50%", minAmt:"—", maxAmt:"—", effective:"2005/08/15" },
+  { fund:"VP0021", class:"A类 美元 ACC", feeType:"表现费", rate:"—", minAmt:"—", maxAmt:"高水位 15%", effective:"2005/08/15" },
+  { fund:"VP0021", class:"A类 美元 ACC", feeType:"申购费", rate:"5.00%", minAmt:"USD 5,000", maxAmt:"USD 10,000,000", effective:"2005/08/15" },
+  { fund:"VP0045", class:"A类 美元 ACC", feeType:"管理费", rate:"0.85%", minAmt:"—", maxAmt:"—", effective:"2024/03/01" },
+  { fund:"VP0045", class:"A类 美元 ACC", feeType:"申购费", rate:"0%", minAmt:"USD 100,000", maxAmt:"—", effective:"2024/03/01" },
+];
+const FEE_TYPE_TAG = { "管理费":"tag-green", "表现费":"tag-blue", "申购费":"tag-gray", "赎回费":"tag-gray", "转换费":"tag-gray" };
+
+function feeRender() {
+  const body = document.getElementById("feeBody");
+  if (!body) return;
+  body.innerHTML = FEE_RECORDS.map(f => {
+    const tTag = `<span class="tag ${FEE_TYPE_TAG[f.feeType] || 'tag-gray'}">${f.feeType}</span>`;
+    return `<tr>
+      <td><span class="cell-code">${f.fund}</span></td>
+      <td class="cell-name">${f.class}</td>
+      <td>${tTag}</td>
+      <td class="cell-muted">${f.rate}</td>
+      <td class="cell-muted">${f.minAmt}</td>
+      <td class="cell-muted">${f.maxAmt}</td>
+      <td class="cell-muted">${f.effective}</td>
+      <td class="right"><button class="btn btn-ghost btn-sm">编辑</button></td>
+    </tr>`;
+  }).join("");
+}
+
 // ========== Config Data ==========
 const CFG_USERS = [
   { id:"U001", name:"David",  dept:"港股研究",  roles:["研究员"],            analyst:"是（地产/金融）", status:"启用" },
@@ -861,8 +1057,8 @@ function buildContent(key) {
   if (key === 'stock-pool') return buildStockPool();
   if (key === 'portfolio') return buildPortfolio();
   if (key === 'config') return buildConfig();
-  if (key === 'share-class') return '<div class="page-header"><div><h1 class="page-title">份额类别</h1><p class="page-subtitle">ISIN · 货币 · 费率结构</p></div></div>';
-  if (key === 'lifecycle') return '<div class="page-header"><div><h1 class="page-title">产品生命周期</h1><p class="page-subtitle">募集 · 成立 · 开放 · 封闭 · 清盘</p></div></div>';
+  if (key === 'share-class') return buildShareClass();
+  if (key === 'lifecycle') return buildLifecycle();
   return '<div class="page-header"><div><h1 class="page-title">页面建设中</h1></div></div>';
 }
 
@@ -923,12 +1119,47 @@ function buildConfig() {
 }
 
 function buildProductManagement() {
-  const statusTag = (s) => `<span class="tag ${STATUS_COLORS[s] || 'tag-gray'}">${s}</span>`;
-  const rows = PRODUCTS.map(p => `<tr><td class="cell-code">${p.code}</td><td class="cell-name">${p.name}</td><td>${p.type}</td><td>${statusTag(p.status)}</td><td class="cell-muted" style="font-variant-numeric:tabular-nums">${p.date}</td><td>${p.currency}</td><td>${p.manager}</td><td><button class="btn btn-secondary btn-sm">查看</button></td></tr>`).join('');
-  return `<div class="page-header"><div><h1 class="page-title">Product Management</h1><p class="page-subtitle">Manage fund masterdata, share classes and lifecycle</p></div><button class="btn btn-primary" onclick="alert('新建产品')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Product</button></div>
-    <div class="card"><div class="card-body"><div class="filter-bar"><div class="form-group"><label class="form-label">Fund Code</label><input type="text" class="form-control" placeholder="e.g. VP0001"></div><div class="form-group"><label class="form-label">Fund Name</label><input type="text" class="form-control" placeholder="Search name..."></div><div class="form-group"><label class="form-label">Fund Type</label><select class="form-control"><option value="">All Types</option><option>SFC-UT</option><option>SFC-OFC</option><option>SFC-Cayman</option><option>Private Fund</option></select></div><div class="form-group"><label class="form-label">Status</label><select class="form-control"><option value="">All Status</option><option>Active</option><option>In Offering</option><option>In Liquidation</option></select></div><div class="filter-actions"><button class="btn btn-secondary">Reset</button><button class="btn btn-primary">Search</button></div></div></div></div>
-    <div class="card"><div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Fund Code</th><th>Fund Name</th><th>Type</th><th>Status</th><th>Launch Date</th><th>Base Currency</th><th>Fund Manager</th><th></th></tr></thead><tbody>${rows}</tbody></table><div class="pagination-bar"><span class="pagination-info">Showing 1-5 of 24 products</span><div class="pagination"><button class="page-btn" disabled>←</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">→</button></div></div></div></div>`;
+  const rows = PRODUCTS.map(p => {
+    const stTag = `<span class="tag ${PROD_STATUS_TAG[p.status] || 'tag-gray'}">${p.status}</span>`;
+    return `<tr>
+      <td><span class="cell-code">${p.code}</span></td>
+      <td><div class="cell-name">${p.name}</div></td>
+      <td>${p.type}</td>
+      <td>${p.domicile}</td>
+      <td>${stTag}</td>
+      <td class="cell-muted" style="font-variant-numeric:tabular-nums">${p.date}</td>
+      <td>${p.currency}</td>
+      <td>${p.manager}</td>
+      <td class="right"><button class="btn btn-secondary btn-sm" onclick="prodOpenDetail('${p.code}')">查看</button></td>
+    </tr>`;
+  }).join('');
+  return `<div class="page-header">
+    <div><h1 class="page-title">产品管理</h1><p class="page-subtitle">基金主数据 · 份额类别 · 产品生命周期</p></div>
+    <button class="btn btn-primary" onclick="prodOpenNew()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      新建产品
+    </button>
+  </div>
+  <div class="card"><div class="card-body"><div class="filter-bar">
+    <div class="form-group"><label class="form-label">基金代码</label><input type="text" class="form-control" id="prodSearchCode" placeholder="如 VP0010"></div>
+    <div class="form-group"><label class="form-label">基金名称</label><input type="text" class="form-control" id="prodSearchName" placeholder="搜索名称..."></div>
+    <div class="form-group"><label class="form-label">基金类型</label><select class="form-control" id="prodSearchType"><option value="">全部类型</option>${PROD_TYPE_OPTIONS.map(t => `<option>${t}</option>`).join('')}</select></div>
+    <div class="form-group"><label class="form-label">注册地</label><select class="form-control" id="prodSearchDom"><option value="">全部</option><option>香港</option><option>开曼</option><option>卢森堡</option><option>爱尔兰</option></select></div>
+    <div class="form-group"><label class="form-label">状态</label><select class="form-control" id="prodSearchSt"><option value="">全部状态</option><option>运作中</option><option>募集中</option><option>已停用</option><option>已终止</option><option>清盘中</option></select></div>
+    <div class="filter-actions"><button class="btn btn-secondary btn-sm" onclick="prodResetFilter()">重置</button><button class="btn btn-primary btn-sm" onclick="prodDoFilter()">搜索</button></div>
+  </div></div></div>
+  <div class="card"><div style="overflow-x:auto;">
+    <table class="data-table"><thead><tr><th>基金代码</th><th>基金名称</th><th>基金类型</th><th>注册地</th><th>状态</th><th>成立日期</th><th>基础货币</th><th>管理人</th><th></th></tr></thead>
+    <tbody id="prodBody">${rows}</tbody>
+    </table>
+    <div class="pagination-bar"><span class="pagination-info">共 ${PRODUCTS.length} 条</span><div class="pagination"><button class="page-btn" disabled>←</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">→</button></div></div>
+  </div></div>`;
 }
+
+function prodOpenDetail(code) { alert("查看产品详情：" + code); }
+function prodOpenNew() { alert("原型：打开新建产品弹层"); }
+function prodResetFilter() { document.getElementById("prodSearchCode").value=""; document.getElementById("prodSearchName").value=""; document.getElementById("prodSearchType").value=""; document.getElementById("prodSearchDom").value=""; document.getElementById("prodSearchSt").value=""; }
+function prodDoFilter() { alert("原型：按条件筛选"); }
 
 function buildIndustry() {
   return `<div class="page-header"><div><h1 class="page-title">行业配置</h1><p class="page-subtitle">最近更新：2026-08-12　|　主数据维护</p></div></div>
