@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VPBC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --vp-green: #20A06E;
+      --vp-green-dark: #178A5C;
+      --vp-green-light: #E8F5EE;
+      --vp-lime: #BDD646;
+      --vp-red: #B23A48;
+      --vp-mint-50: #F2F8F4;
+      --vp-white: #FFFFFF;
+      --vp-gray-900: #1A1A1A;
+      --vp-gray-700: #4A4A4A;
+      --vp-gray-500: #737373;
+      --vp-gray-300: #D1D5DB;
+      --vp-gray-100: #F3F4F6;
+      --vp-border: #E5E7EB;
+      --topbar-height: 52px;
+      --menu-width: 180px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Open Sans', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background-color: var(--vp-mint-50);
+      color: var(--vp-gray-900);
+      font-size: 14px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top Navigation Bar ── */
+    .topnav {
+      height: var(--topbar-height);
+      background-color: var(--vp-gray-900);
+      display: flex;
+      align-items: stretch;
+      flex-shrink: 0;
+      z-index: 200;
+    }
+
+    .topnav-logo {
+      width: 220px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+
+    .topnav-logo-mark {
+      width: 26px;
+      height: 26px;
+      background: linear-gradient(135deg, var(--vp-green) 0%, var(--vp-lime) 100%);
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .topnav-logo-text {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--vp-white);
+    }
+
+    .topnav-menus {
+      display: flex;
+      align-items: stretch;
+    }
+
+    /* First-level menu item */
+    .topmenu {
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      color: rgba(255,255,255,0.65);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      transition: color 0.15s, background 0.15s;
+      user-select: none;
+      position: relative;
+    }
+
+    .topmenu:hover { color: #fff; background: rgba(255,255,255,0.06); }
+    .topmenu.active { color: #fff; background: rgba(255,255,255,0.08); }
+
+    .topmenu-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 180px;
+      background: var(--vp-white);
+      border: 1px solid var(--vp-border);
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      z-index: 300;
+      overflow: hidden;
+    }
+
+    .topmenu:hover .topmenu-dropdown,
+    .topmenu.open .topmenu-dropdown {
+      display: block;
+    }
+
+    .submenu-item {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--vp-gray-700);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .submenu-item:hover { background: var(--vp-green-light); color: var(--vp-green-dark); }
+    .submenu-item.has-tab { color: var(--vp-green); font-weight: 600; }
+
+    .topnav-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+    }
+
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--vp-green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* ── Tab Bar ── */
+    .tabbar {
+      background-color: var(--vp-white);
+      border-bottom: 1px solid var(--vp-border);
+      display: flex;
+      align-items: stretch;
+      height: 38px;
+      padding: 0 16px;
+      gap: 2px;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      font-size: 13px;
+      color: var(--vp-gray-500);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.15s;
+      user-select: none;
+    }
+
+    .tab:hover { color: var(--vp-gray-700); }
+    .tab.active { color: var(--vp-green); border-bottom-color: var(--vp-green); font-weight: 600; }
+
+    .tab-close {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      color: var(--vp-gray-400);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .tab-close:hover { background: var(--vp-gray-100); color: var(--vp-gray-700); }
+
+    /* ── Content Area ── */
+    .content {
+      flex: 1;
+      overflow: auto;
+      padding: 24px;
+    }
+
+    /* ── Placeholder for research system ── */
+    .placeholder-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--vp-gray-400);
+      gap: 12px;
+    }
+
+    .placeholder-panel svg { opacity: 0.3; }
+    .placeholder-panel p { font-size: 15px; }
+
+    /* ── Light dismiss for dropdown ── */
+    .topmenu { position: relative; }
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="topnav">
+    <div class="topnav-logo">
+      <div class="topnav-logo-mark"></div>
+      <div class="topnav-logo-text">Value Partners</div>
+    </div>
+
+    <div class="topnav-menus">
+      <!-- 研究管理 — no sub menus, just open -->
+      <div class="topmenu" id="menu-research">
+        研究管理
+      </div>
+
+      <!-- 产品系统 — has sub menus -->
+      <div class="topmenu" id="menu-product" onclick="toggleProductMenu()">
+        产品系统
+        <div class="topmenu-dropdown">
+          <div class="submenu-item" onclick="openTab('product-management', '产品管理', event)">产品管理</div>
+          <div class="submenu-item" onclick="openTab('product-lifecycle', '产品生命周期', event)">产品生命周期</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topnav-right">
+      <div class="user-chip">
+        <div class="user-avatar">KW</div>
+        <span>Kyra Wang</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Tab Bar (dynamic) -->
+  <div class="tabbar" id="tabbar"></div>
+
+  <!-- Content Area -->
+  <div class="content" id="content"></div>
+
+<script>
+  // ── State ──
+  const openTabs = {}; // key -> { title, content }
+  let activeTabKey = null;
+
+  // ── Tab Management ──
+  function openTab(key, title, event) {
+    if (event) event.stopPropagation();
+
+    // If already open, just activate
+    if (openTabs[key]) {
+      activateTab(key);
+      return;
+    }
+
+    // Create tab
+    openTabs[key] = { title, content: buildContent(key, title) };
+    renderTabBar();
+    activateTab(key);
+  }
+
+  function closeTab(key, event) {
+    if (event) event.stopPropagation();
+    delete openTabs[key];
+    renderTabBar();
+
+    if (activeTabKey === key) {
+      // Activate nearest tab
+      const keys = Object.keys(openTabs);
+      activeTabKey = keys.length > 0 ? keys[keys.length - 1] : null;
+      if (activeTabKey) activateTab(key);
+      else renderContent('');
+    } else {
+      renderContent(openTabs[activeTabKey] ? openTabs[activeTabKey].content : '');
+    }
+  }
+
+  function activateTab(key) {
+    activeTabKey = key;
+    renderTabBar();
+    renderContent(openTabs[key].content);
+  }
+
+  function renderTabBar() {
+    const bar = document.getElementById('tabbar');
+    const keys = Object.keys(openTabs);
+    bar.innerHTML = keys.map(key => {
+      const isActive = key === activeTabKey;
+      return `<div class="tab ${isActive ? 'active' : ''}" onclick="activateTab('${key}')">
+        ${openTabs[key].title}
+        <span class="tab-close" onclick="closeTab('${key}', event)">×</span>
+      </div>`;
+    }).join('');
+  }
+
+  function renderContent(html) {
+    document.getElementById('content').innerHTML = html;
+  }
+
+  // ── Build content per tab ──
+  function buildContent(key, title) {
+    if (key === 'product-management') {
+      return `
+        <div style="max-width:1200px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <div>
+              <h2 style="font-size:22px;font-weight:600;">产品管理</h2>
+              <p style="color:#737373;font-size:13px;margin-top:4px;">管理基金主数据、份额类别和生命周期</p>
+            </div>
+            <button style="background:#20A06E;color:#fff;border:none;padding:8px 16px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;">
+              + 新增产品
+            </button>
+          </div>
+          <div style="background:#fff;border:1px solid #E5E7EB;border-radius:6px;padding:16px;margin-bottom:16px;">
+            <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:#4A4A4A;margin-bottom:4px;">基金代码</div>
+                <input style="height:34px;padding:0 12px;border:1px solid #E5E7EB;border-radius:4px;font-size:13px;width:140px;" placeholder="e.g. VP0010">
+              </div>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:#4A4A4A;margin-bottom:4px;">基金名称</div>
+                <input style="height:34px;padding:0 12px;border:1px solid #E5E7EB;border-radius:4px;font-size:13px;width:180px;" placeholder="搜索名称...">
+              </div>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:#4A4A4A;margin-bottom:4px;">基金类型</div>
+                <select style="height:34px;padding:0 12px;border:1px solid #E5E7EB;border-radius:4px;font-size:13px;">
+                  <option>全部类型</option>
+                </select>
+              </div>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:#4A4A4A;margin-bottom:4px;">状态</div>
+                <select style="height:34px;padding:0 12px;border:1px solid #E5E7EB;border-radius:4px;font-size:13px;">
+                  <option>全部状态</option>
+                </select>
+              </div>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:#4A4A4A;margin-bottom:4px;">注册地</div>
+                <select style="height:34px;padding:0 12px;border:1px solid #E5E7EB;border-radius:4px;font-size:13px;">
+                  <option>全部</option>
+                </select>
+              </div>
+              <div style="display:flex;gap:8px;margin-left:auto;">
+                <button style="padding:7px 14px;border:1px solid #E5E7EB;background:#fff;border-radius:4px;font-size:13px;cursor:pointer;">重置</button>
+                <button style="padding:7px 14px;border:none;background:#20A06E;color:#fff;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;">搜索</button>
+              </div>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #E5E7EB;border-radius:6px;overflow:hidden;">
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead>
+                <tr style="background:#F3F4F6;">
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">基金代码</th>
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">基金名称（EN）</th>
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">类型</th>
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">状态</th>
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">成立日期</th>
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">基础货币</th>
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">基金管理人</th>
+                  <th style="padding:10px 16px;text-align:right;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #E5E7EB;">
+                  <td style="padding:12px 16px;font-family:monospace;font-weight:600;color:#20A06E;">VP0010</td>
+                  <td style="padding:12px 16px;font-weight:500;">Value Partners Classic Fund</td>
+                  <td style="padding:12px 16px;">Equity Fund</td>
+                  <td style="padding:12px 16px;"><span style="background:#E8F5EE;color:#20A06E;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;">Active</span></td>
+                  <td style="padding:12px 16px;font-variant-numeric:tabular-nums;">1993/04/01</td>
+                  <td style="padding:12px 16px;">USD</td>
+                  <td style="padding:12px 16px;">Value Partners Group</td>
+                  <td style="padding:12px 16px;text-align:right;"><button style="padding:5px 12px;border:1px solid #E5E7EB;background:#fff;border-radius:4px;font-size:12px;cursor:pointer;">查看</button></td>
+                </tr>
+                <tr style="border-bottom:1px solid #E5E7EB;">
+                  <td style="padding:12px 16px;font-family:monospace;font-weight:600;color:#20A06E;">VP0021</td>
+                  <td style="padding:12px 16px;font-weight:500;">Value Partners High-Dividend Stocks Fund</td>
+                  <td style="padding:12px 16px;">Equity Fund</td>
+                  <td style="padding:12px 16px;"><span style="background:#E8F5EE;color:#20A06E;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;">Active</span></td>
+                  <td style="padding:12px 16px;font-variant-numeric:tabular-nums;">2005/08/15</td>
+                  <td style="padding:12px 16px;">USD</td>
+                  <td style="padding:12px 16px;">Value Partners Group</td>
+                  <td style="padding:12px 16px;text-align:right;"><button style="padding:5px 12px;border:1px solid #E5E7EB;background:#fff;border-radius:4px;font-size:12px;cursor:pointer;">查看</button></td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 16px;font-family:monospace;font-weight:600;color:#20A06E;">VP0033</td>
+                  <td style="padding:12px 16px;font-weight:500;">Value Partners China A-Share Fund</td>
+                  <td style="padding:12px 16px;">Equity Fund</td>
+                  <td style="padding:12px 16px;"><span style="background:#E8F5EE;color:#20A06E;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;">Active</span></td>
+                  <td style="padding:12px 16px;font-variant-numeric:tabular-nums;">2010/11/22</td>
+                  <td style="padding:12px 16px;">CNY</td>
+                  <td style="padding:12px 16px;">Value Partners Group</td>
+                  <td style="padding:12px 16px;text-align:right;"><button style="padding:5px 12px;border:1px solid #E5E7EB;background:#fff;border-radius:4px;font-size:12px;cursor:pointer;">查看</button></td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="padding:14px 16px;border-top:1px solid #E5E7EB;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:13px;color:#737373;">显示 1-3 条，共 24 条产品</span>
+              <div style="display:flex;gap:4px;">
+                <button style="padding:5px 10px;border:1px solid #E5E7EB;background:#fff;border-radius:4px;font-size:12px;cursor:not-allowed;" disabled>←</button>
+                <button style="padding:5px 10px;border:1px solid #20A06E;background:#20A06E;color:#fff;border-radius:4px;font-size:12px;font-weight:600;">1</button>
+                <button style="padding:5px 10px;border:1px solid #E5E7EB;background:#fff;border-radius:4px;font-size:12px;">2</button>
+                <button style="padding:5px 10px;border:1px solid #E5E7EB;background:#fff;border-radius:4px;font-size:12px;">3</button>
+                <button style="padding:5px 10px;border:1px solid #E5E7EB;background:#fff;border-radius:4px;font-size:12px;">→</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    if (key === 'product-lifecycle') {
+      return `
+        <div style="max-width:900px;">
+          <div style="margin-bottom:20px;">
+            <h2 style="font-size:22px;font-weight:600;">产品生命周期</h2>
+            <p style="color:#737373;font-size:13px;margin-top:4px;">Track fund lifecycle status transitions and key dates</p>
+          </div>
+          <div style="background:#fff;border:1px solid #E5E7EB;border-radius:6px;overflow:hidden;">
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead>
+                <tr style="background:#F3F4F6;">
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">基金代码</th>
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">基金名称</th>
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">当前状态</th>
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">成立日期</th>
+                  <th style="padding:10px 16px;text-align:left;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">终止日期</th>
+                  <th style="padding:10px 16px;text-align:right;font-weight:600;color:#4A4A4A;border-bottom:1px solid #E5E7EB;">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #E5E7EB;">
+                  <td style="padding:12px 16px;font-family:monospace;font-weight:600;color:#20A06E;">VP0010</td>
+                  <td style="padding:12px 16px;font-weight:500;">Value Partners Classic Fund</td>
+                  <td style="padding:12px 16px;"><span style="background:#E8F5EE;color:#20A06E;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;">Active</span></td>
+                  <td style="padding:12px 16px;font-variant-numeric:tabular-nums;">1993/04/01</td>
+                  <td style="padding:12px 16px;color:#737373;">—</td>
+                  <td style="padding:12px 16px;text-align:right;"><button style="padding:5px 12px;border:1px solid #E5E7EB;background:#fff;border-radius:4px;font-size:12px;cursor:pointer;">查看</button></td>
+                </tr>
+                <tr style="border-bottom:1px solid #E5E7EB;">
+                  <td style="padding:12px 16px;font-family:monospace;font-weight:600;color:#20A06E;">VP0021</td>
+                  <td style="padding:12px 16px;font-weight:500;">Value Partners High-Dividend Stocks Fund</td>
+                  <td style="padding:12px 16px;"><span style="background:#E8F5EE;color:#20A06E;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;">Active</span></td>
+                  <td style="padding:12px 16px;font-variant-numeric:tabular-nums;">2005/08/15</td>
+                  <td style="padding:12px 16px;color:#737373;">—</td>
+                  <td style="padding:12px 16px;text-align:right;"><button style="padding:5px 12px;border:1px solid #E5E7EB;background:#fff;border-radius:4px;font-size:12px;cursor:pointer;">查看</button></td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 16px;font-family:monospace;font-weight:600;color:#20A06E;">VP0068</td>
+                  <td style="padding:12px 16px;font-weight:500;">Value Partners Greater China Fund</td>
+                  <td style="padding:12px 16px;"><span style="background:#FCE8EA;color:#B23A48;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;">Liquidated</span></td>
+                  <td style="padding:12px 16px;font-variant-numeric:tabular-nums;">2001/06/30</td>
+                  <td style="padding:12px 16px;font-variant-numeric:tabular-nums;">2020/03/15</td>
+                  <td style="padding:12px 16px;text-align:right;"><button style="padding:5px 12px;border:1px solid #E5E7EB;background:#fff;border-radius:4px;font-size:12px;cursor:pointer;">查看</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+
+    return '<div class="placeholder-panel"><p>此页面正在建设中</p></div>';
+  }
+
+  // ── Toggle product system dropdown ──
+  function toggleProductMenu() {
+    document.getElementById('menu-product').classList.toggle('open');
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    const productMenu = document.getElementById('menu-product');
+    if (!productMenu.contains(e.target)) {
+      productMenu.classList.remove('open');
+    }
+  });
+
+  // Open product-management tab by default on load
+  document.addEventListener('DOMContentLoaded', function() {
+    openTab('product-management', '产品管理');
+  });
+</script>
+</body>
+</html>
