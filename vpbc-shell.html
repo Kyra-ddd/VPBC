@@ -280,11 +280,6 @@
     .lifecycle-step-item.active .lifecycle-step-circle { background: var(--vp-green); border-color: var(--vp-green); color: #fff; box-shadow: 0 0 0 4px var(--vp-green-light); }
     .lifecycle-step-label { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--vp-gray-500); text-align: center; }
     .lifecycle-step-item.done .lifecycle-step-label, .lifecycle-step-item.active .lifecycle-step-label { color: var(--vp-green); }
-    .lifecycle-step-date { font-size: 12px; color: var(--vp-gray-400); margin-top: 2px; }
-    .timeline-table { width: 100%; border-collapse: collapse; }
-    .timeline-table th { background: var(--vp-gray-100); color: var(--vp-gray-700); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--vp-border); font-size: 12px; }
-    .timeline-table td { padding: 12px 14px; border-bottom: 1px solid var(--vp-border); font-size: 13px; }
-    .timeline-table tr:last-child td { border-bottom: none; }
   </style>
 </head>
 <body>
@@ -325,7 +320,6 @@
       <div class="submenu open" id="submenu-product-center">
         <div class="submenu-item active" onclick="openTab('product-management', '产品管理')">产品管理</div>
         <div class="submenu-item" onclick="openTab('share-class', '份额类别')">份额类别</div>
-        <div class="submenu-item" onclick="openTab('lifecycle', '产品生命周期')">产品生命周期</div>
       </div>
     </div>
   </nav>
@@ -389,7 +383,6 @@ function renderContent(html) {
   if (activeTabKey === 'portfolio') { portRenderPortfolios(); portRenderShared(); portRenderHoldings(); portRenderRebalances(); portRenderIndicatorLib(); portRenderNavChart(); }
   if (activeTabKey === 'config') { cfgSwitchTab('users'); }
   if (activeTabKey === 'share-class') { scRender(); }
-  if (activeTabKey === 'lifecycle') { lcRender(); }
   if (activeTabKey === 'fee') { feeRender(); }
 }
 function updateBreadcrumb(text) { document.getElementById('topbarBreadcrumb').textContent = text; }
@@ -403,7 +396,7 @@ function toggleSubmenu(id) {
 
 function updateSidebarActive(key) {
   document.querySelectorAll('.submenu-item').forEach(el => el.classList.remove('active'));
-  const map = { 'industry':'industry', 'research-report':'research-report', 'stock-pool':'stock-pool', 'portfolio':'portfolio', 'config':'config', 'product-management':'product-management', 'share-class':'share-class', 'lifecycle':'lifecycle' };
+  const map = { 'industry':'industry', 'research-report':'research-report', 'stock-pool':'stock-pool', 'portfolio':'portfolio', 'config':'config', 'product-management':'product-management', 'share-class':'share-class' };
   if (key && map[key]) {
     document.querySelectorAll('.submenu-item').forEach(item => {
       if (item.getAttribute('onclick') && item.getAttribute('onclick').startsWith(`openTab('${map[key]}'`)) item.classList.add('active');
@@ -810,62 +803,6 @@ function scSwitchTab(tab) {
   document.getElementById("scPanel-" + tab).classList.add("active");
 }
 
-// --- Lifecycle ---
-const LC_FUNDS = [
-  { code:"VP0010", name:"Value Partners Classic Fund", phase:"运作中", phaseDate:"1993/04/01" },
-  { code:"VP0021", name:"Value Partners High-Dividend Stocks Fund", phase:"运作中", phaseDate:"2005/08/15" },
-  { code:"VP0033", name:"Value Partners China A-Share Fund", phase:"运作中", phaseDate:"2010/11/22" },
-  { code:"VP0045", name:"Value Partners Balanced Fund", phase:"募集期", phaseDate:"2024/03/01" },
-  { code:"VP0056", name:"Value Partners Bond Fund", phase:"清盘中", phaseDate:"2023/01/15" },
-];
-const LC_PHASES = ["申请提交","授权","募集","成立","运作","封闭","清盘"];
-const LC_TIMELINE = [
-  { phase:"申请提交", date:"1992/11/01", actor:"产品团队", note:"内部审批完成，提交监管申请" },
-  { phase:"授权", date:"1993/02/15", actor:"SFC", note:"获取监管授权" },
-  { phase:"募集", date:"1993/03/01", actor:"销售团队", note:"首次发售期（IOP），募集目标1亿美元" },
-  { phase:"成立", date:"1993/04/01", actor:"行政管理人", note:"满足成立条件，正式运作" },
-  { phase:"运作", date:"1993/04/01", actor:"—", note:"进入正常运作状态" },
-];
-
-function lcRender() {
-  const body = document.getElementById("lcBody");
-  if (!body) return;
-  const rows = LC_FUNDS.map(f => {
-    const ph = f.phase;
-    const phTag = ph === "运作中" ? "tag-green" : ph === "募集期" ? "tag-blue" : ph === "清盘中" ? "tag-red" : "tag-gray";
-    return `<tr style="cursor:pointer" onclick="lcShowDetail('${f.code}')">
-      <td><span class="cell-code">${f.code}</span></td>
-      <td class="cell-name">${f.name}</td>
-      <td><span class="tag ${phTag}">${ph}</span></td>
-      <td class="cell-muted">${f.phaseDate}</td>
-      <td class="right"><button class="btn btn-ghost btn-sm">详情</button></td>
-    </tr>`;
-  }).join("");
-  body.innerHTML = rows;
-}
-
-function lcShowDetail(code) {
-  const fund = LC_FUNDS.find(f => f.code === code);
-  if (!fund) return;
-  const titleEl = document.getElementById("lcDetailTitle");
-  if (titleEl) titleEl.textContent = fund.code + " — " + fund.name;
-  const body = document.getElementById("lcTimelineBody");
-  if (!body) return;
-  body.innerHTML = LC_TIMELINE.map((t, i) => {
-    const isLast = i === LC_TIMELINE.length - 1;
-    const isActive = t.phase === fund.phase;
-    return `<tr>
-      <td class="cell-muted">${t.date}</td>
-      <td><span class="tag ${isActive ? 'tag-green' : 'tag-gray'}">${t.phase}</span></td>
-      <td>${t.actor}</td>
-      <td class="cell-muted">${t.note}</td>
-    </tr>`;
-  }).join("");
-  document.getElementById("lcDetail").style.display = "";
-}
-
-function lcCloseDetail() { document.getElementById("lcDetail").style.display = "none"; }
-
 // --- Fee Structure ---
 const FEE_RECORDS = [
   { fund:"VP0010", class:"A类 美元 ACC", feeType:"管理费", rate:"1.25%", minAmt:"—", maxAmt:"—", effective:"1993/04/01" },
@@ -1058,9 +995,258 @@ function buildContent(key) {
   if (key === 'portfolio') return buildPortfolio();
   if (key === 'config') return buildConfig();
   if (key === 'share-class') return buildShareClass();
-  if (key === 'lifecycle') return buildLifecycle();
   return '<div class="page-header"><div><h1 class="page-title">页面建设中</h1></div></div>';
 }
+
+function buildShareClass() {
+  return `<div class="page-header">
+    <div><h1 class="page-title">份额类别</h1><p class="page-subtitle">ISIN · 货币 · 费率结构 · 交易条款</p></div>
+    <button class="btn btn-primary" onclick="scOpenModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      新增份额类别
+    </button>
+  </div>
+  <div class="card"><div class="card-body"><div class="filter-bar">
+    <div class="form-group"><label class="form-label">基金代码</label><input type="text" class="form-control" id="scFundCode" placeholder="如 VP0010"></div>
+    <div class="form-group"><label class="form-label">ISIN</label><input type="text" class="form-control" id="scIsin" placeholder="如 HK0000012345"></div>
+    <div class="form-group"><label class="form-label">类别名称</label><input type="text" class="form-control" id="scName" placeholder="搜索名称..."></div>
+    <div class="form-group"><label class="form-label">货币</label><select class="form-control" id="scCcy"><option value="">全部货币</option><option>USD</option><option>HKD</option><option>CNY</option><option>CNH</option><option>EUR</option><option>GBP</option><option>JPY</option><option>SGD</option><option>CHF</option><option>AUD</option><option>CAD</option></select></div>
+    <div class="form-group"><label class="form-label">状态</label><select class="form-control" id="scSt"><option value="">全部状态</option><option>运行中</option><option>已停用</option><option>已终止</option></select></div>
+    <div class="filter-actions"><button class="btn btn-secondary btn-sm" onclick="scResetFilter()">重置</button><button class="btn btn-primary btn-sm" onclick="scDoFilter()">搜索</button></div>
+  </div></div></div>
+  <div class="card"><div style="overflow-x:auto;">
+    <table class="data-table"><thead><tr><th>基金代码</th><th>类别名称</th><th>VPFS Class ID</th><th>ISIN</th><th>货币</th><th>状态</th><th>成立日期</th><th>截止时间</th><th>交易频率</th><th>管理费（%）</th><th>TER（%）</th><th>赎回结算</th><th></th></tr></thead>
+    <tbody id="scBody"></tbody>
+    </table>
+    <div class="pagination-bar"><span class="pagination-info">共 ${SC_RECORDS.length} 条</span><div class="pagination"><button class="page-btn" disabled>←</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">→</button></div></div>
+  </div></div>
+
+  <!-- 新增/编辑弹窗 -->
+  <div class="modal-mask" id="scModal"><div class="modal-overlay" onclick="if(event.target===this)scCloseModal()"></div>
+    <div class="modal" onclick="event.stopPropagation()" style="max-width:980px">
+      <div class="modal-header">
+        <div class="modal-title" id="scModalTitle">新增份额类别</div>
+        <button class="modal-close" onclick="scCloseModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="modal-body" style="max-height:75vh;overflow-y:auto;padding:0">
+        <div class="sc-tabs">
+          <div class="sc-tab active" data-tab="sc-fund" onclick="scSwitchTab('sc-fund')">基金信息</div>
+          <div class="sc-tab" data-tab="sc-class" onclick="scSwitchTab('sc-class')">类别信息</div>
+          <div class="sc-tab" data-tab="sc-dealing" onclick="scSwitchTab('sc-dealing')">交易与估值</div>
+          <div class="sc-tab" data-tab="sc-fees" onclick="scSwitchTab('sc-fees')">费率</div>
+        </div>
+
+        <!-- Tab1: 基金信息 -->
+        <div class="sc-panel active" id="scPanel-sc-fund">
+          <div class="sc-section-title">基金信息</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group">
+              <label class="sc-form-label">基金代码 <span class="req">*</span></label>
+              <select class="sc-input" required><option value="">请选择基金</option><option>VP0010 — Value Partners 经典基金</option><option>VP0021 — Value Partners 高股息股票基金</option><option>VP0033 — Value Partners A股基金</option><option>VP0045 — Value Partners 平衡基金</option><option>VP0056 — Value Partners 债券基金</option></select>
+            </div>
+            <div class="sc-form-group span-2">
+              <label class="sc-form-label">基金名称（EN）</label>
+              <input type="text" class="sc-input" disabled placeholder="选择基金后自动填充">
+            </div>
+            <div class="sc-form-group span-2">
+              <label class="sc-form-label">基金名称（繁中）</label>
+              <input type="text" class="sc-input" disabled placeholder="选择基金后自动填充">
+            </div>
+            <div class="sc-form-group span-2">
+              <label class="sc-form-label">基金名称（简中）</label>
+              <input type="text" class="sc-input" disabled placeholder="选择基金后自动填充">
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab2: 类别信息 -->
+        <div class="sc-panel" id="scPanel-sc-class">
+          <div class="sc-section-title">类别标识</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group">
+              <label class="sc-form-label">VPFS Class ID <span class="req">*</span></label>
+              <input type="text" class="sc-input" placeholder="如 VP0010-A-USD-ACC" required>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">类别状态 <span class="req">*</span></label>
+              <select class="sc-input" required><option value="">请选择状态</option><option>运行中</option><option>已停用</option><option>已终止</option></select>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">类别货币 <span class="req">*</span></label>
+              <select class="sc-input" required><option value="">请选择货币</option><option>USD</option><option>HKD</option><option>CNY</option><option>CNH（离岸人民币）</option><option>EUR</option><option>GBP</option><option>JPY</option><option>SGD</option><option>CHF</option><option>AUD</option><option>CAD</option><option>RMB</option></select>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">成立日期 <span class="req">*</span></label>
+              <input type="text" class="sc-input" placeholder="YYYY/MM/DD" required>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">IOP 截止日期</label>
+              <input type="text" class="sc-input" placeholder="YYYY/MM/DD">
+            </div>
+          </div>
+          <div class="sc-section-title" style="margin-top:20px">类别名称</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group span-2">
+              <label class="sc-form-label">类别名称（EN）<span class="req">*</span></label>
+              <input type="text" class="sc-input" placeholder="Official English name" required>
+            </div>
+            <div class="sc-form-group span-2">
+              <label class="sc-form-label">类别名称（繁中）<span class="req">*</span></label>
+              <input type="text" class="sc-input" placeholder="官方繁体中文名称" required>
+            </div>
+            <div class="sc-form-group span-2">
+              <label class="sc-form-label">类别名称（简中）<span class="req">*</span></label>
+              <input type="text" class="sc-input" placeholder="官方简体中文名称" required>
+            </div>
+          </div>
+          <div class="sc-section-title" style="margin-top:20px">标识码</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group"><label class="sc-form-label">ISIN Code</label><input type="text" class="sc-input" placeholder="如 HK0000012345" maxlength="12" style="font-family:monospace"></div>
+            <div class="sc-form-group"><label class="sc-form-label">CUSIP</label><input type="text" class="sc-input" placeholder="9位码" maxlength="9" style="font-family:monospace"></div>
+            <div class="sc-form-group"><label class="sc-form-label">SEDOL</label><input type="text" class="sc-input" placeholder="7位码" maxlength="7" style="font-family:monospace"></div>
+            <div class="sc-form-group"><label class="sc-form-label">Bloomberg Ticker</label><input type="text" class="sc-input" placeholder="如 VP0010A UH"></div>
+            <div class="sc-form-group"><label class="sc-form-label">BBG ID Equity</label><input type="text" class="sc-input" placeholder="如 EQ0010A"></div>
+            <div class="sc-form-group"><label class="sc-form-label">股票代码</label><input type="text" class="sc-input" placeholder="1-5位数字" maxlength="5" style="font-family:monospace"></div>
+          </div>
+        </div>
+
+        <!-- Tab3: 交易与估值 -->
+        <div class="sc-panel" id="scPanel-sc-dealing">
+          <div class="sc-section-title">交易条款</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group">
+              <label class="sc-form-label">分配政策 <span class="req">*</span></label>
+              <select class="sc-input" required><option value="">请选择</option><option>每月分配</option><option>每季分配</option><option>每年分配</option><option>不分配（Accumulation）</option></select>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">对冲 <span class="req">*</span></label>
+              <select class="sc-input" required><option value="">请选择</option><option value="no">否</option><option value="yes">是</option></select>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">对冲货币</label>
+              <select class="sc-input"><option value="">自动（同类货币）</option><option>USD</option><option>HKD</option><option>CNY</option><option>EUR</option><option>GBP</option></select>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">单位精确位数 <span class="req">*</span></label>
+              <select class="sc-input" required><option value="">请选择</option><option>2位小数</option><option>3位小数</option><option>4位小数</option></select>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">净值精确位数 <span class="req">*</span></label>
+              <select class="sc-input" required><option value="">请选择</option><option>0位小数</option><option>2位小数</option><option>4位小数</option></select>
+            </div>
+          </div>
+          <div class="sc-section-title" style="margin-top:20px">业务日与日历</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group span-3">
+              <label class="sc-form-label">业务日定义 <span class="req">*</span></label>
+              <input type="text" class="sc-input" placeholder="如：非香港周六、日及公众假期" required>
+            </div>
+            <div class="sc-form-group span-3">
+              <label class="sc-form-label">业务日历</label>
+              <div class="sc-checkbox-group">
+                <label><input type="checkbox" value="香港"> 香港</label>
+                <label><input type="checkbox" value="台湾"> 台湾</label>
+                <label><input type="checkbox" value="日本"> 日本</label>
+                <label><input type="checkbox" value="中国大陆"> 中国大陆 — 交易所</label>
+                <label><input type="checkbox" value="中国大陆银行"> 中国大陆 — 银行</label>
+                <label><input type="checkbox" value="爱尔兰"> 爱尔兰</label>
+                <label><input type="checkbox" value="英国"> 英国</label>
+                <label><input type="checkbox" value="相关市场（章程）"> 相关市场（按章程）</label>
+              </div>
+            </div>
+          </div>
+          <div class="sc-section-title" style="margin-top:20px">交易与估值时间</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group">
+              <label class="sc-form-label">截止时间 <span class="req">*</span></label>
+              <div class="sc-time-group"><input type="time" class="sc-input" value="17:00"><select class="sc-input"><option>HKT</option><option>IRL</option><option>CHN</option><option>JPN</option><option>GBR</option><option>USA</option><option>SGP</option><option>CHE</option></select></div>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">交易截止 <span class="req">*</span></label>
+              <div class="sc-time-group"><input type="time" class="sc-input" value="16:00"><select class="sc-input"><option>HKT</option><option>IRL</option><option>CHN</option><option>JPN</option><option>GBR</option><option>USA</option><option>SGP</option><option>CHE</option></select></div>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">估值时点 <span class="req">*</span></label>
+              <div class="sc-time-group"><input type="time" class="sc-input" value="09:30"><select class="sc-input"><option>IRL</option><option>HKT</option><option>CHN</option><option>JPN</option><option>GBR</option><option>USA</option><option>SGP</option><option>CHE</option></select></div>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">交易频率 <span class="req">*</span></label>
+              <select class="sc-input" required><option value="">请选择</option><option>每日</option><option>每周</option><option>每月</option><option>每季</option><option>每年</option></select>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">估值频率 <span class="req">*</span></label>
+              <select class="sc-input" required><option value="">请选择</option><option>每日</option><option>每周</option><option>每月</option><option>每季</option><option>每年</option></select>
+            </div>
+          </div>
+          <div class="sc-section-title" style="margin-top:20px">结算与定价</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group">
+              <label class="sc-form-label">申购结算（T+）<span class="req">*</span></label>
+              <input type="number" class="sc-input" value="3" min="0">
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">赎回结算（T+）<span class="req">*</span></label>
+              <input type="number" class="sc-input" value="3" min="0">
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">合同通知书发出日</label>
+              <input type="number" class="sc-input" placeholder="T+" min="0">
+            </div>
+            <div class="sc-form-group span-3">
+              <label class="sc-form-label">定价方法 <span class="req">*</span></label>
+              <div class="sc-checkbox-group">
+                <label><input type="checkbox" value="摊销"> 摊销（Amortization）</label>
+                <label><input type="checkbox" value="成本"> 成本（Cost）</label>
+                <label><input type="checkbox" value="市值计价"> 市值计价（Mark to Market）</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab4: 费率 -->
+        <div class="sc-panel" id="scPanel-sc-fees">
+          <div class="sc-section-title">申购与赎回</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group"><label class="sc-form-label">最低首次申购金额 <span class="req">*</span></label><input type="number" class="sc-input" placeholder="如 10000" min="0" required></div>
+            <div class="sc-form-group"><label class="sc-form-label">最低追加申购金额 <span class="req">*</span></label><input type="number" class="sc-input" placeholder="如 1000" min="0" required></div>
+            <div class="sc-form-group"><label class="sc-form-label">最低赎回金额</label><input type="number" class="sc-input" placeholder="如 500" min="0"></div>
+            <div class="sc-form-group"><label class="sc-form-label">最低持有量</label><input type="number" class="sc-input" placeholder="如 1000" min="0"></div>
+            <div class="sc-form-group"><label class="sc-form-label">赎回费（%）</label><input type="number" class="sc-input" placeholder="如 0.5" step="0.01" min="0"></div>
+          </div>
+          <div class="sc-section-title" style="margin-top:20px">管理费与表现费</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group"><label class="sc-form-label">管理费（%）</label><input type="number" class="sc-input" placeholder="如 1.25" step="0.01" min="0"></div>
+            <div class="sc-form-group"><label class="sc-form-label">表现费（%）</label><input type="number" class="sc-input" placeholder="如 15.00" step="0.01" min="0"></div>
+          </div>
+          <div class="sc-section-title" style="margin-top:20px">TER（总Expense比率）</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group"><label class="sc-form-label">最新 TER 日期</label><input type="text" class="sc-input" placeholder="YYYY/MM"></div>
+            <div class="sc-form-group"><label class="sc-form-label">最新 TER 比率（%）</label><input type="number" class="sc-input" placeholder="如 1.65" step="0.01" min="0"></div>
+          </div>
+          <div class="sc-section-title" style="margin-top:20px">财务年度与其他</div>
+          <div class="sc-form-grid">
+            <div class="sc-form-group">
+              <label class="sc-form-label">财务年度截止</label>
+              <select class="sc-input"><option value="">请选择</option><option>3月31日</option><option>6月30日</option><option>12月31日</option></select>
+            </div>
+            <div class="sc-form-group">
+              <label class="sc-form-label">证券借贷</label>
+              <select class="sc-input"><option value="">请选择</option><option>是</option><option>否</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sc-modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="scCloseModal()">取消</button>
+        <button type="button" class="btn btn-primary" onclick="scSave()">保存份额类别</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function scResetFilter() { document.getElementById("scFundCode").value=""; document.getElementById("scIsin").value=""; document.getElementById("scName").value=""; document.getElementById("scCcy").value=""; document.getElementById("scSt").value=""; scRender(); }
+function scDoFilter() { scRender(); }
+function scSave() { alert("原型：保存份额类别（已校验必填字段）"); scCloseModal(); }
 
 function buildConfig() {
   return `<div class="page-header"><div><h1 class="page-title">配置中心</h1><p class="page-subtitle">用户权限 · 角色管理 · 自定义选项</p></div></div>
