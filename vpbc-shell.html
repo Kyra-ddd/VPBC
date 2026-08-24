@@ -347,22 +347,33 @@ const openTabs = {};
 let activeTabKey = null;
 
 function openTab(key, title) {
-  if (openTabs[key]) { activateTab(key); return; }
-  openTabs[key] = { title, content: buildContent(key) };
-  renderTabBar();
-  activateTab(key);
+  if (openTabs[key]) { activateTab(key); }
+  else {
+    openTabs[key] = { title, content: buildContent(key) };
+    renderTabBar();
+    activateTab(key);
+  }
   updateSidebarActive(key);
+  if (location.hash !== '#' + key) location.hash = key;
 }
 
 function closeTab(key, event) {
   event.stopPropagation();
+  const isActive = activeTabKey === key;
   delete openTabs[key];
   renderTabBar();
-  if (activeTabKey === key) {
+  if (isActive) {
     const keys = Object.keys(openTabs);
     activeTabKey = keys.length > 0 ? keys[keys.length - 1] : null;
-    if (activeTabKey) activateTab(activeTabKey);
-    else { renderContent(''); updateBreadcrumb(''); }
+    if (activeTabKey) {
+      activateTab(activeTabKey);
+      location.hash = activeTabKey;
+    } else {
+      activeTabKey = null;
+      renderContent('');
+      updateBreadcrumb('');
+      history.replaceState(null, '', location.pathname + location.search);
+    }
   }
 }
 
@@ -2719,8 +2730,44 @@ function portDoCreate() {
 
 // ========== Init ==========
 document.addEventListener('DOMContentLoaded', function() {
-  openTab('industry', '行业配置');
+  window.addEventListener('hashchange', onHashChange);
+  const hash = location.hash.slice(1);
+  if (hash && hash !== 'industry') {
+    openTabByHash(hash);
+  } else {
+    openTab('industry', '行业配置');
+  }
 });
+
+function openTabByHash(key) {
+  const TITLE_MAP = {
+    'product-management': '产品管理',
+    'product-add': '新增产品',
+    'product-detail': '产品详情',
+    'share-class': '份额类别',
+    'share-class-add': '新增份额类别',
+    'industry': '行业配置',
+    'research-report': '研究报告',
+    'stock-pool': '股票池',
+    'portfolio': '模拟组合',
+    'config': '系统配置',
+    'fee': '费率结构',
+  };
+  const title = TITLE_MAP[key] || key;
+  openTab(key, title);
+}
+
+function onHashChange() {
+  const hash = location.hash.slice(1);
+  if (!hash) {
+    if (activeTabKey) closeTab(activeTabKey, { stopPropagation: function() {} });
+    return;
+  }
+  if (hash !== activeTabKey) {
+    if (openTabs[hash]) activateTab(hash);
+    else openTabByHash(hash);
+  }
+}
 </script>
 </body>
 </html>
