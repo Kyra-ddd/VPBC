@@ -1459,11 +1459,14 @@ function buildConfig() {
 // ========== Product Management ==========
 let prodSortField = '';
 let prodSortDir = 'asc';
+let prodSelected = '';
 
 function buildProductManagement() {
   const rows = PRODUCTS.map(p => {
     const stTag = `<span class="tag ${PROD_STATUS_TAG[p.status] || 'tag-gray'}">${p.status}</span>`;
-    return `<tr>
+    const chk = prodSelected === p.code ? 'checked' : '';
+    return `<tr ${chk ? 'style="background:var(--vp-green-light)"' : ''}>
+      <td><input type="radio" name="prod-check" value="${p.code}" ${chk} onchange="prodSelect('${p.code}')" style="accent-color:var(--vp-green)"></td>
       <td><span class="cell-code" style="text-decoration:underline;cursor:pointer" onclick="openTab('product-detail','${p.code}')">${p.code}</span></td>
       <td><div class="cell-name">${p.nameEn}</div><div class="tiny muted">${p.nameTc}</div></td>
       <td>${p.type}</td>
@@ -1480,8 +1483,8 @@ function buildProductManagement() {
   return `<div class="toolbar">
     <div class="flex gap-2">
       <button class="btn btn-primary btn-sm" onclick="openTab('product-add','新增产品')">＋ 新增产品</button>
-      <button class="btn btn-secondary btn-sm" onclick="alert('原型：修改产品')">修改产品</button>
-      <button class="btn btn-ghost btn-sm" onclick="alert('原型：删除产品')">删除产品</button>
+      <button class="btn btn-secondary btn-sm" onclick="prodEditSelected()">修改产品</button>
+      <button class="btn btn-ghost btn-sm" onclick="prodDeleteSelected()">删除产品</button>
     </div>
   </div>
   <div class="card"><div class="card-body"><div style="display:flex;flex-wrap:nowrap;gap:12px;align-items:center">
@@ -1496,6 +1499,7 @@ function buildProductManagement() {
   </div></div></div>
   <div class="card"><div style="overflow-x:auto;">
     <table class="data-table"><thead><tr>
+      <th></th>
       <th class="sortable" onclick="prodSort('code')">基金代码 <span class="sort-icon">${sortIcon('code')}</span></th>
       <th class="sortable" onclick="prodSort('nameEn')">基金名称 <span class="sort-icon">${sortIcon('nameEn')}</span></th>
       <th class="sortable" onclick="prodSort('type')">基金类型 <span class="sort-icon">${sortIcon('type')}</span></th>
@@ -1534,6 +1538,9 @@ function prodExport() { alert('原型：导出产品数据为 Excel'); }
 function prodOpenDetail(code) { alert("查看产品详情：" + code); }
 function prodResetFilter() { document.getElementById("prodSearchCode").value=""; document.getElementById("prodSearchName").value=""; document.getElementById("prodSearchType").value=""; document.getElementById("prodSearchDom").value=""; document.getElementById("prodSearchSt").value=""; }
 function prodDoFilter() { alert("原型：按条件筛选"); }
+function prodSelect(code) { prodSelected = code; document.getElementById('content').innerHTML = buildProductManagement(); }
+function prodEditSelected() { if (!prodSelected) { alert('请先选择一个产品'); return; } alert('原型：修改产品 ' + prodSelected); }
+function prodDeleteSelected() { if (!prodSelected) { alert('请先选择一个产品'); return; } if (confirm('确认删除 ' + prodSelected + '？')) { alert('原型：删除产品 ' + prodSelected); prodSelected = ''; document.getElementById('content').innerHTML = buildProductManagement(); } }
 
 // ========== Product Add / Edit ==========
 function buildProductAdd() {
