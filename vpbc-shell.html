@@ -264,6 +264,7 @@
     .sc-input { height: 36px; padding: 0 12px; border: 1px solid var(--vp-border); border-radius: var(--vp-radius-sm); font-size: 13px; color: var(--vp-gray-900); background: var(--vp-white); font-family: inherit; width: 100%; }
     .sc-input:focus { outline: none; border-color: var(--vp-green); box-shadow: 0 0 0 3px var(--vp-green-light); }
     .sc-input:disabled { background: var(--vp-gray-100); color: var(--vp-gray-500); }
+    .sc-input.sc-error { border-color: #dc2626; }
     textarea.sc-input { height: auto; min-height: 70px; resize: vertical; }
     .sc-checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0; }
     .sc-checkbox-group label { display: flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer; }
@@ -388,6 +389,7 @@ function renderContent(html) {
   if (activeTabKey === 'portfolio') { portRenderPortfolios(); portRenderShared(); portRenderHoldings(); portRenderRebalances(); portRenderIndicatorLib(); portRenderNavChart(); }
   if (activeTabKey === 'config') { cfgSwitchTab('users'); }
   if (activeTabKey === 'share-class') { scRender(); }
+  if (activeTabKey === 'share-class-add') { scAddInit(); }
   if (activeTabKey === 'fee') { feeRender(); }
 }
 function updateBreadcrumb(text) { document.getElementById('topbarBreadcrumb').textContent = text; }
@@ -1149,13 +1151,14 @@ function buildContent(key) {
   if (key === 'portfolio') return buildPortfolio();
   if (key === 'config') return buildConfig();
   if (key === 'share-class') return buildShareClass();
+  if (key === 'share-class-add') return buildShareClassAdd();
   return '<div class="page-header"><div><h1 class="page-title">页面建设中</h1></div></div>';
 }
 
 function buildShareClass() {
   return `<div class="toolbar">
     <div class="flex gap-2">
-      <button class="btn btn-primary btn-sm" onclick="scOpenModal()">＋ 新增份额类别</button>
+      <button class="btn btn-primary btn-sm" onclick="openTab('share-class-add','新增份额类别')">＋ 新增份额类别</button>
       <button class="btn btn-secondary btn-sm" onclick="alert('原型：修改份额类别')">修改</button>
       <button class="btn btn-ghost btn-sm" onclick="alert('原型：删除份额类别')">删除</button>
     </div>
@@ -1401,6 +1404,268 @@ function buildShareClass() {
 function scResetFilter() { document.getElementById("scFundCode").value=""; document.getElementById("scName").value=""; document.getElementById("scCcy").value=""; document.getElementById("scSt").value=""; scRender(); }
 function scDoFilter() { scRender(); }
 function scSave() { alert("原型：保存份额类别（已校验必填字段）"); scCloseModal(); }
+
+// ========== Share Class Add / Edit (Tab) ==========
+function buildShareClassAdd() {
+  const L = 'style="display:flex;align-items:center;gap:8px"', LB = 'style="width:150px;flex-shrink:0;margin:0;font-weight:500"', IN = 'style="flex:1;min-width:0"';
+  const R = '<span style="color:#dc2626;margin-right:2px">*</span>';
+  const hdr = (label) => `<div style="grid-column:1/-1;font-weight:600;color:var(--vp-green);padding:6px 0;border-bottom:1px solid var(--vp-green);margin-bottom:4px">${label}</div>`;
+  const cell = (label, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
+  const empty = `<div></div>`;
+  const taCell = (label, id, ph, req) => `<div style="grid-column:1/-1;display:flex;align-items:flex-start;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><textarea class="form-control" style="flex:1" rows="2" id="${id}" placeholder="${ph}"></textarea></div>`;
+  const row = (a, b, reqA, reqB) => b ? `${cell(a[0], a[1], reqA)}${cell(b[0], b[1], reqB)}` : `${cell(a[0], a[1], reqA)}${empty}`;
+  const span2 = (label, field, req) => `<div style="grid-column:span 2;display:flex;align-items:flex-start;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
+  const span3 = (label, field, req) => `<div style="grid-column:span 3;display:flex;align-items:flex-start;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
+
+  const CURRENCIES = ['USD','HKD','CNY','CNH（离岸人民币）','EUR','GBP','JPY','SGD','CHF','AUD','CAD','NZD','RMB'];
+  const TZ_OPTIONS = ['HKT','IRL','CHN','JPN','GBR','USA','SGP','CHE'];
+  const STATUS_OPTS = ['Active 运作中','Inactive 非运作','Terminated 已终止'];
+  const DIST_OPTS = ['Monthly 月度','Quarterly 季度','Annually 年度','N/A 不适用'];
+  const PREC_OPTS = ['2','3','4'];
+  const NAV_PREC_OPTS = ['0','2','4'];
+  const FY_OPTS = ['31-March 3月31日','30-June 6月30日','31-December 12月31日'];
+  const CALENDAR_OPTS = [
+    { val:'Hong Kong 香港', label:'香港' },
+    { val:'Taiwan 台湾', label:'台湾' },
+    { val:'Japan 日本', label:'日本' },
+    { val:'PRC - Stock Exchange 中国—证券交易所', label:'中国大陆 — 交易所' },
+    { val:'PRC - Bank 中国—银行', label:'中国大陆 — 银行' },
+    { val:'Ireland 爱尔兰', label:'爱尔兰' },
+    { val:'UK 英国', label:'英国' },
+    { val:'Relevant Market as per Prospectus 招募说明书规定的相关市场', label:'相关市场（章程）' },
+  ];
+  const PRICING_OPTS = ['Amortization 摊销','Cost 成本','Mark to Market 市价计量'];
+  const FREQ_OPTS = ['Daily 每日','Weekly 每周','Monthly 每月','Quarterly 每季','Yearly 每年'];
+
+  const scGrid = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
+
+    ${hdr('基金信息')}
+    ${row(['基金代码', `<select class="form-control" ${IN} id="sc-fundCode"><option value="">请选择基金</option>${PRODUCTS.map(p => `<option value="${p.code}">${p.code} — ${p.nameEn}</option>`).join('')}</select>`], ['基金名称（英文）', `<input type="text" class="form-control" ${IN} id="sc-fundNameEn" disabled placeholder="选择基金后自动填充">`], true, false)}
+    ${span2(['基金名称（繁体）', `<input type="text" class="form-control" style="flex:1" id="sc-fundNameTc" disabled placeholder="选择基金后自动填充">`], false)}
+    ${span2(['基金名称（简体）', `<input type="text" class="form-control" style="flex:1" id="sc-fundNameSc" disabled placeholder="选择基金后自动填充">`], false)}
+
+    ${hdr('类别标识')}
+    ${row(['VPFS Class ID', `<input type="text" class="form-control" ${IN} id="sc-vpfsClassId" placeholder="如 VP0010-A-USD-ACC">`], ['份额类状态', `<select class="form-control" ${IN} id="sc-fundClassStatus"><option value="">请选择状态</option>${STATUS_OPTS.map(o => `<option>${o}</option>`).join('')}</select>`], true, true)}
+    ${row(['份额类货币', `<select class="form-control" ${IN} id="sc-classCurrency"><option value="">请选择货币</option>${CURRENCIES.map(c => `<option>${c}</option>`).join('')}</select>`], ['成立日期', `<input type="text" class="form-control" ${IN} id="sc-launchDate" placeholder="YYYY/MM/DD">`], true, true)}
+    ${row(['首次发行期结束日期', `<input type="text" class="form-control" ${IN} id="sc-endOfIopDate" placeholder="YYYY/MM/DD">`], ['', ''], false, false)}
+
+    ${hdr('类别名称（三语）')}
+    ${span2(['类别名称（EN）', `<input type="text" class="form-control" style="flex:1" id="sc-shareClassNameEn" placeholder="Official English name，max 200 chars">`], true)}
+    ${span2(['类别名称（繁体）', `<input type="text" class="form-control" style="flex:1" id="sc-shareClassNameTc" placeholder="官方繁体中文名称，max 200 chars">`], true)}
+    ${span2(['类别名称（简体）', `<input type="text" class="form-control" style="flex:1" id="sc-shareClassNameSc" placeholder="官方简体中文名称，max 200 chars">`], true)}
+
+    ${hdr('标识码')}
+    ${row(['ISIN Code', `<input type="text" class="form-control" ${IN} id="sc-isinCode" placeholder="12字符，如 HK0000012345" maxlength="12" style="font-family:monospace">`], ['CUSIP', `<input type="text" class="form-control" ${IN} id="sc-cusip" placeholder="9位字母数字" maxlength="9" style="font-family:monospace">`], false, false)}
+    ${row(['SEDOL', `<input type="text" class="form-control" ${IN} id="sc-sedol" placeholder="7位字母数字" maxlength="7" style="font-family:monospace">`], ['Bloomberg Ticker', `<input type="text" class="form-control" ${IN} id="sc-bloombergTicker" placeholder="如 VP0010A UH">`], false, false)}
+    ${row(['BBG ID Equity', `<input type="text" class="form-control" ${IN} id="sc-bbgIdEquity" placeholder="如 EQ0010A">`], ['股票代码', `<input type="text" class="form-control" ${IN} id="sc-stockCode" placeholder="1-5位数字" maxlength="5" style="font-family:monospace">`], false, false)}
+    ${row(['Morningstar Fund ID', `<input type="text" class="form-control" ${IN} id="sc-morningstarFundId" placeholder="选填">`], ['Morningstar Sec ID', `<input type="text" class="form-control" ${IN} id="sc-morningstarSecId" placeholder="选填">`], false, false)}
+    ${row(['Morningstar Performance ID', `<input type="text" class="form-control" ${IN} id="sc-morningstarPerfId" placeholder="选填">`], ['Valor Code', `<input type="text" class="form-control" ${IN} id="sc-valorCode" placeholder="选填">`], false, false)}
+    ${row(['Lipper Code', `<input type="text" class="form-control" ${IN} id="sc-lipperCode" placeholder="选填">`], ['', ''], false, false)}
+
+  </div>`;
+
+  const dealingGrid = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
+
+    ${hdr('交易条款')}
+    ${row(['分配政策', `<select class="form-control" ${IN} id="sc-distributionPolicy"><option value="">请选择</option>${DIST_OPTS.map(o => `<option>${o}</option>`).join('')}</select>`], ['对冲', `<select class="form-control" ${IN} id="sc-hedged"><option value="">请选择</option><option value="true">是</option><option value="false">否</option></select>`], true, true)}
+    ${row(['对冲货币', `<select class="form-control" ${IN} id="sc-hedgingCurrency"><option value="">自动（同类货币）</option>${CURRENCIES.map(c => `<option>${c}</option>`).join('')}</select>`], ['单位精度', `<select class="form-control" ${IN} id="sc-unitPrecision"><option value="">请选择</option>${PREC_OPTS.map(p => `<option>${p}</option>`).join('')}</select>`], false, true)}
+    ${row(['净值精度', `<select class="form-control" ${IN} id="sc-navPrecision"><option value="">请选择</option>${NAV_PREC_OPTS.map(p => `<option>${p}</option>`).join('')}</select>`], ['', ''], true, false)}
+
+    ${hdr('业务日与日历')}
+    ${span3(['业务日定义', `<input type="text" class="form-control" style="flex:1" id="sc-businessDayDefinition" placeholder="如：非香港周六、日及公众假期">`], true)}
+    ${span3(['业务日历', `<div style="display:flex;flex-wrap:wrap;gap:12px;padding:4px 0">${CALENDAR_OPTS.map(o => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${o.val}" id="sc-cal-${o.val.split(' ')[0]}" style="accent-color:var(--vp-green)">${o.label}</label>`).join('')}</div>`], true)}
+
+    ${hdr('交易与估值时间')}
+    ${row([`截止时间`, `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-cutoffTime" value="17:00"><select class="form-control" style="flex:0 0 80px" id="sc-cutoffTz"><option>HKT</option>${TZ_OPTIONS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], [`交易截止`, `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-dealingCutOff" value="16:00"><select class="form-control" style="flex:0 0 80px" id="sc-dealingCutOffTz"><option>HKT</option>${TZ_OPTIONS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], true, true)}
+    ${row([`估值时点`, `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-valuationPoint" value="09:30"><select class="form-control" style="flex:0 0 80px" id="sc-valuationPointTz"><option>IRL</option>${TZ_OPTIONS.filter(t=>t!=='IRL').map(t=>`<option>${t}</option>`).join('')}</select></div>`], ['', ''], true, false)}
+    ${row(['交易频率', `<select class="form-control" ${IN} id="sc-dealingFrequency"><option value="">请选择</option>${FREQ_OPTS.map(f => `<option>${f}</option>`).join('')}</select>`], ['估值频率', `<select class="form-control" ${IN} id="sc-valuationFrequency"><option value="">请选择</option>${FREQ_OPTS.map(f => `<option>${f}</option>`).join('')}</select>`], true, true)}
+
+    ${hdr('结算与定价')}
+    ${row(['申购结算（T+）', `<input type="number" class="form-control" ${IN} id="sc-subscriptionSettlement" value="3" min="0">`], ['赎回结算（T+）', `<input type="number" class="form-control" ${IN} id="sc-redemptionSettlement" value="3" min="0">`], true, true)}
+    ${row(['合同通知书发出日', `<input type="number" class="form-control" ${IN} id="sc-contractNoteDeliveryDay" placeholder="T+" min="0">`], ['估值发布时间', `<input type="number" class="form-control" ${IN} id="sc-valuationDeliveryTime" placeholder="正整数" min="0">`], false, false)}
+    ${span3(['定价方法', `<div style="display:flex;flex-wrap:wrap;gap:12px;padding:4px 0">${PRICING_OPTS.map(p => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${p}" id="sc-pricing-${p.split(' ')[0]}" style="accent-color:var(--vp-green)">${p}</label>`).join('')}</div>`], true)}
+
+  </div>`;
+
+  const feeGrid = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
+
+    ${hdr('最低申购与赎回')}
+    ${row(['最低首次申购金额', `<input type="number" class="form-control" ${IN} id="sc-minInitialSub" placeholder="如 10000" min="0">`], ['最低追加申购金额', `<input type="number" class="form-control" ${IN} id="sc-minSubSub" placeholder="如 1000" min="0">`], true, true)}
+    ${row(['最低赎回金额', `<input type="number" class="form-control" ${IN} id="sc-minRedemption" placeholder="如 500" min="0">`], ['最低持有量', `<input type="number" class="form-control" ${IN} id="sc-minHolding" placeholder="如 1000" min="0">`], false, false)}
+    ${row(['赎回费（%）', `<input type="number" class="form-control" ${IN} id="sc-redemptionCharge" placeholder="如 0.5" step="0.01" min="0">`], ['', ''], false, false)}
+
+    ${hdr('管理费与表现费')}
+    ${row(['管理费（%）', `<input type="number" class="form-control" ${IN} id="sc-managementFee" placeholder="如 1.25" step="0.01" min="0">`], ['表现费（%）', `<input type="number" class="form-control" ${IN} id="sc-performanceFee" placeholder="如 15.00" step="0.01" min="0">`], false, false)}
+
+    ${hdr('TER（总 Expense 比率）')}
+    ${row(['最新 TER 日期', `<input type="month" class="form-control" ${IN} id="sc-latestTerDate" placeholder="YYYY/MM">`], ['最新 TER 比率（%）', `<input type="number" class="form-control" ${IN} id="sc-latestTerRate" placeholder="如 1.65" step="0.01" min="0">`], false, false)}
+
+    ${hdr('财务年度与其他')}
+    ${row(['财务年度截止', `<select class="form-control" ${IN} id="sc-financialYearEnd"><option value="">请选择</option>${FY_OPTS.map(f => `<option>${f}</option>`).join('')}</select>`], ['证券借贷', `<select class="form-control" ${IN} id="sc-securityLending"><option value="">请选择</option><option value="true">是</option><option value="false">否</option></select>`], false, false)}
+
+  </div>`;
+
+  return `<div class="card"><div class="card-body" style="padding:20px">
+  <div class="sc-tabs" style="position:sticky;top:0;z-index:10;background:#fff;margin:-20px -20px 20px;padding:0 20px">
+    <div class="sc-tab active" data-tab="sc-add-fund" onclick="scAddSwitchTab('sc-add-fund')">基金信息</div>
+    <div class="sc-tab" data-tab="sc-add-dealing" onclick="scAddSwitchTab('sc-add-dealing')">交易与估值</div>
+    <div class="sc-tab" data-tab="sc-add-fee" onclick="scAddSwitchTab('sc-add-fee')">费率</div>
+  </div>
+  <div class="sc-panel active" id="scAddPanel-sc-add-fund">${scGrid}</div>
+  <div class="sc-panel" id="scAddPanel-sc-add-dealing" style="display:none">${dealingGrid}</div>
+  <div class="sc-panel" id="scAddPanel-sc-add-fee" style="display:none">${feeGrid}</div>
+  <div style="padding-top:20px;display:flex;gap:12px;border-top:1px solid var(--vp-border);margin-top:20px">
+    <button class="btn btn-secondary" onclick="scAddSaveDraft()">💾 保存草稿</button>
+    <button class="btn btn-primary" onclick="scAddSubmit()">提交</button>
+    <button class="btn btn-ghost" onclick="closeTab('share-class-add', event)">取消</button>
+  </div>
+  </div></div>`;
+}
+
+function scAddSwitchTab(tab) {
+  document.querySelectorAll('#content .sc-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#content .sc-panel').forEach(p => p.style.display = 'none');
+  document.querySelector(`.sc-tab[data-tab='${tab}']`).classList.add('active');
+  document.getElementById('scAddPanel-' + tab).style.display = 'block';
+}
+
+function scAddInit() {
+  // Auto-fill fund names when fund code changes
+  const fundSel = document.getElementById('sc-fundCode');
+  if (fundSel) {
+    fundSel.addEventListener('change', function() {
+      const p = PRODUCTS.find(p => p.code === this.value);
+      const en = document.getElementById('sc-fundNameEn');
+      const tc = document.getElementById('sc-fundNameTc');
+      const sc = document.getElementById('sc-fundNameSc');
+      if (en) en.value = p ? p.nameEn : '';
+      if (tc) tc.value = p ? p.nameTc : '';
+      if (sc) sc.value = p ? p.nameTc : ''; // SC falls back to TC when no SC defined
+    });
+  }
+}
+
+function clearScErrors() {
+  document.querySelectorAll('.sc-error').forEach(el => el.classList.remove('sc-error'));
+  document.querySelectorAll('.sc-err-msg').forEach(el => el.remove());
+}
+function scMarkErr(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.borderColor = '#dc2626';
+  el.classList.add('sc-error');
+  const d = document.createElement('div');
+  d.className = 'sc-err-msg';
+  d.style = 'font-size:11px;color:#dc2626;margin-top:2px';
+  d.textContent = msg;
+  el.parentElement.appendChild(d);
+}
+
+function scAddSaveDraft() {
+  clearScErrors();
+  let ok = true;
+  const fundCode = document.getElementById('sc-fundCode')?.value.trim();
+  const vpfsClassId = document.getElementById('sc-vpfsClassId')?.value.trim();
+  const nameEn = document.getElementById('sc-shareClassNameEn')?.value.trim();
+  const nameTc = document.getElementById('sc-shareClassNameTc')?.value.trim();
+  const nameSc = document.getElementById('sc-shareClassNameSc')?.value.trim();
+  if (!fundCode) { scMarkErr('sc-fundCode', '请选择基金代码'); ok = false; }
+  if (!vpfsClassId) { scMarkErr('sc-vpfsClassId', '请输入 VPFS Class ID'); ok = false; }
+  else if (SC_RECORDS.some(r => r.vpid === vpfsClassId)) { scMarkErr('sc-vpfsClassId', '该 VPFS Class ID 已存在'); ok = false; }
+  if (!nameEn) { scMarkErr('sc-shareClassNameEn', '请输入类别英文名称'); ok = false; }
+  if (!nameTc) { scMarkErr('sc-shareClassNameTc', '请输入类别繁体名称'); ok = false; }
+  if (!nameSc) { scMarkErr('sc-shareClassNameSc', '请输入类别简体名称'); ok = false; }
+  if (!ok) return;
+  alert('草稿已保存');
+}
+
+function scAddSubmit() {
+  clearScErrors();
+  let ok = true;
+
+  // Tab 1 required fields
+  const fundCode = document.getElementById('sc-fundCode')?.value.trim();
+  const vpfsClassId = document.getElementById('sc-vpfsClassId')?.value.trim();
+  const fundClassStatus = document.getElementById('sc-fundClassStatus')?.value.trim();
+  const classCurrency = document.getElementById('sc-classCurrency')?.value.trim();
+  const launchDate = document.getElementById('sc-launchDate')?.value.trim();
+  const nameEn = document.getElementById('sc-shareClassNameEn')?.value.trim();
+  const nameTc = document.getElementById('sc-shareClassNameTc')?.value.trim();
+  const nameSc = document.getElementById('sc-shareClassNameSc')?.value.trim();
+  const businessDayDef = document.getElementById('sc-businessDayDefinition')?.value.trim();
+  const distributionPolicy = document.getElementById('sc-distributionPolicy')?.value.trim();
+  const hedged = document.getElementById('sc-hedged')?.value.trim();
+  const unitPrecision = document.getElementById('sc-unitPrecision')?.value.trim();
+  const navPrecision = document.getElementById('sc-navPrecision')?.value.trim();
+  const dealingFrequency = document.getElementById('sc-dealingFrequency')?.value.trim();
+  const valuationFrequency = document.getElementById('sc-valuationFrequency')?.value.trim();
+  const cutoffTime = document.getElementById('sc-cutoffTime')?.value.trim();
+  const dealingCutOff = document.getElementById('sc-dealingCutOff')?.value.trim();
+  const valuationPoint = document.getElementById('sc-valuationPoint')?.value.trim();
+  const subSettlement = document.getElementById('sc-subscriptionSettlement')?.value.trim();
+  const redSettlement = document.getElementById('sc-redemptionSettlement')?.value.trim();
+  const minInitSub = document.getElementById('sc-minInitialSub')?.value.trim();
+  const minSubSub = document.getElementById('sc-minSubSub')?.value.trim();
+  const minRedemption = document.getElementById('sc-minRedemption')?.value.trim();
+  const cutoffTz = document.getElementById('sc-cutoffTz')?.value.trim();
+  const dealingCutOffTz = document.getElementById('sc-dealingCutOffTz')?.value.trim();
+  const valuationPointTz = document.getElementById('sc-valuationPointTz')?.value.trim();
+
+  // Calendar checkboxes
+  const calSelected = [...document.querySelectorAll('#content input[id^="sc-cal-"]:checked')];
+  const pricingSelected = [...document.querySelectorAll('#content input[id^="sc-pricing-"]:checked')];
+
+  if (!fundCode) { scMarkErr('sc-fundCode', '请选择基金代码'); ok = false; }
+  if (!vpfsClassId) { scMarkErr('sc-vpfsClassId', '请输入 VPFS Class ID'); ok = false; }
+  if (!fundClassStatus) { scMarkErr('sc-fundClassStatus', '请选择份额类状态'); ok = false; }
+  if (!classCurrency) { scMarkErr('sc-classCurrency', '请选择份额类货币'); ok = false; }
+  if (!launchDate) { scMarkErr('sc-launchDate', '请输入成立日期'); ok = false; }
+  if (!nameEn) { scMarkErr('sc-shareClassNameEn', '请输入类别英文名称'); ok = false; }
+  else if (nameEn.length > 200) { scMarkErr('sc-shareClassNameEn', '不超过200字符'); ok = false; }
+  if (!nameTc) { scMarkErr('sc-shareClassNameTc', '请输入类别繁体名称'); ok = false; }
+  else if (nameTc.length > 200) { scMarkErr('sc-shareClassNameTc', '不超过200字符'); ok = false; }
+  if (!nameSc) { scMarkErr('sc-shareClassNameSc', '请输入类别简体名称'); ok = false; }
+  else if (nameSc.length > 200) { scMarkErr('sc-shareClassNameSc', '不超过200字符'); ok = false; }
+
+  // ISIN regex
+  const isin = document.getElementById('sc-isinCode')?.value.trim().toUpperCase();
+  if (isin && !/^[A-Z]{2}[A-Z0-9]{10}$/.test(isin)) { scMarkErr('sc-isinCode', 'ISIN 为12位字母数字（2字母+10位）'); ok = false; }
+  // CUSIP regex
+  const cusip = document.getElementById('sc-cusip')?.value.trim().toUpperCase();
+  if (cusip && !/^[A-Z0-9]{9}$/.test(cusip)) { scMarkErr('sc-cusip', 'CUSIP 为9位字母数字'); ok = false; }
+  // SEDOL regex
+  const sedol = document.getElementById('sc-sedol')?.value.trim().toUpperCase();
+  if (sedol && !/^[A-Z0-9]{7}$/.test(sedol)) { scMarkErr('sc-sedol', 'SEDOL 为7位字母数字'); ok = false; }
+  // Stock code regex
+  const stockCode = document.getElementById('sc-stockCode')?.value.trim();
+  if (stockCode && !/^\d{1,5}$/.test(stockCode)) { scMarkErr('sc-stockCode', '股票代码为1-5位数字'); ok = false; }
+
+  // Tab 2 required
+  if (!distributionPolicy) { scMarkErr('sc-distributionPolicy', '请选择分配政策'); ok = false; }
+  if (!hedged) { scMarkErr('sc-hedged', '请选择对冲'); ok = false; }
+  if (!unitPrecision) { scMarkErr('sc-unitPrecision', '请选择单位精度'); ok = false; }
+  if (!navPrecision) { scMarkErr('sc-navPrecision', '请选择净值精度'); ok = false; }
+  if (!businessDayDef) { scMarkErr('sc-businessDayDefinition', '请输入业务日定义'); ok = false; }
+  if (!calSelected.length) { alert('请至少选择一个业务日历'); ok = false; }
+  if (!cutoffTime) { scMarkErr('sc-cutoffTime', '请输入截止时间'); ok = false; }
+  if (!dealingCutOff) { scMarkErr('sc-dealingCutOff', '请输入交易截止'); ok = false; }
+  if (!valuationPoint) { scMarkErr('sc-valuationPoint', '请输入估值时点'); ok = false; }
+  if (!dealingFrequency) { scMarkErr('sc-dealingFrequency', '请选择交易频率'); ok = false; }
+  if (!valuationFrequency) { scMarkErr('sc-valuationFrequency', '请选择估值频率'); ok = false; }
+  if (!subSettlement) { scMarkErr('sc-subscriptionSettlement', '请输入申购结算'); ok = false; }
+  if (!redSettlement) { scMarkErr('sc-redemptionSettlement', '请输入赎回结算'); ok = false; }
+  if (!minInitSub) { scMarkErr('sc-minInitialSub', '请输入最低首次申购金额'); ok = false; }
+  if (!minSubSub) { scMarkErr('sc-minSubSub', '请输入最低追加申购金额'); ok = false; }
+  if (!minRedemption) { scMarkErr('sc-minRedemption', '请输入最低赎回金额'); ok = false; }
+  if (!pricingSelected.length) { alert('请至少选择一种定价方法'); ok = false; }
+
+  if (!ok) { alert('请填写所有必填项（*标记）并修正格式错误'); return; }
+  alert('提交成功！');
+  closeTab('share-class-add', event);
+}
 
 function buildConfig() {
   return `<div class="page-header"><div><h1 class="page-title">配置中心</h1><p class="page-subtitle">用户权限 · 角色管理 · 自定义选项</p></div></div>
