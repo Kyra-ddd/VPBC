@@ -425,15 +425,15 @@ const PROD_TYPE_OPTIONS = ['股票型基金','债券型基金','混合资产基�
 // ========== Industry Data ==========
 const IND_DATA = {
   HK: { name: "港股", industries: [
-    { code: "HK-RE", name: "地产", analysts: [{ id:"a01", name:"David", acct:"davidw", focus:"港股内房股", status:"在职" }, { id:"a02", name:"Emma", acct:"emma", focus:"物业管理", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、REITs", status:"在职" }] },
-    { code: "HK-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"中资银行、券商", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、金融", status:"在职" }] },
-    { code: "HK-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"互联网平台、消费电子", status:"在职" }, { id:"a06", name:"Kevin", acct:"kevinl", focus:"半导体代工", status:"在职" }] },
+    { code: "HK-RE", name: "地产", analysts: [{ id:"a01", name:"David", acct:"davidw", focus:"港股内房股", status:"在职" }, { id:"a02", name:"Emma", acct:"emma", focus:"物业管理", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、REITs", status:"在职" }], stocks: [{code:"00178.HK",name:"置富产业信托"},{code:"01109.HK",name:"华润置地"},{code:"06098.HK",name:"龙湖集团"}] },
+    { code: "HK-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"中资银行、券商", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、金融", status:"在职" }], stocks: [{code:"0939.HK",name:"建设银行"},{code:"1398.HK",name:"工商银行"},{code:"3988.HK",name:"中国银行"}] },
+    { code: "HK-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"互联网平台、消费电子", status:"在职" }, { id:"a06", name:"Kevin", acct:"kevinl", focus:"半导体代工", status:"在职" }], stocks: [{code:"00700.HK",name:"腾讯控股"},{code:"09988.HK",name:"阿里巴巴"},{code:"02382.HK",name:"舜宇光学"}] },
     { code: "HK-CONS", name: "消费", analysts: [{ id:"a02", name:"Emma", acct:"emma", focus:"消费、物业管理", status:"在职" }] },
   ]},
   US: { name: "美股", industries: [
-    { code: "US-SEM", name: "半导体", analysts: [{ id:"a06", name:"Kevin", acct:"kevinl", focus:"美股半导体（跨市场）", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片", status:"在职" }] },
+    { code: "US-SEM", name: "半导体", analysts: [{ id:"a06", name:"Kevin", acct:"kevinl", focus:"美股半导体（跨市场）", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片", status:"在职" }], stocks: [{code:"NVDA.US",name:"英伟达"},{code:"AMD.US",name:"超微半导体"},{code:"INTC.US",name:"英特尔"}] },
     { code: "US-BIO", name: "生物科技", analysts: [{ id:"a08", name:"Nancy", acct:"nancym", focus:"创新药、CXO", status:"在职" }] },
-    { code: "US-NET", name: "互联网", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"美股互联网（跨市场）", status:"在职" }] },
+    { code: "US-NET", name: "互联网", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"美股互联网（跨市场）", status:"在职" }], stocks: [{code:"GOOGL.US",name:"Alphabet"},{code:"META.US",name:"Meta Platforms"},{code:"AMZN.US",name:"亚马逊"}] },
     { code: "US-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"AI 上游平台", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片与硬件", status:"在职" }] },
   ]},
   JP: { name: "日股", industries: [
@@ -500,8 +500,10 @@ function indInitFilters() {
 function indDoFilter() { indRenderUnified(); }
 
 function indResetFilter() {
-  indCurrentMarket = "ALL";
-  indRenderMarkets(); indInitFilters(); indRenderUnified();
+  document.getElementById("indFMarket").value = "";
+  document.getElementById("indFIndustry").value = "";
+  document.getElementById("indFAnalyst").value = "";
+  indRenderUnified();
 }
 
 function indRenderUnified() {
@@ -513,7 +515,7 @@ function indRenderUnified() {
   const fMarket = document.getElementById("indFMarket")?.value || "";
   const fIndustry = document.getElementById("indFIndustry")?.value || "";
   const fAnalyst = document.getElementById("indFAnalyst")?.value || "";
-  if (fMarket && fMarket !== "ALL") rows = rows.filter(r => (r.marketNames || []).includes(IND_DATA[fMarket]?.name));
+  if (fMarket) rows = rows.filter(r => (r.marketNames || []).includes(IND_DATA[fMarket]?.name));
   if (fIndustry) rows = rows.filter(r => r.name === fIndustry);
   if (fAnalyst) rows = rows.filter(r => (r.analysts || []).filter(a => a.status === "在职").some(a => a.name === fAnalyst));
 
@@ -551,14 +553,18 @@ function indRenderUnified() {
 
   if (!rows.length) { body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:32px">暂无数据</td></tr>'; return; }
   body.innerHTML = rows.map(ind => {
+    const hasStocks = ind.stocks && ind.stocks.length > 0;
+    const nameHtml = hasStocks
+      ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green)" onclick="indShowStocks('${ind.name}')">${ind.name}</span>`
+      : ind.name;
     return `<tr>
-      <td class="bold">${ind.name}</td>
+      <td class="bold">${nameHtml}</td>
       <td>${(ind.marketNames || []).join("、")}</td>
       <td>${ind._analystNames}</td>
       <td class="muted">${ind._updater}</td>
       <td class="muted" style="font-variant-numeric:tabular-nums">${ind._time}</td>
-      <td class="right nowrap">
-        <button class="btn btn-ghost btn-sm" onclick="alert('导入「${ind.name}」')">导入</button>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="indOpenImport('${ind.name}')">导入</button>
         <button class="btn btn-ghost btn-sm" onclick="alert('编辑「${ind.name}」')">编辑</button>
       </td>
     </tr>`;
@@ -574,11 +580,66 @@ function indSort(field) {
   indRenderUnified();
 }
 
-function indRenderMarkets() {
-  const seg = document.getElementById("marketSeg");
-  if (!seg) return;
-  seg.innerHTML = `<button class="seg${indCurrentMarket === 'ALL' ? ' active' : ''}" onclick="indSwitchMarket('ALL')">全部</button>` +
-    Object.keys(IND_DATA).map(code => `<button class="seg${code === indCurrentMarket ? ' active' : ''}" onclick="indSwitchMarket('${code}')">${IND_DATA[code].name}</button>`).join("");
+// Show stock panel below the table when clicking an industry name
+function indShowStocks(name) {
+  const panel = document.getElementById("indStockPanel");
+  const title = document.getElementById("indStockTitle");
+  const tbody = document.getElementById("indStockBody");
+  if (!panel || !title || !tbody) return;
+  // Find the industry across all markets
+  let target = null;
+  Object.values(IND_DATA).forEach(m => {
+    const found = m.industries.find(i => i.name === name);
+    if (found) target = found;
+  });
+  title.textContent = name + " — 股票明细";
+  if (!target || !target.stocks || !target.stocks.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center;padding:24px">暂无股票数据</td></tr>';
+  } else {
+    tbody.innerHTML = target.stocks.map(s => {
+      const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股" };
+      const mcode = Object.keys(IND_DATA).find(k => IND_DATA[k].industries.some(i => i.name === name)) || "HK";
+      return `<tr>
+        <td>${marketMap[mcode] || "—"}</td>
+        <td><span class="cell-code">${s.code}</span></td>
+        <td>${s.name}</td>
+        <td class="muted">${target.analysts[0]?.name || "—"}</td>
+      </tr>`;
+    }).join("");
+  }
+  panel.style.display = "block";
+}
+
+// Import modal
+let indImportTarget = "";
+let indSelectedFile = null;
+
+function indOpenImport(name) {
+  indImportTarget = name;
+  indSelectedFile = null;
+  document.getElementById("indFileName").textContent = "";
+  document.getElementById("indUploadBtn").disabled = true;
+  document.getElementById("indImportModal").classList.add("show");
+}
+
+function indCloseImport() {
+  document.getElementById("indImportModal").classList.remove("show");
+  indSelectedFile = null;
+  indImportTarget = "";
+}
+
+function indHandleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  indSelectedFile = file;
+  document.getElementById("indFileName").textContent = file.name;
+  document.getElementById("indUploadBtn").disabled = false;
+}
+
+function indDoUpload() {
+  if (!indSelectedFile) return;
+  alert("原型：上传 " + indSelectedFile.name + " 到行业「" + indImportTarget + "」（解析 Excel 并更新股票清单）");
+  indCloseImport();
 }
 
 // ========== Report Data ==========
@@ -1412,10 +1473,47 @@ function buildIndustry() {
         <th class="sortable" onclick="indSort('analyst')">研究员 <span class="sort-icon" id="sort-analyst"></span></th>
         <th class="sortable" onclick="indSort('updater')">更新人 <span class="sort-icon" id="sort-updater"></span></th>
         <th class="sortable" onclick="indSort('time')">更新时间 <span class="sort-icon" id="sort-time"></span></th>
-        <th class="right">操作</th>
+        <th>操作</th>
       </tr></thead>
       <tbody id="indUniBody"></tbody>
-      </table></div></div></div>`;
+      </table></div></div></div>
+
+    <!-- 行业股票明细 -->
+    <div class="card mt-4" id="indStockPanel" style="display:none">
+      <div class="card-head"><div class="card-title" id="indStockTitle"></div></div>
+      <div class="card-body" style="padding:0"><div style="max-height:200px;overflow-y:auto">
+        <table class="data-table"><thead><tr><th>市场</th><th>股票代码</th><th>股票名称</th><th>发送人</th></tr></thead>
+        <tbody id="indStockBody"></tbody></table></div></div>
+    </div>
+
+    <!-- 导入弹窗 -->
+    <div class="modal-mask" id="indImportModal"><div class="modal-overlay" onclick="indCloseImport()"></div>
+      <div class="modal" onclick="event.stopPropagation()" style="max-width:500px">
+        <div class="modal-header"><div class="modal-title">导入股票清单</div><button class="modal-close" onclick="indCloseImport()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <div class="modal-body">
+          <div style="border:2px dashed var(--vp-gray-200);border-radius:var(--vp-radius);padding:32px;text-align:center;margin-bottom:16px">
+            <div style="margin-bottom:8px;color:var(--vp-gray-400)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <div style="font-size:14px;color:var(--vp-gray-600);margin-bottom:4px">将 Excel 文件拖拽到此处，或<label for="indFileInput" style="color:var(--vp-green);cursor:pointer">点击上传</label></div>
+            <div style="font-size:12px;color:var(--vp-gray-400)">仅支持 .xlsx 格式，每次仅限上传一个文件</div>
+            <input type="file" id="indFileInput" accept=".xlsx,.xls" style="display:none" onchange="indHandleFile(this)">
+          </div>
+          <div id="indFileName" style="font-size:13px;color:var(--vp-gray-500);text-align:center"></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-secondary" onclick="indCloseImport()">取消</button><button class="btn btn-primary" id="indUploadBtn" disabled onclick="indDoUpload()">确认上传</button></div>
+      </div>
+    </div>
+
+    <!-- 股票明细弹窗 -->
+    <div class="modal-mask" id="indStockModal"><div class="modal-overlay" onclick="indCloseStock()"></div>
+      <div class="modal" onclick="event.stopPropagation()" style="max-width:700px">
+        <div class="modal-header"><div class="modal-title" id="indStockModalTitle"></div><button class="modal-close" onclick="indCloseStock()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <div class="modal-body" style="max-height:60vh;overflow-y:auto;padding:0">
+          <table class="data-table"><thead><tr><th>市场</th><th>股票代码</th><th>股票名称</th><th>发送人</th><th>更新时间</th></tr></thead>
+          <tbody id="indStockModalBody"></tbody></table>
+        </div>
+        <div class="modal-footer"><button class="btn btn-secondary" onclick="indCloseStock()">关闭</button></div>
+      </div>
+    </div>`;
 }
 
 function buildResearchReport() {
