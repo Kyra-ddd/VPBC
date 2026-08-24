@@ -1412,19 +1412,17 @@ function buildShareClassAdd() {
   const hdr = (label) => `<div style="grid-column:1/-1;font-weight:600;color:var(--vp-green);padding:6px 0;border-bottom:1px solid var(--vp-green);margin-bottom:4px">${label}</div>`;
   const cell = (label, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
   const empty = `<div></div>`;
-  const taCell = (label, id, ph, req) => `<div style="grid-column:1/-1;display:flex;align-items:flex-start;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><textarea class="form-control" style="flex:1" rows="2" id="${id}" placeholder="${ph}"></textarea></div>`;
-  const row = (a, b, reqA, reqB) => b ? `${cell(a[0], a[1], reqA)}${cell(b[0], b[1], reqB)}` : `${cell(a[0], a[1], reqA)}${empty}`;
   const span2 = (label, field, req) => `<div style="grid-column:span 2;display:flex;align-items:flex-start;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
-  const span3 = (label, field, req) => `<div style="grid-column:span 3;display:flex;align-items:flex-start;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
+  const row = (a, b, reqA, reqB) => b ? `${cell(a[0], a[1], reqA)}${cell(b[0], b[1], reqB)}` : `${cell(a[0], a[1], reqA)}${empty}`;
 
   const CURRENCIES = ['USD','HKD','CNY','CNH（离岸人民币）','EUR','GBP','JPY','SGD','CHF','AUD','CAD','NZD','RMB'];
-  const TZ_OPTIONS = ['HKT','IRL','CHN','JPN','GBR','USA','SGP','CHE'];
+  const TZ_OPTS = ['HKT','IRL','CHN','JPN','GBR','USA','SGP','CHE'];
   const STATUS_OPTS = ['Active 运作中','Inactive 非运作','Terminated 已终止'];
   const DIST_OPTS = ['Monthly 月度','Quarterly 季度','Annually 年度','N/A 不适用'];
   const PREC_OPTS = ['2','3','4'];
   const NAV_PREC_OPTS = ['0','2','4'];
   const FY_OPTS = ['31-March 3月31日','30-June 6月30日','31-December 12月31日'];
-  const CALENDAR_OPTS = [
+  const CAL_OPTS = [
     { val:'Hong Kong 香港', label:'香港' },
     { val:'Taiwan 台湾', label:'台湾' },
     { val:'Japan 日本', label:'日本' },
@@ -1437,7 +1435,7 @@ function buildShareClassAdd() {
   const PRICING_OPTS = ['Amortization 摊销','Cost 成本','Mark to Market 市价计量'];
   const FREQ_OPTS = ['Daily 每日','Weekly 每周','Monthly 每月','Quarterly 每季','Yearly 每年'];
 
-  const scGrid = `
+  return `<div class="card"><div class="card-body" style="padding:20px">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
 
     ${hdr('基金信息')}
@@ -1451,9 +1449,9 @@ function buildShareClassAdd() {
     ${row(['首次发行期结束日期', `<input type="text" class="form-control" ${IN} id="sc-endOfIopDate" placeholder="YYYY/MM/DD">`], ['', ''], false, false)}
 
     ${hdr('类别名称（三语）')}
-    ${span2(['类别名称（EN）', `<input type="text" class="form-control" style="flex:1" id="sc-shareClassNameEn" placeholder="Official English name，max 200 chars">`], true)}
-    ${span2(['类别名称（繁体）', `<input type="text" class="form-control" style="flex:1" id="sc-shareClassNameTc" placeholder="官方繁体中文名称，max 200 chars">`], true)}
-    ${span2(['类别名称（简体）', `<input type="text" class="form-control" style="flex:1" id="sc-shareClassNameSc" placeholder="官方简体中文名称，max 200 chars">`], true)}
+    ${span2(['类别名称（EN）', `<input type="text" class="form-control" style="flex:1" id="sc-shareClassNameEn" placeholder="Official English name，不超过200字符">`], true)}
+    ${span2(['类别名称（繁体）', `<input type="text" class="form-control" style="flex:1" id="sc-shareClassNameTc" placeholder="官方繁体中文名称，不超过200字符">`], true)}
+    ${span2(['类别名称（简体）', `<input type="text" class="form-control" style="flex:1" id="sc-shareClassNameSc" placeholder="官方简体中文名称，不超过200字符">`], true)}
 
     ${hdr('标识码')}
     ${row(['ISIN Code', `<input type="text" class="form-control" ${IN} id="sc-isinCode" placeholder="12字符，如 HK0000012345" maxlength="12" style="font-family:monospace">`], ['CUSIP', `<input type="text" class="form-control" ${IN} id="sc-cusip" placeholder="9位字母数字" maxlength="9" style="font-family:monospace">`], false, false)}
@@ -1463,34 +1461,24 @@ function buildShareClassAdd() {
     ${row(['Morningstar Performance ID', `<input type="text" class="form-control" ${IN} id="sc-morningstarPerfId" placeholder="选填">`], ['Valor Code', `<input type="text" class="form-control" ${IN} id="sc-valorCode" placeholder="选填">`], false, false)}
     ${row(['Lipper Code', `<input type="text" class="form-control" ${IN} id="sc-lipperCode" placeholder="选填">`], ['', ''], false, false)}
 
-  </div>`;
-
-  const dealingGrid = `
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
-
     ${hdr('交易条款')}
     ${row(['分配政策', `<select class="form-control" ${IN} id="sc-distributionPolicy"><option value="">请选择</option>${DIST_OPTS.map(o => `<option>${o}</option>`).join('')}</select>`], ['对冲', `<select class="form-control" ${IN} id="sc-hedged"><option value="">请选择</option><option value="true">是</option><option value="false">否</option></select>`], true, true)}
     ${row(['对冲货币', `<select class="form-control" ${IN} id="sc-hedgingCurrency"><option value="">自动（同类货币）</option>${CURRENCIES.map(c => `<option>${c}</option>`).join('')}</select>`], ['单位精度', `<select class="form-control" ${IN} id="sc-unitPrecision"><option value="">请选择</option>${PREC_OPTS.map(p => `<option>${p}</option>`).join('')}</select>`], false, true)}
     ${row(['净值精度', `<select class="form-control" ${IN} id="sc-navPrecision"><option value="">请选择</option>${NAV_PREC_OPTS.map(p => `<option>${p}</option>`).join('')}</select>`], ['', ''], true, false)}
 
     ${hdr('业务日与日历')}
-    ${span3(['业务日定义', `<input type="text" class="form-control" style="flex:1" id="sc-businessDayDefinition" placeholder="如：非香港周六、日及公众假期">`], true)}
-    ${span3(['业务日历', `<div style="display:flex;flex-wrap:wrap;gap:12px;padding:4px 0">${CALENDAR_OPTS.map(o => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${o.val}" id="sc-cal-${o.val.split(' ')[0]}" style="accent-color:var(--vp-green)">${o.label}</label>`).join('')}</div>`], true)}
+    ${span2(['业务日定义', `<input type="text" class="form-control" style="flex:1" id="sc-businessDayDefinition" placeholder="如：非香港周六、日及公众假期">`], true)}
+    ${span2(['业务日历', `<div style="display:flex;flex-wrap:wrap;gap:12px;padding:4px 0">${CAL_OPTS.map(o => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${o.val}" id="sc-cal-${o.val.split(' ')[0]}" style="accent-color:var(--vp-green)">${o.label}</label>`).join('')}</div>`], true)}
 
     ${hdr('交易与估值时间')}
-    ${row([`截止时间`, `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-cutoffTime" value="17:00"><select class="form-control" style="flex:0 0 80px" id="sc-cutoffTz"><option>HKT</option>${TZ_OPTIONS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], [`交易截止`, `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-dealingCutOff" value="16:00"><select class="form-control" style="flex:0 0 80px" id="sc-dealingCutOffTz"><option>HKT</option>${TZ_OPTIONS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], true, true)}
-    ${row([`估值时点`, `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-valuationPoint" value="09:30"><select class="form-control" style="flex:0 0 80px" id="sc-valuationPointTz"><option>IRL</option>${TZ_OPTIONS.filter(t=>t!=='IRL').map(t=>`<option>${t}</option>`).join('')}</select></div>`], ['', ''], true, false)}
+    ${row([`截止时间`, `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-cutoffTime" value="17:00"><select class="form-control" style="flex:0 0 80px" id="sc-cutoffTz"><option>HKT</option>${TZ_OPTS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], [`交易截止`, `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-dealingCutOff" value="16:00"><select class="form-control" style="flex:0 0 80px" id="sc-dealingCutOffTz"><option>HKT</option>${TZ_OPTS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], true, true)}
+    ${row([`估值时点`, `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-valuationPoint" value="09:30"><select class="form-control" style="flex:0 0 80px" id="sc-valuationPointTz"><option>IRL</option>${TZ_OPTS.filter(t=>t!=='IRL').map(t=>`<option>${t}</option>`).join('')}</select></div>`], ['', ''], true, false)}
     ${row(['交易频率', `<select class="form-control" ${IN} id="sc-dealingFrequency"><option value="">请选择</option>${FREQ_OPTS.map(f => `<option>${f}</option>`).join('')}</select>`], ['估值频率', `<select class="form-control" ${IN} id="sc-valuationFrequency"><option value="">请选择</option>${FREQ_OPTS.map(f => `<option>${f}</option>`).join('')}</select>`], true, true)}
 
     ${hdr('结算与定价')}
     ${row(['申购结算（T+）', `<input type="number" class="form-control" ${IN} id="sc-subscriptionSettlement" value="3" min="0">`], ['赎回结算（T+）', `<input type="number" class="form-control" ${IN} id="sc-redemptionSettlement" value="3" min="0">`], true, true)}
     ${row(['合同通知书发出日', `<input type="number" class="form-control" ${IN} id="sc-contractNoteDeliveryDay" placeholder="T+" min="0">`], ['估值发布时间', `<input type="number" class="form-control" ${IN} id="sc-valuationDeliveryTime" placeholder="正整数" min="0">`], false, false)}
-    ${span3(['定价方法', `<div style="display:flex;flex-wrap:wrap;gap:12px;padding:4px 0">${PRICING_OPTS.map(p => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${p}" id="sc-pricing-${p.split(' ')[0]}" style="accent-color:var(--vp-green)">${p}</label>`).join('')}</div>`], true)}
-
-  </div>`;
-
-  const feeGrid = `
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
+    ${span2(['定价方法', `<div style="display:flex;flex-wrap:wrap;gap:12px;padding:4px 0">${PRICING_OPTS.map(p => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${p}" id="sc-pricing-${p.split(' ')[0]}" style="accent-color:var(--vp-green)">${p}</label>`).join('')}</div>`], true)}
 
     ${hdr('最低申购与赎回')}
     ${row(['最低首次申购金额', `<input type="number" class="form-control" ${IN} id="sc-minInitialSub" placeholder="如 10000" min="0">`], ['最低追加申购金额', `<input type="number" class="form-control" ${IN} id="sc-minSubSub" placeholder="如 1000" min="0">`], true, true)}
@@ -1506,30 +1494,14 @@ function buildShareClassAdd() {
     ${hdr('财务年度与其他')}
     ${row(['财务年度截止', `<select class="form-control" ${IN} id="sc-financialYearEnd"><option value="">请选择</option>${FY_OPTS.map(f => `<option>${f}</option>`).join('')}</select>`], ['证券借贷', `<select class="form-control" ${IN} id="sc-securityLending"><option value="">请选择</option><option value="true">是</option><option value="false">否</option></select>`], false, false)}
 
-  </div>`;
+    <div style="grid-column:1/-1;padding-top:20px;display:flex;gap:12px;border-top:1px solid var(--vp-border);margin-top:8px">
+      <button class="btn btn-secondary" onclick="scAddSaveDraft()">💾 保存草稿</button>
+      <button class="btn btn-primary" onclick="scAddSubmit()">提交</button>
+      <button class="btn btn-ghost" onclick="closeTab('share-class-add', event)">取消</button>
+    </div>
 
-  return `<div class="card"><div class="card-body" style="padding:20px">
-  <div class="sc-tabs" style="position:sticky;top:0;z-index:10;background:#fff;margin:-20px -20px 20px;padding:0 20px">
-    <div class="sc-tab active" data-tab="sc-add-fund" onclick="scAddSwitchTab('sc-add-fund')">基金信息</div>
-    <div class="sc-tab" data-tab="sc-add-dealing" onclick="scAddSwitchTab('sc-add-dealing')">交易与估值</div>
-    <div class="sc-tab" data-tab="sc-add-fee" onclick="scAddSwitchTab('sc-add-fee')">费率</div>
-  </div>
-  <div class="sc-panel active" id="scAddPanel-sc-add-fund">${scGrid}</div>
-  <div class="sc-panel" id="scAddPanel-sc-add-dealing" style="display:none">${dealingGrid}</div>
-  <div class="sc-panel" id="scAddPanel-sc-add-fee" style="display:none">${feeGrid}</div>
-  <div style="padding-top:20px;display:flex;gap:12px;border-top:1px solid var(--vp-border);margin-top:20px">
-    <button class="btn btn-secondary" onclick="scAddSaveDraft()">💾 保存草稿</button>
-    <button class="btn btn-primary" onclick="scAddSubmit()">提交</button>
-    <button class="btn btn-ghost" onclick="closeTab('share-class-add', event)">取消</button>
   </div>
   </div></div>`;
-}
-
-function scAddSwitchTab(tab) {
-  document.querySelectorAll('#content .sc-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('#content .sc-panel').forEach(p => p.style.display = 'none');
-  document.querySelector(`.sc-tab[data-tab='${tab}']`).classList.add('active');
-  document.getElementById('scAddPanel-' + tab).style.display = 'block';
 }
 
 function scAddInit() {
