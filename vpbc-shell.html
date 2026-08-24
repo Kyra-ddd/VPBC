@@ -1470,13 +1470,14 @@ function buildProductManagement() {
       <td class="right"><button class="btn btn-secondary btn-sm" onclick="prodOpenDetail('${p.code}')">查看</button></td>
     </tr>`;
   }).join('');
-  return `<div class="card"><div class="card-body"><div class="filter-bar">
-    <div class="form-group"><label class="form-label">基金代码</label><input type="text" class="form-control" id="prodSearchCode" placeholder="如 VP0010"></div>
-    <div class="form-group"><label class="form-label">基金名称</label><input type="text" class="form-control" id="prodSearchName" placeholder="搜索名称..."></div>
-    <div class="form-group"><label class="form-label">基金类型</label><select class="form-control" id="prodSearchType"><option value="">全部类型</option>${PROD_TYPE_OPTIONS.map(t => `<option>${t}</option>`).join('')}</select></div>
-    <div class="form-group"><label class="form-label">注册地</label><select class="form-control" id="prodSearchDom"><option value="">全部</option><option>香港</option><option>开曼</option><option>卢森堡</option><option>爱尔兰</option></select></div>
-    <div class="form-group"><label class="form-label">状态</label><select class="form-control" id="prodSearchSt"><option value="">全部状态</option><option>运作中</option><option>募集中</option><option>已停用</option><option>已终止</option><option>清盘中</option></select></div>
-    <div class="filter-actions"><button class="btn btn-secondary btn-sm" onclick="prodResetFilter()">重置</button><button class="btn btn-primary btn-sm" onclick="prodDoFilter()">搜索</button></div>
+  return `<div class="card"><div class="card-body"><div class="filter-bar" style="flex-wrap:nowrap;gap:12px;align-items:center">
+    <div class="form-group" style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">基金代码</label><input type="text" class="form-control" id="prodSearchCode" placeholder="如 VP0010"></div>
+    <div class="form-group" style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">基金名称</label><input type="text" class="form-control" id="prodSearchName" placeholder="搜索名称..."></div>
+    <div class="form-group" style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">基金类型</label><select class="form-control" id="prodSearchType"><option value="">全部类型</option>${PROD_TYPE_OPTIONS.map(t => `<option>${t}</option>`).join('')}</select></div>
+    <div class="form-group" style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">注册地</label><select class="form-control" id="prodSearchDom"><option value="">全部</option><option>香港</option><option>开曼</option><option>卢森堡</option><option>爱尔兰</option></select></div>
+    <div class="form-group" style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">状态</label><select class="form-control" id="prodSearchSt"><option value="">全部状态</option><option>运作中</option><option>募集中</option><option>已停用</option><option>已终止</option><option>清盘中</option></select></div>
+    <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="prodResetFilter()">重置</button>
+    <button class="btn btn-primary btn-sm" style="flex-shrink:0" onclick="prodDoFilter()">搜索</button>
   </div></div></div>
   <div class="card"><div style="overflow-x:auto;">
     <table class="data-table"><thead><tr><th>基金代码</th><th>基金名称</th><th>基金类型</th><th>注册地</th><th>状态</th><th>成立日期</th><th>基础货币</th><th>管理人</th><th></th></tr></thead>
