@@ -555,7 +555,7 @@ function indRenderUnified() {
   body.innerHTML = rows.map(ind => {
     const hasStocks = ind.stocks && ind.stocks.length > 0;
     const nameHtml = hasStocks
-      ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green)" onclick="indShowStocks('${ind.name}');indOpenStock('${ind.name}')">${ind.name}</span>`
+      ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green)" onclick="indShowStocks('${ind.name}')">${ind.name}</span>`
       : ind.name;
     return `<tr>
       <td class="bold">${nameHtml}</td>
@@ -1520,7 +1520,7 @@ function buildIndustry() {
     <!-- 行业股票明细 -->
     <div class="card mt-4" id="indStockPanel" style="display:none">
       <div class="card-head"><div class="card-title" id="indStockTitle"></div></div>
-      <div class="card-body" style="padding:0"><div style="max-height:200px;overflow-y:auto">
+      <div class="card-body" style="padding:0"><div style="max-height:440px;overflow-y:auto">
         <table class="data-table"><thead><tr><th>市场</th><th>股票代码</th><th>股票名称</th><th>发行人</th></tr></thead>
         <tbody id="indStockBody"></tbody></table></div></div>
     </div>
