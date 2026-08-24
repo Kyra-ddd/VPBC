@@ -1349,7 +1349,6 @@ function prodDoFilter() { alert("原型：按条件筛选"); }
 
 function buildIndustry() {
   return `<div class="page-header"><div><h1 class="page-title">行业配置</h1><p class="page-subtitle">最近更新：2026-08-12　|　主数据维护</p></div></div>
-    <div class="notice"><span class="ico">ⓘ</span>行业是一级大类，同一行业可覆盖多个市场；研究员按启用/停用维护，不再区分协助关系。上传 Excel 即可解析当前行业下的股票清单。</div>
     <div class="toolbar"><div class="segmented" id="marketSeg"></div><div class="flex gap-2"><button class="btn btn-secondary btn-sm" onclick="alert('新增行业')">＋ 新增行业</button><button class="btn btn-secondary btn-sm" onclick="alert('新增市场')">＋ 新增市场</button></div></div>
     <div class="split">
       <div class="card"><div class="card-head"><div class="card-title" id="industryListTitle">行业列表</div><span class="tiny" id="industryCount"></span></div><div class="card-body" style="padding:0"><div class="industry-table-wrap"><table class="data-table"><thead><tr><th>行业</th><th>研究员</th><th>状态</th><th class="right">操作</th></tr></thead><tbody id="industryBody"></tbody></table></div></div></div>
