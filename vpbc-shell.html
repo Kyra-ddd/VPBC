@@ -427,20 +427,20 @@ const IND_DATA = {
   HK: { name: "港股", industries: [
     { code: "HK-RE", name: "地产", analysts: [{ id:"a01", name:"David", acct:"davidw", focus:"港股内房股", status:"在职" }, { id:"a02", name:"Emma", acct:"emma", focus:"物业管理", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、REITs", status:"在职" }], stocks: [{code:"00178.HK",name:"置富产业信托"},{code:"01109.HK",name:"华润置地"},{code:"06098.HK",name:"龙湖集团"}] },
     { code: "HK-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"中资银行、券商", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、金融", status:"在职" }], stocks: [{code:"0939.HK",name:"建设银行"},{code:"1398.HK",name:"工商银行"},{code:"3988.HK",name:"中国银行"}] },
-    { code: "HK-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"互联网平台、消费电子", status:"在职" }, { id:"a06", name:"Kevin", acct:"kevinl", focus:"半导体代工", status:"在职" }], stocks: [{code:"00700.HK",name:"腾讯控股"},{code:"09988.HK",name:"阿里巴巴"},{code:"02382.HK",name:"舜宇光学"}] },
+    { code: "HK-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"互联网平台、消费电子", status:"在职" }, { id:"a06", name:"Kevin", acct:"kevinl", focus:"半导体代工", status:"在职" }], stocks: [{code:"00700.HK",name:"腾讯控股",issuer:"腾讯控股有限公司"},{code:"09988.HK",name:"阿里巴巴",issuer:"阿里巴巴集团控股有限公司"},{code:"02382.HK",name:"舜宇光学",issuer:"舜宇光学科技（集团）有限公司"},{code:"1810.HK",name:"小米集团",issuer:"小米集团"},{code:"3690.HK",name:"美团",issuer:"美团"},{code:"9618.HK",name:"京东集团",issuer:"京东集团股份有限公司"},{code:"9999.HK",name:"网易",issuer:"网易股份有限公司"}] },
     { code: "HK-CONS", name: "消费", analysts: [{ id:"a02", name:"Emma", acct:"emma", focus:"消费、物业管理", status:"在职" }] },
   ]},
   US: { name: "美股", industries: [
     { code: "US-SEM", name: "半导体", analysts: [{ id:"a06", name:"Kevin", acct:"kevinl", focus:"美股半导体（跨市场）", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片", status:"在职" }], stocks: [{code:"NVDA.US",name:"英伟达"},{code:"AMD.US",name:"超微半导体"},{code:"INTC.US",name:"英特尔"}] },
     { code: "US-BIO", name: "生物科技", analysts: [{ id:"a08", name:"Nancy", acct:"nancym", focus:"创新药、CXO", status:"在职" }] },
     { code: "US-NET", name: "互联网", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"美股互联网（跨市场）", status:"在职" }], stocks: [{code:"GOOGL.US",name:"Alphabet"},{code:"META.US",name:"Meta Platforms"},{code:"AMZN.US",name:"亚马逊"}] },
-    { code: "US-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"AI 上游平台", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片与硬件", status:"在职" }] },
+    { code: "US-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"AI 上游平台", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片与硬件", status:"在职" }], stocks: [{code:"AAPL.US",name:"Apple",issuer:"Apple Inc."},{code:"MSFT.US",name:"Microsoft",issuer:"Microsoft Corporation"},{code:"GOOGL.US",name:"Alphabet",issuer:"Alphabet Inc."},{code:"AMZN.US",name:"Amazon",issuer:"Amazon.com, Inc."},{code:"TSLA.US",name:"Tesla",issuer:"Tesla, Inc."},{code:"META.US",name:"Meta",issuer:"Meta Platforms, Inc."}] },
   ]},
   JP: { name: "日股", industries: [
     { code: "JP-AUTO", name: "汽车", analysts: [{ id:"a09", name:"Tanaka", acct:"tanakak", focus:"日系整车厂", status:"在职" }] },
-    { code: "JP-ELE", name: "电子", analysts: [{ id:"a10", name:"Sato", acct:"sato.t", focus:"电子元器件", status:"离职" }] },
+    { code: "JP-ELE", name: "电子", analysts: [{ id:"a10", name:"Sato", acct:"sato.t", focus:"电子元器件", status:"离职" }], stocks: [{code:"6758.JP",name:"索尼集团",issuer:"索尼グループ株式会社"},{code:"9984.JP",name:"软银集团",issuer:"SBG（SoftBank Group）"},{code:"8035.JP",name:"东京威力科创",issuer:"東京エレクトロン"}] },
   ]},
-  KR: { name: "韩股", industries: [{ code: "KR-TECH", name: "科技", analysts: [{ id:"a11", name:"Kim", acct:"kim", focus:"韩国科技巨头", status:"在职" }] }] },
+  KR: { name: "韩股", industries: [{ code: "KR-TECH", name: "科技", analysts: [{ id:"a11", name:"Kim", acct:"kim", focus:"韩国科技巨头", status:"在职" }], stocks: [{code:"005930.KS",name:"三星电子",issuer:"Samsung Electronics Co., Ltd."},{code:"000660.KS",name:"SK海力士",issuer:"SK Hynix Inc."},{code:"035420.KS",name:"NAVER",issuer:"NAVER Corporation"}] }] },
 };
 
 let indCurrentMarket = "ALL";
@@ -555,7 +555,7 @@ function indRenderUnified() {
   body.innerHTML = rows.map(ind => {
     const hasStocks = ind.stocks && ind.stocks.length > 0;
     const nameHtml = hasStocks
-      ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green)" onclick="indShowStocks('${ind.name}')">${ind.name}</span>`
+      ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green)" onclick="indShowStocks('${ind.name}');indOpenStock('${ind.name}')">${ind.name}</span>`
       : ind.name;
     return `<tr>
       <td class="bold">${nameHtml}</td>
@@ -594,7 +594,7 @@ function indShowStocks(name) {
   });
   title.textContent = name + " — 股票明细";
   if (!target || !target.stocks || !target.stocks.length) {
-    tbody.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center;padding:24px">暂无股票数据</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center;padding:24px">暂无股票数据，请先上传</td></tr>';
   } else {
     tbody.innerHTML = target.stocks.map(s => {
       const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股" };
@@ -603,11 +603,48 @@ function indShowStocks(name) {
         <td>${marketMap[mcode] || "—"}</td>
         <td><span class="cell-code">${s.code}</span></td>
         <td>${s.name}</td>
-        <td class="muted">${target.analysts[0]?.name || "—"}</td>
+        <td class="muted">${s.issuer || "—"}</td>
       </tr>`;
     }).join("");
   }
   panel.style.display = "block";
+}
+
+// Open stock detail modal
+function indOpenStock(name) {
+  const modal = document.getElementById("indStockModal");
+  const title = document.getElementById("indStockModalTitle");
+  const tbody = document.getElementById("indStockModalBody");
+  if (!modal || !title || !tbody) return;
+  let target = null;
+  Object.values(IND_DATA).forEach(m => {
+    const found = m.industries.find(i => i.name === name);
+    if (found) target = found;
+  });
+  title.textContent = name + " — 股票明细";
+  if (!target || !target.stocks || !target.stocks.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">暂无股票数据</td></tr>';
+  } else {
+    const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股" };
+    const mcode = Object.keys(IND_DATA).find(k => IND_DATA[k].industries.some(i => i.name === name)) || "HK";
+    tbody.innerHTML = target.stocks.map(s => {
+      const now = new Date();
+      const ts = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+      return `<tr>
+        <td>${marketMap[mcode] || "—"}</td>
+        <td><span class="cell-code">${s.code}</span></td>
+        <td>${s.name}</td>
+        <td class="muted">${s.issuer || "—"}</td>
+        <td class="muted" style="font-variant-numeric:tabular-nums">${ts}</td>
+      </tr>`;
+    }).join("");
+  }
+  modal.classList.add("show");
+}
+
+function indCloseStock() {
+  const modal = document.getElementById("indStockModal");
+  if (modal) modal.classList.remove("show");
 }
 
 // Import modal
@@ -1482,7 +1519,7 @@ function buildIndustry() {
     <div class="card mt-4" id="indStockPanel" style="display:none">
       <div class="card-head"><div class="card-title" id="indStockTitle"></div></div>
       <div class="card-body" style="padding:0"><div style="max-height:200px;overflow-y:auto">
-        <table class="data-table"><thead><tr><th>市场</th><th>股票代码</th><th>股票名称</th><th>发送人</th></tr></thead>
+        <table class="data-table"><thead><tr><th>市场</th><th>股票代码</th><th>股票名称</th><th>发行人</th></tr></thead>
         <tbody id="indStockBody"></tbody></table></div></div>
     </div>
 
@@ -1508,7 +1545,7 @@ function buildIndustry() {
       <div class="modal" onclick="event.stopPropagation()" style="max-width:700px">
         <div class="modal-header"><div class="modal-title" id="indStockModalTitle"></div><button class="modal-close" onclick="indCloseStock()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
         <div class="modal-body" style="max-height:60vh;overflow-y:auto;padding:0">
-          <table class="data-table"><thead><tr><th>市场</th><th>股票代码</th><th>股票名称</th><th>发送人</th><th>更新时间</th></tr></thead>
+          <table class="data-table"><thead><tr><th>市场</th><th>股票代码</th><th>股票名称</th><th>发行人</th><th>更新时间</th></tr></thead>
           <tbody id="indStockModalBody"></tbody></table>
         </div>
         <div class="modal-footer"><button class="btn btn-secondary" onclick="indCloseStock()">关闭</button></div>
