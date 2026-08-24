@@ -586,21 +586,22 @@ function indShowStocks(name) {
   const title = document.getElementById("indStockTitle");
   const tbody = document.getElementById("indStockBody");
   if (!panel || !title || !tbody) return;
-  // Find the industry across all markets
-  let target = null;
-  Object.values(IND_DATA).forEach(m => {
-    const found = m.industries.find(i => i.name === name);
-    if (found) target = found;
+  // Collect all stocks from ALL markets that have this industry name
+  const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股" };
+  const allStocks = [];
+  Object.entries(IND_DATA).forEach(([mcode, market]) => {
+    const ind = market.industries.find(i => i.name === name);
+    if (ind && ind.stocks && ind.stocks.length) {
+      ind.stocks.forEach(s => allStocks.push({ ...s, _market: marketMap[mcode] || mcode }));
+    }
   });
   title.textContent = name + " — 股票明细";
-  if (!target || !target.stocks || !target.stocks.length) {
+  if (!allStocks.length) {
     tbody.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center;padding:24px">暂无股票数据，请先上传</td></tr>';
   } else {
-    tbody.innerHTML = target.stocks.map(s => {
-      const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股" };
-      const mcode = Object.keys(IND_DATA).find(k => IND_DATA[k].industries.some(i => i.name === name)) || "HK";
+    tbody.innerHTML = allStocks.map(s => {
       return `<tr>
-        <td>${marketMap[mcode] || "—"}</td>
+        <td>${s._market}</td>
         <td><span class="cell-code">${s.code}</span></td>
         <td>${s.name}</td>
         <td class="muted">${s.issuer || "—"}</td>
@@ -616,22 +617,23 @@ function indOpenStock(name) {
   const title = document.getElementById("indStockModalTitle");
   const tbody = document.getElementById("indStockModalBody");
   if (!modal || !title || !tbody) return;
-  let target = null;
-  Object.values(IND_DATA).forEach(m => {
-    const found = m.industries.find(i => i.name === name);
-    if (found) target = found;
+  const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股" };
+  const allStocks = [];
+  Object.entries(IND_DATA).forEach(([mcode, market]) => {
+    const ind = market.industries.find(i => i.name === name);
+    if (ind && ind.stocks && ind.stocks.length) {
+      ind.stocks.forEach(s => allStocks.push({ ...s, _market: marketMap[mcode] || mcode }));
+    }
   });
   title.textContent = name + " — 股票明细";
-  if (!target || !target.stocks || !target.stocks.length) {
+  const now = new Date();
+  const ts = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  if (!allStocks.length) {
     tbody.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">暂无股票数据</td></tr>';
   } else {
-    const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股" };
-    const mcode = Object.keys(IND_DATA).find(k => IND_DATA[k].industries.some(i => i.name === name)) || "HK";
-    tbody.innerHTML = target.stocks.map(s => {
-      const now = new Date();
-      const ts = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+    tbody.innerHTML = allStocks.map(s => {
       return `<tr>
-        <td>${marketMap[mcode] || "—"}</td>
+        <td>${s._market}</td>
         <td><span class="cell-code">${s.code}</span></td>
         <td>${s.name}</td>
         <td class="muted">${s.issuer || "—"}</td>
@@ -1498,9 +1500,9 @@ function prodDoFilter() { alert("原型：按条件筛选"); }
 function buildIndustry() {
   return `<div class="toolbar"><div class="flex gap-2"><button class="btn btn-secondary btn-sm" onclick="indOpenAdd()">＋ 新增行业</button></div></div>
     <div class="filter-bar" style="flex-wrap:nowrap;gap:12px;align-items:center">
-      <div class="form-group" style="margin:0;flex-shrink:0"><label class="form-label" style="display:inline-block;margin-right:6px">市场</label><select class="form-control" style="display:inline-block;width:auto" id="indFMarket" onchange="indDoFilter()"><option value="">全部市场</option></select></div>
-      <div class="form-group" style="margin:0;flex-shrink:0"><label class="form-label" style="display:inline-block;margin-right:6px">行业</label><select class="form-control" style="display:inline-block;width:auto" id="indFIndustry" onchange="indDoFilter()"><option value="">全部行业</option></select></div>
-      <div class="form-group" style="margin:0;flex-shrink:0"><label class="form-label" style="display:inline-block;margin-right:6px">研究员</label><select class="form-control" style="display:inline-block;width:auto" id="indFAnalyst" onchange="indDoFilter()"><option value="">全部研究员</option></select></div>
+      <div class="form-group" style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">市场</label><select class="form-control" style="width:auto" id="indFMarket" onchange="indDoFilter()"><option value="">全部市场</option></select></div>
+      <div class="form-group" style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">行业</label><select class="form-control" style="width:auto" id="indFIndustry" onchange="indDoFilter()"><option value="">全部行业</option></select></div>
+      <div class="form-group" style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">研究员</label><select class="form-control" style="width:auto" id="indFAnalyst" onchange="indDoFilter()"><option value="">全部研究员</option></select></div>
       <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="indResetFilter()">重置</button>
     </div>
     <div class="card"><div class="card-body" style="padding:0"><div style="max-height:264px;overflow-y:auto">
