@@ -114,6 +114,9 @@
     .tag-blue { background-color: #E6F2FF; color: #2563EB; }
 
     .segmented { display: inline-flex; background: var(--vp-gray-100); border-radius: var(--vp-radius); padding: 3px; gap: 2px; }
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--vp-green); }
+    .sort-icon { font-size: 11px; margin-left: 2px; }
     .seg { font-size: 12px; font-weight: 600; padding: 5px 12px; border: none; background: transparent; color: var(--vp-gray-700); border-radius: 4px; cursor: pointer; white-space: nowrap; transition: background 0.15s, color 0.15s; }
     .seg:hover { color: var(--vp-green); }
     .seg.active { background: var(--vp-white); color: var(--vp-green); box-shadow: var(--vp-shadow); }
@@ -473,21 +476,63 @@ function indOpenAddMarket() { alert("原型：新增市场"); }
 function indRenderUnified() {
   const body = document.getElementById("indUniBody");
   if (!body) return;
-  const rows = indGetIndustries();
+  let rows = indGetIndustries();
+
+  // Attach computed fields
+  rows = rows.map((ind, i) => {
+    const analysts = (ind.analysts || []).filter(a => a.status === "在职");
+    return {
+      ...ind,
+      _analystNames: analysts.length ? analysts.map(a => a.name).join("、") : "—",
+      _updater: analysts.length ? analysts[0].name : "—",
+      _time: ind._time || ["2026/08/20 09:15:32","2026/08/18 14:22:07","2026/08/15 11:03:45","2026/08/12 16:40:18","2026/08/10 08:55:01","2026/08/08 10:30:44","2026/08/05 13:20:11","2026/08/03 15:07:38","2026/08/01 09:42:56","2026/07/30 17:18:22","2026/07/28 11:05:33"][i % 11]
+    };
+  });
+
+  // Sort
+  if (indSortField) {
+    rows.sort((a, b) => {
+      let av, bv;
+      if (indSortField === "name")    { av = a.name; bv = b.name; }
+      else if (indSortField === "market")  { av = (a.marketNames || []).join(""); bv = (b.marketNames || []).join(""); }
+      else if (indSortField === "analyst") { av = a._analystNames; bv = b._analystNames; }
+      else if (indSortField === "updater") { av = a._updater; bv = b._updater; }
+      else if (indSortField === "time")    { av = a._time; bv = b._time; }
+      if (av < bv) return indSortDir === "asc" ? -1 : 1;
+      if (av > bv) return indSortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+
+  // Update sort icons
+  ["name","market","analyst","updater","time"].forEach(f => {
+    const el = document.getElementById("sort-" + f);
+    if (el) el.textContent = f === indSortField ? (indSortDir === "asc" ? "↑" : "↓") : "";
+  });
+
   if (!rows.length) { body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:32px">暂无数据</td></tr>'; return; }
   body.innerHTML = rows.map(ind => {
-    const analysts = (ind.analysts || []).filter(a => a.status === "在职");
-    const names = analysts.length ? analysts.map(a => a.name).join("、") : "—";
-    const updater = analysts.length ? analysts[0].name : "—";
     return `<tr>
       <td class="bold">${ind.name}</td>
       <td>${(ind.marketNames || []).join("、")}</td>
-      <td>${names}</td>
-      <td class="muted">${updater}</td>
-      <td class="muted">—</td>
-      <td class="right nowrap"><button class="btn btn-ghost btn-sm" onclick="alert('编辑「${ind.name}」')">编辑</button></td>
+      <td>${ind._analystNames}</td>
+      <td class="muted">${ind._updater}</td>
+      <td class="muted" style="font-variant-numeric:tabular-nums">${ind._time}</td>
+      <td class="right nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="alert('导入「${ind.name}」')">导入</button>
+        <button class="btn btn-ghost btn-sm" onclick="alert('编辑「${ind.name}」')">编辑</button>
+      </td>
     </tr>`;
   }).join("");
+}
+
+let indSortField = "";
+let indSortDir = "asc";
+
+function indSort(field) {
+  if (indSortField === field) indSortDir = indSortDir === "asc" ? "desc" : "asc";
+  else { indSortField = field; indSortDir = "asc"; }
+  indRenderUnified();
 }
 
 function indRenderMarkets() {
@@ -1315,11 +1360,17 @@ function prodDoFilter() { alert("原型：按条件筛选"); }
 
 function buildIndustry() {
   return `<div class="toolbar"><div class="segmented" id="marketSeg"></div><div class="flex gap-2"><button class="btn btn-secondary btn-sm" onclick="indOpenAdd()">＋ 新增行业</button><button class="btn btn-secondary btn-sm" onclick="indOpenAddMarket()">＋ 新增市场</button></div></div>
-    <div class="card"><div class="card-body" style="padding:0;overflow-x:auto">
-      <table class="data-table"><thead><tr><th>行业</th><th>市场</th><th>研究员</th><th>更新人</th><th>更新时间</th><th class="right">操作</th></tr></thead>
+    <div class="card"><div class="card-body" style="padding:0"><div style="max-height:264px;overflow-y:auto">
+      <table class="data-table"><thead><tr>
+        <th class="sortable" onclick="indSort('name')">行业 <span class="sort-icon" id="sort-name"></span></th>
+        <th class="sortable" onclick="indSort('market')">市场 <span class="sort-icon" id="sort-market"></span></th>
+        <th class="sortable" onclick="indSort('analyst')">研究员 <span class="sort-icon" id="sort-analyst"></span></th>
+        <th class="sortable" onclick="indSort('updater')">更新人 <span class="sort-icon" id="sort-updater"></span></th>
+        <th class="sortable" onclick="indSort('time')">更新时间 <span class="sort-icon" id="sort-time"></span></th>
+        <th class="right">操作</th>
+      </tr></thead>
       <tbody id="indUniBody"></tbody>
-      </table>
-    </div></div>`;
+      </table></div></div></div>`;
 }
 
 function buildResearchReport() {
