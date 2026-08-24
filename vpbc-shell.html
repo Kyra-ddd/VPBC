@@ -1464,7 +1464,7 @@ function buildProductManagement() {
   const rows = PRODUCTS.map(p => {
     const stTag = `<span class="tag ${PROD_STATUS_TAG[p.status] || 'tag-gray'}">${p.status}</span>`;
     return `<tr>
-      <td><span class="cell-code">${p.code}</span></td>
+      <td><span class="cell-code" style="text-decoration:underline;cursor:pointer" onclick="openTab('product-detail','${p.code}')">${p.code}</span></td>
       <td><div class="cell-name">${p.nameEn}</div><div class="tiny muted">${p.nameTc}</div></td>
       <td>${p.type}</td>
       <td>${p.domicile}</td>
@@ -1474,7 +1474,6 @@ function buildProductManagement() {
       <td>${p.manager}</td>
       <td>${p.updater}</td>
       <td class="cell-muted" style="font-variant-numeric:tabular-nums">${p.updateTime}</td>
-      <td class="right"><button class="btn btn-secondary btn-sm" onclick="prodOpenDetail('${p.code}')">查看</button></td>
     </tr>`;
   }).join('');
   const sortIcon = (field) => field === prodSortField ? (prodSortDir === 'asc' ? '↑' : '↓') : '';
@@ -1507,7 +1506,6 @@ function buildProductManagement() {
       <th class="sortable" onclick="prodSort('manager')">基金经理 <span class="sort-icon">${sortIcon('manager')}</span></th>
       <th class="sortable" onclick="prodSort('updater')">更新人 <span class="sort-icon">${sortIcon('updater')}</span></th>
       <th class="sortable" onclick="prodSort('updateTime')">更新时间 <span class="sort-icon">${sortIcon('updateTime')}</span></th>
-      <th></th>
     </tr></thead>
     <tbody id="prodBody">${rows}</tbody>
     </table>
