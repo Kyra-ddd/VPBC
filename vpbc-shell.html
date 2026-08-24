@@ -411,14 +411,14 @@ function updateSidebarActive(key) {
 
 // ========== Product Data ==========
 const PRODUCTS = [
-  { code:'VP0010', name:'Value Partners 经典基金',       type:'股票型基金',   domicile:'香港', status:'运作中',   date:'1993/04/01', currency:'USD', manager:'Value Partners Group' },
-  { code:'VP0021', name:'Value Partners 高股息股票基金',   type:'股票型基金',   domicile:'香港', status:'运作中',   date:'2005/08/15', currency:'USD', manager:'Value Partners Group' },
-  { code:'VP0033', name:'Value Partners A股基金',         type:'混合资产基金', domicile:'香港', status:'运作中',   date:'2010/11/22', currency:'CNY', manager:'Value Partners Group' },
-  { code:'VP0045', name:'Value Partners 平衡基金',       type:'混合资产基金', domicile:'开曼', status:'募集中',   date:'2024/03/01', currency:'USD', manager:'Value Partners Group' },
-  { code:'VP0056', name:'Value Partners 债券基金',       type:'债券型基金',   domicile:'开曼', status:'运作中',   date:'2018/06/20', currency:'USD', manager:'Value Partners Group' },
-  { code:'VP0067', name:'Value Partners 货币市场基金',   type:'货币市场基金', domicile:'香港', status:'运作中',   date:'2020/01/10', currency:'HKD', manager:'Value Partners Group' },
-  { code:'VP0078', name:'Value Partners 指数基金',       type:'指数基金',     domicile:'香港', status:'已终止',   date:'2015/06/30', currency:'USD', manager:'Value Partners Group' },
-  { code:'VP0089', name:'Value Partners 优选增长基金',   type:'股票型基金',   domicile:'卢森堡', status:'运作中', date:'2022/09/01', currency:'EUR', manager:'Value Partners Group' },
+  { code:'VP0010', nameEn:'Value Partners Classic Fund',        nameTc:'Value Partners 經典基金',       type:'股票型基金',   domicile:'香港', status:'运作中',   date:'1993/04/01', currency:'USD', manager:'Value Partners Group', updater:'张明', updateTime:'2026/08/20 14:30' },
+  { code:'VP0021', nameEn:'Value Partners High Dividend Equity', nameTc:'Value Partners 高股息股票基金',  type:'股票型基金',   domicile:'香港', status:'运作中',   date:'2005/08/15', currency:'USD', manager:'Value Partners Group', updater:'张明', updateTime:'2026/08/21 09:15' },
+  { code:'VP0033', nameEn:'Value Partners A-Share Fund',         nameTc:'Value Partners A股基金',         type:'混合资产基金', domicile:'香港', status:'运作中',   date:'2010/11/22', currency:'CNY', manager:'Value Partners Group', updater:'李华', updateTime:'2026/08/19 16:45' },
+  { code:'VP0045', nameEn:'Value Partners Balanced Fund',        nameTc:'Value Partners 平衡基金',        type:'混合资产基金', domicile:'开曼', status:'募集中',   date:'2024/03/01', currency:'USD', manager:'Value Partners Group', updater:'王芳', updateTime:'2026/08/22 10:00' },
+  { code:'VP0056', nameEn:'Value Partners Bond Fund',            nameTc:'Value Partners 债券基金',        type:'债券型基金',   domicile:'开曼', status:'运作中',   date:'2018/06/20', currency:'USD', manager:'Value Partners Group', updater:'张明', updateTime:'2026/08/18 11:20' },
+  { code:'VP0067', nameEn:'Value Partners Money Market Fund',     nameTc:'Value Partners 货币市场基金',    type:'货币市场基金', domicile:'香港', status:'运作中',   date:'2020/01/10', currency:'HKD', manager:'Value Partners Group', updater:'李华', updateTime:'2026/08/20 15:30' },
+  { code:'VP0078', nameEn:'Value Partners Index Fund',            nameTc:'Value Partners 指数基金',        type:'指数基金',     domicile:'香港', status:'已终止',   date:'2015/06/30', currency:'USD', manager:'Value Partners Group', updater:'王芳', updateTime:'2026/08/10 09:00' },
+  { code:'VP0089', nameEn:'Value Partners Growth Fund',           nameTc:'Value Partners 优选增长基金',    type:'股票型基金',   domicile:'卢森堡', status:'运作中',   date:'2022/09/01', currency:'EUR', manager:'Value Partners Group', updater:'张明', updateTime:'2026/08/21 14:00' },
 ];
 const PROD_STATUS_TAG = { '运作中':'tag-green', '募集中':'tag-blue', '已终止':'tag-red', '清盘中':'tag-gray', '已停用':'tag-gray' };
 const PROD_TYPE_OPTIONS = ['股票型基金','债券型基金','混合资产基金','货币市场基金','指数基金','ETF','基金中基金','结构型基金','其他'];
@@ -1140,6 +1140,7 @@ function cfgSwitchTab(tab) {
 // ========== Build Content ==========
 function buildContent(key) {
   if (key === 'product-management') return buildProductManagement();
+  if (key === 'product-add') return buildProductAdd();
   if (key === 'industry') return buildIndustry();
   if (key === 'research-report') return buildResearchReport();
   if (key === 'stock-pool') return buildStockPool();
@@ -1455,22 +1456,36 @@ function buildConfig() {
     </section>`;
 }
 
+// ========== Product Management ==========
+let prodSortField = '';
+let prodSortDir = 'asc';
+
 function buildProductManagement() {
   const rows = PRODUCTS.map(p => {
     const stTag = `<span class="tag ${PROD_STATUS_TAG[p.status] || 'tag-gray'}">${p.status}</span>`;
     return `<tr>
       <td><span class="cell-code">${p.code}</span></td>
-      <td><div class="cell-name">${p.name}</div></td>
+      <td><div class="cell-name">${p.nameEn}</div><div class="tiny muted">${p.nameTc}</div></td>
       <td>${p.type}</td>
       <td>${p.domicile}</td>
       <td>${stTag}</td>
       <td class="cell-muted" style="font-variant-numeric:tabular-nums">${p.date}</td>
       <td>${p.currency}</td>
       <td>${p.manager}</td>
+      <td>${p.updater}</td>
+      <td class="cell-muted" style="font-variant-numeric:tabular-nums">${p.updateTime}</td>
       <td class="right"><button class="btn btn-secondary btn-sm" onclick="prodOpenDetail('${p.code}')">查看</button></td>
     </tr>`;
   }).join('');
-  return `<div class="card"><div class="card-body"><div style="display:flex;flex-wrap:nowrap;gap:12px;align-items:center">
+  const sortIcon = (field) => field === prodSortField ? (prodSortDir === 'asc' ? '↑' : '↓') : '';
+  return `<div class="toolbar">
+    <div class="flex gap-2">
+      <button class="btn btn-primary btn-sm" onclick="openTab('product-add','新增产品')">＋ 新增产品</button>
+      <button class="btn btn-secondary btn-sm" onclick="alert('原型：修改产品')">修改产品</button>
+      <button class="btn btn-ghost btn-sm" onclick="alert('原型：删除产品')">删除产品</button>
+    </div>
+  </div>
+  <div class="card"><div class="card-body"><div style="display:flex;flex-wrap:nowrap;gap:12px;align-items:center">
     <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">基金代码</label><input type="text" class="form-control" id="prodSearchCode" placeholder="如 VP0010"></div>
     <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">基金名称</label><input type="text" class="form-control" id="prodSearchName" placeholder="搜索名称..."></div>
     <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">基金类型</label><select class="form-control" id="prodSearchType"><option value="">全部类型</option>${PROD_TYPE_OPTIONS.map(t => `<option>${t}</option>`).join('')}</select></div>
@@ -1478,19 +1493,205 @@ function buildProductManagement() {
     <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">状态</label><select class="form-control" id="prodSearchSt"><option value="">全部状态</option><option>运作中</option><option>募集中</option><option>已停用</option><option>已终止</option><option>清盘中</option></select></div>
     <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="prodResetFilter()">重置</button>
     <button class="btn btn-primary btn-sm" style="flex-shrink:0" onclick="prodDoFilter()">搜索</button>
+    <button class="btn btn-ghost btn-sm" style="flex-shrink:0" onclick="prodExport()">⬇ 导出</button>
   </div></div></div>
   <div class="card"><div style="overflow-x:auto;">
-    <table class="data-table"><thead><tr><th>基金代码</th><th>基金名称</th><th>基金类型</th><th>注册地</th><th>状态</th><th>成立日期</th><th>基础货币</th><th>管理人</th><th></th></tr></thead>
+    <table class="data-table"><thead><tr>
+      <th class="sortable" onclick="prodSort('code')">基金代码 <span class="sort-icon">${sortIcon('code')}</span></th>
+      <th class="sortable" onclick="prodSort('nameEn')">基金名称 <span class="sort-icon">${sortIcon('nameEn')}</span></th>
+      <th class="sortable" onclick="prodSort('type')">基金类型 <span class="sort-icon">${sortIcon('type')}</span></th>
+      <th class="sortable" onclick="prodSort('domicile')">注册地 <span class="sort-icon">${sortIcon('domicile')}</span></th>
+      <th class="sortable" onclick="prodSort('status')">状态 <span class="sort-icon">${sortIcon('status')}</span></th>
+      <th class="sortable" onclick="prodSort('date')">成立日期 <span class="sort-icon">${sortIcon('date')}</span></th>
+      <th class="sortable" onclick="prodSort('currency')">基础货币 <span class="sort-icon">${sortIcon('currency')}</span></th>
+      <th class="sortable" onclick="prodSort('manager')">基金经理 <span class="sort-icon">${sortIcon('manager')}</span></th>
+      <th class="sortable" onclick="prodSort('updater')">更新人 <span class="sort-icon">${sortIcon('updater')}</span></th>
+      <th class="sortable" onclick="prodSort('updateTime')">更新时间 <span class="sort-icon">${sortIcon('updateTime')}</span></th>
+      <th></th>
+    </tr></thead>
     <tbody id="prodBody">${rows}</tbody>
     </table>
     <div class="pagination-bar"><span class="pagination-info">共 ${PRODUCTS.length} 条</span><div class="pagination"><button class="page-btn" disabled>←</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">→</button></div></div>
   </div></div>`;
 }
 
+function prodSort(field) {
+  if (prodSortField === field) prodSortDir = prodSortDir === 'asc' ? 'desc' : 'asc';
+  else { prodSortField = field; prodSortDir = 'asc'; }
+  PRODUCTS.sort((a, b) => {
+    let av = a[field], bv = b[field];
+    if (field === 'code') { av = a.code; bv = b.code; }
+    if (field === 'nameEn') { av = a.nameEn; bv = b.nameEn; }
+    if (field === 'updateTime') {
+      av = a.updateTime.replace(/\//g, ''); bv = b.updateTime.replace(/\//g, '');
+    }
+    if (av < bv) return prodSortDir === 'asc' ? -1 : 1;
+    if (av > bv) return prodSortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+  document.getElementById('content').innerHTML = buildProductManagement();
+}
+
+function prodExport() { alert('原型：导出产品数据为 Excel'); }
 function prodOpenDetail(code) { alert("查看产品详情：" + code); }
-function prodOpenNew() { alert("原型：打开新建产品弹层"); }
 function prodResetFilter() { document.getElementById("prodSearchCode").value=""; document.getElementById("prodSearchName").value=""; document.getElementById("prodSearchType").value=""; document.getElementById("prodSearchDom").value=""; document.getElementById("prodSearchSt").value=""; }
 function prodDoFilter() { alert("原型：按条件筛选"); }
+
+// ========== Product Add / Edit ==========
+function buildProductAdd() {
+  const L = 'style="display:flex;align-items:center;gap:8px"', LB = 'style="width:140px;flex-shrink:0;margin:0;font-weight:500"', IN = 'style="flex:1;min-width:0"';
+  const R = '<span style="color:#dc2626;margin-right:2px">*</span>';
+  const hdr = (label) => `<div style="grid-column:1/-1;font-weight:600;color:var(--vp-green);padding:6px 0;border-bottom:1px solid var(--vp-green);margin-bottom:4px">${label}</div>`;
+  const cell = (label, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
+  const empty = `<div></div>`;
+  const taCell = (label, id, ph, req) => `<div style="grid-column:1/-1;display:flex;align-items:flex-start;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><textarea class="form-control" style="flex:1" rows="2" id="${id}" placeholder="${ph}"></textarea></div>`;
+
+  const row = (a, b, reqA, reqB) => b
+    ? `${cell(a[0], a[1], reqA)}${cell(b[0], b[1], reqB)}`
+    : `${cell(a[0], a[1], reqA)}${empty}`;
+
+  const grid = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
+
+    ${hdr('基金核心身份')}
+    ${row(['基金代码', `<input type="text" class="form-control" ${IN} placeholder="不超过20字符" id="f-fundCode">`], ['基金名称（英文）', `<input type="text" class="form-control" ${IN} placeholder="不超过200字符" id="f-fundNameEn">`], true, true)}
+    ${row(['基金名称（繁体）', `<input type="text" class="form-control" ${IN} placeholder="不超过200字符" id="f-fundNameTc">`], ['基金名称（简体）', `<input type="text" class="form-control" ${IN} placeholder="不超过200字符" id="f-fundNameSc">`], true, true)}
+    ${row(['基金类型', `<select class="form-control" ${IN} id="f-fundType"><option value="">请选择</option><option>SFC Authorized Fund（UT）香港证监会认可基金（单位信托）</option><option>SFC Authorized Fund（OFC）香港证监会认可基金（开放式基金型公司）</option><option>SFC Authorized Fund（Cayman）香港证监会认可基金（开曼）</option><option>SFC Authorized Fund（ICAV）香港证监会认可基金（爱尔兰集体资产管理工具）</option><option>Private Fund（Cayman）私募基金（开曼）</option><option>Private Fund（Chinese Mainland）私募基金（中国内地）</option><option>Investment Advisory（Offshore）投资咨询（离岸）</option><option>Investment Advisory（Chinese Mainland）投资咨询（中国内地）</option><option>Other Mutual Fund 其他共同基金</option></select>`], ['伞型/OFC名称', `<input type="text" class="form-control" ${IN} id="f-umbrellaOfcName" placeholder="选填">`], true, false)}
+    ${row(['子基金代码', `<input type="text" class="form-control" ${IN} id="f-subFundCode" placeholder="选填">`], ['注册地/管辖区', `<select class="form-control" ${IN} id="f-domicileJurisdiction"><option value="">请选择</option><option>HK</option><option>IE</option><option>KY</option><option>CN</option><option>SG</option><option>LU</option><option>GB</option><option>US</option><option>CH</option><option>DE</option><option>FR</option><option>JP</option><option>BM</option><option>VG</option><option>AU</option><option>NL</option><option>TW</option><option>MO</option><option>MY</option><option>KR</option><option>IN</option><option>IT</option><option>ES</option><option>SE</option><option>FI</option><option>DK</option><option>NO</option></select>`], false, true)}
+    ${row(['主要监管机构', `<input type="text" class="form-control" ${IN} id="f-primaryRegulator">`], ['基础货币', `<select class="form-control" ${IN} id="f-baseCurrency"><option value="">请选择</option><option>HKD</option><option>USD</option><option>EUR</option><option>CNY</option><option>CNH</option><option>GBP</option><option>JPY</option><option>SGD</option><option>CHF</option><option>AUD</option><option>CAD</option><option>NZD</option><option>RMB</option></select>`], true, false)}
+    ${row(['基金状态', `<select class="form-control" ${IN} id="f-fundStatus"><option value="">请选择</option><option>In Offering 募集中</option><option>Active 运作中</option><option>In Liquidation 清算中</option><option>Liquidated 已清算</option></select>`], ['申请提交日期', `<input type="date" class="form-control" ${IN} id="f-applicationSubmissionDate">`], true, false)}
+    ${row(['审批日期', `<input type="date" class="form-control" ${IN} id="f-authorizationDate">`], ['成立日期', `<input type="date" class="form-control" ${IN} id="f-launchDate">`], false, true)}
+    ${row(['复杂产品', `<select class="form-control" ${IN} id="f-complexProduct"><option value="">请选择</option><option>true 是</option><option>false 否</option></select>`], ['首次发行期开始日期', `<input type="date" class="form-control" ${IN} id="f-iopStartDate">`], true, false)}
+    ${row(['运营开始日期', `<input type="date" class="form-control" ${IN} id="f-operationStartDate">`], ['上市日期', `<input type="date" class="form-control" ${IN} id="f-listingDate">`], false, false)}
+    ${row(['终止日期', `<input type="date" class="form-control" ${IN} id="f-terminationDate">`], ['LEI编码', `<input type="text" class="form-control" ${IN} id="f-leiNumber" placeholder="20位字母数字">`], false, false)}
+    ${row(['GIIN编码', `<input type="text" class="form-control" ${IN} id="f-giinNumber" placeholder="XXXXXX.XXXXX.XX.XX">`], ['仅限专业投资者', `<select class="form-control" ${IN} id="f-professionalInvestorsOnly"><option value="">请选择</option><option>true 是</option><option>false 否</option></select>`], false, false)}
+    ${row(['投资者国籍限制', `<input type="text" class="form-control" ${IN} id="f-restrictionOnInvestorSNationality" placeholder="选填">`], ['投资者居留限制', `<input type="text" class="form-control" ${IN} id="f-restrictionOnInvestorSResidency" placeholder="选填">`], false, false)}
+
+    ${hdr('主要相关方')}
+    ${row(['基金经理', `<input type="text" class="form-control" ${IN} id="f-fundManager">`], ['基金经理LEI', `<input type="text" class="form-control" ${IN} id="f-fundManagerLei" placeholder="20位字母数字">`], true, true)}
+    ${row(['副基金经理', `<input type="text" class="form-control" ${IN} id="f-subManager" placeholder="选填">`], ['投资顾问', `<input type="text" class="form-control" ${IN} id="f-investmentAdvisor" placeholder="选填">`], false, false)}
+    ${row(['受托人/行政管理人', `<input type="text" class="form-control" ${IN} id="f-trusteeAdministrator" placeholder="选填">`], ['托管人/主经纪商', `<input type="text" class="form-control" ${IN} id="f-custodianPrimeBroker" placeholder="选填">`], false, false)}
+    ${row(['副托管人', `<input type="text" class="form-control" ${IN} id="f-subCustodian" placeholder="选填">`], ['审计师', `<input type="text" class="form-control" ${IN} id="f-auditor" placeholder="选填">`], false, false)}
+
+    ${hdr('投资策略')}
+    ${row(['主要工具类型', `<select class="form-control" ${IN} id="f-primaryInstrumentType"><option value="">请选择</option><option>Alternative (Private) Assets 另类（私募）资产</option><option>Commodities 商品</option><option>Digital Assets 数字资产</option><option>Equity 股票</option><option>Fixed Income 固定收益</option><option>Money Market (Liquidity) 货币市场（流动性）</option><option>Multi-Assets 多资产</option></select>`], ['被动/主动基金', `<select class="form-control" ${IN} id="f-passiveOrActiveFund"><option value="">请选择</option><option>Active 主动</option><option>Passive 被动</option></select>`], true, true)}
+    ${row(['投资市场聚焦', `<select class="form-control" ${IN} id="f-investmentMarketFocus"><option value="">请选择</option><option>America 美洲</option><option>Asia Pacific 亚太</option><option>Emerging Markets 新兴市场</option><option>Europe 欧洲</option><option>Global 全球</option></select>`], ['晨星类别', `<input type="text" class="form-control" ${IN} id="f-morningstarCategory" placeholder="选填">`], true, false)}
+    ${row(['风险等级', `<select class="form-control" ${IN} id="f-riskLevel"><option value="">请选择</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>`], ['对冲政策（基金）', `<select class="form-control" ${IN} id="f-hedgingPolicyFund"><option value="">请选择</option><option>Hedge to Base Currency 对冲至基础货币</option><option>Optional 可选</option><option>N/A 不适用</option></select>`], false, true)}
+    ${row(['基准', `<input type="text" class="form-control" ${IN} id="f-benchmark" placeholder="选填">`], ['基准代码', `<input type="text" class="form-control" ${IN} id="f-benchmarkCode" placeholder="选填">`], false, false)}
+    ${row(['最高杠杆比率', `<input type="number" class="form-control" ${IN} id="f-leverageRatioMax" placeholder="非负整数">`], ['最高衍生品比率', `<input type="number" class="form-control" ${IN} id="f-derivativesRatioMax" placeholder="非负整数">`], true, true)}
+    ${row(['借款限额', `<input type="number" class="form-control" ${IN} id="f-borrowingLimit" placeholder="非负整数">`], ['止损限额', `<input type="number" class="form-control" ${IN} id="f-stopLossLimit" placeholder="非负，最多2位小数" step="0.01">`], true, false)}
+    ${row(['止损警报', `<input type="number" class="form-control" ${IN} id="f-stopLossAlert" placeholder="非负，最多2位小数" step="0.01">`], ['注册地区', `<select class="form-control" ${IN} id="f-regionDictCodes"><option value="">请选择</option><option>HK</option><option>IE</option><option>KY</option><option>CN</option><option>SG</option><option>LU</option><option>GB</option><option>US</option><option>CH</option><option>DE</option><option>FR</option><option>JP</option></select>`], true, false)}
+    ${taCell('投资目标', 'f-investmentObjective', '不超过2000字符', true)}
+    ${taCell('投资策略', 'f-investmentStrategy', '不超过2000字符', true)}
+    ${taCell('资产配置表', 'f-assetAllocationTable', '文本或图片，至少填一项', false)}
+
+    <div style="grid-column:1/-1;display:flex;align-items:flex-start;gap:8px;padding:4px 0">
+      <label class="form-label" ${LB}>附件上传</label>
+      <div style="flex:1;width:100%">
+        <div style="display:grid;grid-template-columns:auto 1fr auto auto;gap:0;background:var(--vp-gray-100);border-radius:6px 6px 0 0;font-weight:600;font-size:13px;color:var(--vp-gray-600);padding:8px 12px">
+          <div style="width:120px">文件类型</div>
+          <div>文件名</div>
+          <div style="width:100px;text-align:right;padding-right:8px">大小</div>
+          <div style="width:40px"></div>
+        </div>
+        <div id="f-assetTableBody" style="border:1px solid var(--vp-gray-200);border-top:none;border-radius:0 0 6px 6px;background:#fff;margin-bottom:8px"></div>
+        <button class="btn btn-secondary btn-sm" onclick="addAssetRow()" style="font-size:12px">＋ 添加附件</button>
+        <input type="file" id="f-assetFileHidden" style="display:none" onchange="assetFileChanged(this)">
+      </div>
+    </div>
+
+    <div style="grid-column:1/-1;padding-top:16px;display:flex;gap:12px">
+      <button class="btn btn-secondary" onclick="prodSaveDraft()">💾 保存草稿</button>
+      <button class="btn btn-primary" onclick="prodSubmit()">提交</button>
+      <button class="btn btn-ghost" onclick="closeTab('product-add', event)">取消</button>
+    </div>
+
+  </div>`;
+
+  return `<div class="card"><div class="card-body" style="padding:20px">${grid}</div></div>`;
+}
+
+function addAssetRow() {
+  const body = document.getElementById('f-assetTableBody');
+  const row = document.createElement('div');
+  row.style = 'display:grid;grid-template-columns:auto 1fr auto auto;gap:0;padding:6px 12px;border-bottom:1px solid var(--vp-gray-200);align-items:center';
+  row.innerHTML = `
+    <select class="form-control" style="width:120px;height:30px;font-size:12px" id="asset-type-${Date.now()}">
+      <option>招募说明书</option><option>年报</option><option>半年报</option><option>季报</option><option>净值报告</option><option>合同</option><option>其他</option>
+    </select>
+    <div class="form-label" style="padding:0 8px;font-size:12px;color:var(--vp-gray-500)">未选择文件</div>
+    <div class="form-label" style="width:100px;text-align:right;padding-right:8px;font-size:12px;color:var(--vp-gray-400)">—</div>
+    <button class="btn btn-ghost btn-sm" style="width:32px;height:32px;padding:0;font-size:16px;color:var(--vp-gray-400)" onclick="this.closest('[style*=\'grid-template-columns\']').remove()">×</button>`;
+  body.appendChild(row);
+}
+
+function assetFileChanged(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const id = 'asset-type-' + Date.now();
+  const row = input.closest('div[style*="grid-template-columns"]') || document.getElementById('f-assetTableBody').lastChild;
+  if (row) {
+    const nameDiv = row.querySelector('div:nth-child(2)');
+    const sizeDiv = row.querySelector('div:nth-child(3)');
+    if (nameDiv) nameDiv.textContent = file.name;
+    if (sizeDiv) sizeDiv.textContent = (file.size / 1024).toFixed(1) + ' KB';
+  }
+  input.value = '';
+}
+
+function clearProdErrors() {
+  document.querySelectorAll('.prod-error').forEach(el => el.classList.remove('prod-error'));
+  document.querySelectorAll('.prod-err-msg').forEach(el => el.remove());
+}
+function prodMarkErr(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('prod-error');
+  const d = document.createElement('div');
+  d.className = 'prod-err-msg';
+  d.style = 'font-size:11px;color:#dc2626;margin-top:2px';
+  d.textContent = msg;
+  el.parentElement.appendChild(d);
+}
+
+function prodSaveDraft() {
+  clearProdErrors();
+  let ok = true;
+  const code = document.getElementById('f-fundCode')?.value.trim();
+  const nameEn = document.getElementById('f-fundNameEn')?.value.trim();
+  const nameTc = document.getElementById('f-fundNameTc')?.value.trim();
+  const mgr = document.getElementById('f-fundManager')?.value.trim();
+  if (!code) { prodMarkErr('f-fundCode', '请输入基金代码'); ok = false; }
+  else if (PRODUCTS.some(p => p.code === code)) { prodMarkErr('f-fundCode', '该基金代码已存在'); ok = false; }
+  if (!nameEn) { prodMarkErr('f-fundNameEn', '请输入基金英文名称'); ok = false; }
+  if (!nameTc) { prodMarkErr('f-fundNameTc', '请输入基金繁体名称'); ok = false; }
+  if (!mgr) { prodMarkErr('f-fundManager', '请输入基金经理'); ok = false; }
+  if (!ok) return;
+  alert('草稿已保存');
+}
+
+function prodSubmit() {
+  clearProdErrors();
+  let ok = true;
+  const required = [
+    ['f-fundCode','基金代码'], ['f-fundNameEn','基金英文名称'], ['f-fundNameTc','基金繁体名称'],
+    ['f-fundType','基金类型'], ['f-domicileJurisdiction','注册地/管辖区'],
+    ['f-primaryRegulator','主要监管机构'], ['f-fundStatus','基金状态'],
+    ['f-complexProduct','复杂产品'], ['f-fundManager','基金经理'],
+    ['f-fundManagerLei','基金经理LEI'], ['f-primaryInstrumentType','主要工具类型'],
+    ['f-passiveOrActiveFund','被动/主动基金'], ['f-investmentMarketFocus','投资市场聚焦'],
+    ['f-riskLevel','风险等级'], ['f-leverageRatioMax','最高杠杆比率'],
+    ['f-derivativesRatioMax','最高衍生品比率'], ['f-borrowingLimit','借款限额'],
+    ['f-stopLossLimit','止损限额'], ['f-investmentObjective','投资目标'],
+    ['f-investmentStrategy','投资策略']
+  ];
+  required.forEach(([id, label]) => {
+    const el = document.getElementById(id);
+    if (!el?.value.trim()) { prodMarkErr(id, label + '为必填项'); ok = false; }
+  });
+  if (!ok) { alert('请填写所有必填项（*标记）'); return; }
+  alert('提交成功！');
+}
 
 function buildIndustry() {
   return `<div class="toolbar"><div class="flex gap-2"><button class="btn btn-secondary btn-sm" onclick="indOpenAdd()">＋ 新增行业</button></div></div>
