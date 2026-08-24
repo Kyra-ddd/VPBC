@@ -377,7 +377,7 @@ function renderTabBar() {
 
 function renderContent(html) {
   document.getElementById('content').innerHTML = html;
-  if (activeTabKey === 'industry') { indRenderMarkets(); indRenderIndustries(); }
+  if (activeTabKey === 'industry') { indRenderMarkets(); indRenderUnified(); }
   if (activeTabKey === 'research-report') { reportRender(); }
   if (activeTabKey === 'stock-pool') { poolRenderGrid(); poolRenderDetail(); }
   if (activeTabKey === 'portfolio') { portRenderPortfolios(); portRenderShared(); portRenderHoldings(); portRenderRebalances(); portRenderIndicatorLib(); portRenderNavChart(); }
@@ -464,12 +464,30 @@ function indGetIndustries() {
 
 function indSwitchMarket(code) {
   indCurrentMarket = code; indCurrentIndustry = null; indCurrentIndustryName = "";
-  indRenderMarkets(); indRenderIndustries(); indClearAnalysts();
+  indRenderMarkets(); indRenderUnified();
 }
 
-function indSelectIndustry(code, name) {
-  indCurrentIndustry = code; indCurrentIndustryName = name;
-  indRenderIndustries(); indRenderAnalysts();
+function indOpenAdd() { alert("原型：新增行业"); }
+function indOpenAddMarket() { alert("原型：新增市场"); }
+
+function indRenderUnified() {
+  const body = document.getElementById("indUniBody");
+  if (!body) return;
+  const rows = indGetIndustries();
+  if (!rows.length) { body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:32px">暂无数据</td></tr>'; return; }
+  body.innerHTML = rows.map(ind => {
+    const analysts = (ind.analysts || []).filter(a => a.status === "在职");
+    const names = analysts.length ? analysts.map(a => a.name).join("、") : "—";
+    const updater = analysts.length ? analysts[0].name : "—";
+    return `<tr>
+      <td class="bold">${ind.name}</td>
+      <td>${(ind.marketNames || []).join("、")}</td>
+      <td>${names}</td>
+      <td class="muted">${updater}</td>
+      <td class="muted">—</td>
+      <td class="right nowrap"><button class="btn btn-ghost btn-sm" onclick="alert('编辑「${ind.name}」')">编辑</button></td>
+    </tr>`;
+  }).join("");
 }
 
 function indRenderMarkets() {
@@ -477,58 +495,6 @@ function indRenderMarkets() {
   if (!seg) return;
   seg.innerHTML = `<button class="seg${indCurrentMarket === 'ALL' ? ' active' : ''}" onclick="indSwitchMarket('ALL')">全部</button>` +
     Object.keys(IND_DATA).map(code => `<button class="seg${code === indCurrentMarket ? ' active' : ''}" onclick="indSwitchMarket('${code}')">${IND_DATA[code].name}</button>`).join("");
-}
-
-function indRenderIndustries() {
-  const list = indGetIndustries();
-  const titleEl = document.getElementById("industryListTitle");
-  const countEl = document.getElementById("industryCount");
-  const body = document.getElementById("industryBody");
-  if (titleEl) titleEl.textContent = indViewLabel() + " · 行业列表";
-  if (countEl) countEl.textContent = list.length + " 个行业";
-  if (!body) return;
-  body.innerHTML = list.map(ind => {
-    const chips = ind.analysts.map(a => {
-      const cls = a.status === "在职" ? "tag tag-green" : "tag tag-gray";
-      return `<span class="${cls}" title="${a.name}（${a.acct}）${a.focus ? ' · ' + a.focus : ''}">${a.name}</span>`;
-    }).join("");
-    const marketText = (ind.marketNames || []).join(" / ");
-    return `<tr class="${ind.code === indCurrentIndustry ? 'row-selected' : ''}" style="background:${ind.code === indCurrentIndustry ? 'var(--vp-green-light)' : ''}">
-      <td class="bold" style="cursor:pointer" onclick="indSelectIndustry('${ind.name}','${ind.name}')"><span class="ind-cell">${ind.name}</span><div class="tiny">${marketText || '默认市场'}</div></td>
-      <td><div class="chip-stack">${chips || '<span class="muted">—</span>'}</div></td>
-      <td><span class="tag ${ind.analysts.some(a => a.status === '在职') ? 'tag-green' : 'tag-gray'}">${ind.analysts.some(a => a.status === '在职') ? '启用' : '停用'}</span></td>
-      <td class="right nowrap">
-        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('编辑行业「${ind.name}」')">编辑</button>
-      </td>
-    </tr>`;
-  }).join("");
-}
-
-function indRenderAnalysts() {
-  const ind = indGetIndustries().find(i => i.name === indCurrentIndustry);
-  const titleEl = document.getElementById("analystPanelTitle");
-  const body = document.getElementById("analystBody");
-  if (!ind) { if (titleEl) titleEl.textContent = "请选择行业"; if (body) body.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center;padding:32px">← 在左侧选择一个行业查看挂载的研究员</td></tr>'; return; }
-  if (titleEl) titleEl.textContent = ind.name + "（" + (ind.marketNames || []).join(" / ") + "）";
-  if (!body) return;
-  body.innerHTML = ind.analysts.map(a => {
-    const statusTag = a.status === "在职" ? "tag-green" : "tag-gray";
-    const statusLabel = a.status === "在职" ? "启用" : "停用";
-    return `<tr>
-      <td class="bold">${a.name}</td>
-      <td class="muted">${a.acct}</td>
-      <td>${a.focus}</td>
-      <td><span class="tag ${statusTag}">${statusLabel}</span></td>
-      <td class="right nowrap"><button class="btn btn-ghost btn-sm" onclick="alert('编辑研究员')">编辑</button></td>
-    </tr>`;
-  }).join("");
-}
-
-function indClearAnalysts() {
-  const titleEl = document.getElementById("analystPanelTitle");
-  const body = document.getElementById("analystBody");
-  if (titleEl) titleEl.textContent = "请选择行业";
-  if (body) body.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center;padding:32px">← 在左侧选择一个行业查看挂载的研究员</td></tr>';
 }
 
 // ========== Report Data ==========
@@ -1348,11 +1314,12 @@ function prodResetFilter() { document.getElementById("prodSearchCode").value="";
 function prodDoFilter() { alert("原型：按条件筛选"); }
 
 function buildIndustry() {
-  return `<div class="toolbar"><div class="segmented" id="marketSeg"></div><div class="flex gap-2"><button class="btn btn-secondary btn-sm" onclick="alert('新增行业')">＋ 新增行业</button><button class="btn btn-secondary btn-sm" onclick="alert('新增市场')">＋ 新增市场</button></div></div>
-    <div class="split">
-      <div class="card"><div class="card-head"><div class="card-title" id="industryListTitle">行业列表</div><span class="tiny" id="industryCount"></span></div><div class="card-body" style="padding:0"><div class="industry-table-wrap"><table class="data-table"><thead><tr><th>行业</th><th>研究员</th><th>状态</th><th class="right">操作</th></tr></thead><tbody id="industryBody"></tbody></table></div></div></div>
-      <div class="card"><div class="card-head"><div class="card-title" id="analystPanelTitle">请选择行业</div><button class="btn btn-primary btn-sm" onclick="indCurrentIndustry && alert('添加研究员到「' + indCurrentIndustryName + '」')">＋ 添加研究员</button></div><div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>研究员</th><th>账号</th><th>研究方向</th><th>状态</th><th class="right">操作</th></tr></thead><tbody id="analystBody"><tr><td colspan="5" class="muted" style="text-align:center;padding:32px">← 在左侧选择一个行业查看挂载的研究员</td></tr></tbody></table></div></div>
-    </div>`;
+  return `<div class="toolbar"><div class="segmented" id="marketSeg"></div><div class="flex gap-2"><button class="btn btn-secondary btn-sm" onclick="indOpenAdd()">＋ 新增行业</button><button class="btn btn-secondary btn-sm" onclick="indOpenAddMarket()">＋ 新增市场</button></div></div>
+    <div class="card"><div class="card-body" style="padding:0;overflow-x:auto">
+      <table class="data-table"><thead><tr><th>行业</th><th>市场</th><th>研究员</th><th>更新人</th><th>更新时间</th><th class="right">操作</th></tr></thead>
+      <tbody id="indUniBody"></tbody>
+      </table>
+    </div></div>`;
 }
 
 function buildResearchReport() {
