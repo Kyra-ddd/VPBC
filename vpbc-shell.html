@@ -914,14 +914,16 @@ const SC_STATUS_TAG = { "运行中":"tag-green", "已停用":"tag-blue", "已终
 function scRender() {
   const body = document.getElementById("scBody");
   if (!body) return;
-  const kw = document.getElementById("scSearch")?.value.trim().toLowerCase() || "";
+  const fundCode = document.getElementById("scFundCode")?.value.trim().toLowerCase() || "";
+  const name = document.getElementById("scName")?.value.trim().toLowerCase() || "";
   const ccy = document.getElementById("scCcy")?.value || "";
   const st = document.getElementById("scSt")?.value || "";
   const rows = SC_RECORDS.filter(r => {
-    const match = !kw || r.fund.toLowerCase().includes(kw) || r.className.toLowerCase().includes(kw) || r.vpid.toLowerCase().includes(kw) || r.isin.toLowerCase().includes(kw);
+    const matchCode = !fundCode || r.fund.toLowerCase().includes(fundCode);
+    const matchName = !name || r.className.toLowerCase().includes(name) || r.vpid.toLowerCase().includes(name) || r.isin.toLowerCase().includes(name);
     const matchCcy = !ccy || r.ccy === ccy;
     const matchSt = !st || r.status === st;
-    return match && matchCcy && matchSt;
+    return matchCode && matchName && matchCcy && matchSt;
   });
   body.innerHTML = rows.length === 0
     ? `<tr><td colspan="12" class="muted" style="text-align:center;padding:32px">暂无符合条件的份额类别</td></tr>`
@@ -1151,23 +1153,23 @@ function buildContent(key) {
 }
 
 function buildShareClass() {
-  return `<div class="page-header">
-    <div><h1 class="page-title">份额类别</h1><p class="page-subtitle">ISIN · 货币 · 费率结构 · 交易条款</p></div>
-    <button class="btn btn-primary" onclick="scOpenModal()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      新增份额类别
-    </button>
+  return `<div class="toolbar">
+    <div class="flex gap-2">
+      <button class="btn btn-primary btn-sm" onclick="scOpenModal()">＋ 新增份额类别</button>
+      <button class="btn btn-secondary btn-sm" onclick="alert('原型：修改份额类别')">修改</button>
+      <button class="btn btn-ghost btn-sm" onclick="alert('原型：删除份额类别')">删除</button>
+    </div>
   </div>
-  <div class="card"><div class="card-body"><div class="filter-bar">
-    <div class="form-group"><label class="form-label">基金代码</label><input type="text" class="form-control" id="scFundCode" placeholder="如 VP0010"></div>
-    <div class="form-group"><label class="form-label">ISIN</label><input type="text" class="form-control" id="scIsin" placeholder="如 HK0000012345"></div>
-    <div class="form-group"><label class="form-label">类别名称</label><input type="text" class="form-control" id="scName" placeholder="搜索名称..."></div>
-    <div class="form-group"><label class="form-label">货币</label><select class="form-control" id="scCcy"><option value="">全部货币</option><option>USD</option><option>HKD</option><option>CNY</option><option>CNH</option><option>EUR</option><option>GBP</option><option>JPY</option><option>SGD</option><option>CHF</option><option>AUD</option><option>CAD</option></select></div>
-    <div class="form-group"><label class="form-label">状态</label><select class="form-control" id="scSt"><option value="">全部状态</option><option>运行中</option><option>已停用</option><option>已终止</option></select></div>
-    <div class="filter-actions"><button class="btn btn-secondary btn-sm" onclick="scResetFilter()">重置</button><button class="btn btn-primary btn-sm" onclick="scDoFilter()">搜索</button></div>
+  <div class="card"><div class="card-body"><div style="display:flex;flex-wrap:nowrap;gap:12px;align-items:center">
+    <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">基金代码</label><input type="text" class="form-control" id="scFundCode" placeholder="如 VP0010"></div>
+    <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">类别名称</label><input type="text" class="form-control" id="scName" placeholder="搜索名称..."></div>
+    <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">货币</label><select class="form-control" id="scCcy"><option value="">全部货币</option><option>USD</option><option>HKD</option><option>CNY</option><option>CNH</option><option>EUR</option><option>GBP</option><option>JPY</option><option>SGD</option><option>CHF</option><option>AUD</option><option>CAD</option></select></div>
+    <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">状态</label><select class="form-control" id="scSt"><option value="">全部状态</option><option>运行中</option><option>已停用</option><option>已终止</option></select></div>
+    <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="scResetFilter()">重置</button>
+    <button class="btn btn-primary btn-sm" style="flex-shrink:0" onclick="scDoFilter()">搜索</button>
   </div></div></div>
   <div class="card"><div style="overflow-x:auto;">
-    <table class="data-table"><thead><tr><th>基金代码</th><th>类别名称</th><th>VPFS Class ID</th><th>ISIN</th><th>货币</th><th>状态</th><th>成立日期</th><th>截止时间</th><th>交易频率</th><th>管理费（%）</th><th>TER（%）</th><th>赎回结算</th><th></th></tr></thead>
+    <table class="data-table"><thead><tr><th>基金代码</th><th>类别名称</th><th>VPFS Class ID</th><th>ISIN</th><th>货币</th><th>状态</th><th>成立日期</th><th>截止时间</th><th>交易频率</th><th>管理费</th><th>TER</th><th>赎回结算</th><th></th></tr></thead>
     <tbody id="scBody"></tbody>
     </table>
     <div class="pagination-bar"><span class="pagination-info">共 ${SC_RECORDS.length} 条</span><div class="pagination"><button class="page-btn" disabled>←</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">→</button></div></div>
@@ -1396,7 +1398,7 @@ function buildShareClass() {
   </div>`;
 }
 
-function scResetFilter() { document.getElementById("scFundCode").value=""; document.getElementById("scIsin").value=""; document.getElementById("scName").value=""; document.getElementById("scCcy").value=""; document.getElementById("scSt").value=""; scRender(); }
+function scResetFilter() { document.getElementById("scFundCode").value=""; document.getElementById("scName").value=""; document.getElementById("scCcy").value=""; document.getElementById("scSt").value=""; scRender(); }
 function scDoFilter() { scRender(); }
 function scSave() { alert("原型：保存份额类别（已校验必填字段）"); scCloseModal(); }
 
