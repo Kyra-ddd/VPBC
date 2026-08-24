@@ -381,7 +381,7 @@ function renderTabBar() {
 
 function renderContent(html) {
   document.getElementById('content').innerHTML = html;
-  if (activeTabKey === 'industry') { indRenderMarkets(); indRenderUnified(); }
+  if (activeTabKey === 'industry') { indRenderMarkets(); indInitFilters(); indRenderUnified(); }
   if (activeTabKey === 'research-report') { reportRender(); }
   if (activeTabKey === 'stock-pool') { poolRenderGrid(); poolRenderDetail(); }
   if (activeTabKey === 'portfolio') { portRenderPortfolios(); portRenderShared(); portRenderHoldings(); portRenderRebalances(); portRenderIndicatorLib(); portRenderNavChart(); }
@@ -467,17 +467,55 @@ function indGetIndustries() {
 }
 
 function indSwitchMarket(code) {
-  indCurrentMarket = code; indCurrentIndustry = null; indCurrentIndustryName = "";
-  indRenderMarkets(); indRenderUnified();
+  indCurrentMarket = code;
+  indRenderMarkets(); indInitFilters(); indRenderUnified();
 }
 
 function indOpenAdd() { alert("原型：新增行业"); }
-function indOpenAddMarket() { alert("原型：新增市场"); }
+
+function indInitFilters() {
+  // Markets dropdown
+  const mEl = document.getElementById("indFMarket");
+  if (mEl) {
+    mEl.innerHTML = '<option value="">全部市场</option>' +
+      Object.keys(IND_DATA).map(code => `<option value="${code}">${IND_DATA[code].name}</option>`).join("");
+    mEl.value = indCurrentMarket !== "ALL" ? indCurrentMarket : "";
+  }
+  // Industry dropdown — unique names across all markets
+  const iEl = document.getElementById("indFIndustry");
+  if (iEl) {
+    const allInds = indGetIndustries();
+    const unique = [...new Set(allInds.map(i => i.name))].sort();
+    iEl.innerHTML = '<option value="">全部行业</option>' + unique.map(n => `<option value="${n}">${n}</option>`).join("");
+  }
+  // Analyst dropdown — unique names
+  const aEl = document.getElementById("indFAnalyst");
+  if (aEl) {
+    const allInds = indGetIndustries();
+    const analysts = [...new Set(allInds.flatMap(i => (i.analysts || []).filter(a => a.status === "在职").map(a => a.name)))].sort();
+    aEl.innerHTML = '<option value="">全部研究员</option>' + analysts.map(n => `<option value="${n}">${n}</option>`).join("");
+  }
+}
+
+function indDoFilter() { indRenderUnified(); }
+
+function indResetFilter() {
+  indCurrentMarket = "ALL";
+  indRenderMarkets(); indInitFilters(); indRenderUnified();
+}
 
 function indRenderUnified() {
   const body = document.getElementById("indUniBody");
   if (!body) return;
   let rows = indGetIndustries();
+
+  // Apply dropdown filters
+  const fMarket = document.getElementById("indFMarket")?.value || "";
+  const fIndustry = document.getElementById("indFIndustry")?.value || "";
+  const fAnalyst = document.getElementById("indFAnalyst")?.value || "";
+  if (fMarket && fMarket !== "ALL") rows = rows.filter(r => (r.marketNames || []).includes(IND_DATA[fMarket]?.name));
+  if (fIndustry) rows = rows.filter(r => r.name === fIndustry);
+  if (fAnalyst) rows = rows.filter(r => (r.analysts || []).filter(a => a.status === "在职").some(a => a.name === fAnalyst));
 
   // Attach computed fields
   rows = rows.map((ind, i) => {
@@ -1360,7 +1398,13 @@ function prodResetFilter() { document.getElementById("prodSearchCode").value="";
 function prodDoFilter() { alert("原型：按条件筛选"); }
 
 function buildIndustry() {
-  return `<div class="toolbar"><div class="segmented" id="marketSeg"></div><div class="flex gap-2"><button class="btn btn-secondary btn-sm" onclick="indOpenAdd()">＋ 新增行业</button><button class="btn btn-secondary btn-sm" onclick="indOpenAddMarket()">＋ 新增市场</button></div></div>
+  return `<div class="toolbar"><div class="segmented" id="marketSeg"></div><div class="flex gap-2"><button class="btn btn-secondary btn-sm" onclick="indOpenAdd()">＋ 新增行业</button></div></div>
+    <div class="filter-bar">
+      <div class="form-group"><label class="form-label">市场</label><select class="form-control" id="indFMarket" onchange="indDoFilter()"><option value="">全部市场</option></select></div>
+      <div class="form-group"><label class="form-label">行业</label><select class="form-control" id="indFIndustry" onchange="indDoFilter()"><option value="">全部行业</option></select></div>
+      <div class="form-group"><label class="form-label">研究员</label><select class="form-control" id="indFAnalyst" onchange="indDoFilter()"><option value="">全部研究员</option></select></div>
+      <div class="filter-actions"><button class="btn btn-secondary btn-sm" onclick="indResetFilter()">重置</button></div>
+    </div>
     <div class="card"><div class="card-body" style="padding:0"><div style="max-height:264px;overflow-y:auto">
       <table class="data-table"><thead><tr>
         <th class="sortable" onclick="indSort('name')">行业 <span class="sort-icon" id="sort-name"></span></th>
@@ -1372,6 +1416,7 @@ function buildIndustry() {
       </tr></thead>
       <tbody id="indUniBody"></tbody>
       </table></div></div></div>`;
+}
 }
 
 function buildResearchReport() {
