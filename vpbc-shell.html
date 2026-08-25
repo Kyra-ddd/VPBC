@@ -2051,10 +2051,10 @@ function buildResearchReport() {
 
 // ========== Portfolio Data ==========
 const PORTFOLIOS = [
-  { id:"P001", name:"港股大消费模拟盘", holdings:4, weight:"87%", capital:"1,000万", creator:"David", share:"已分享", shareType:"只读", status:"启用" },
-  { id:"P002", name:"美股科技组合", holdings:3, weight:"72%", capital:"500万", creator:"Kyra", share:"私人", shareType:"—", status:"启用" },
-  { id:"P003", name:"A股大金融", holdings:5, weight:"95%", capital:"800万", creator:"Grace", share:"已分享", shareType:"可编辑", status:"启用" },
-  { id:"P004", name:"港股地产研究池", holdings:6, weight:"65%", capital:"300万", creator:"David", share:"私人", shareType:"—", status:"停用" },
+  { id:"P001", name:"港股大消费模拟盘", holdings:4, weight:"87%", capital:"1,000万", creator:"David", share:"已分享", shareType:"只读", status:"启用", created:"2026/07/15 10:30" },
+  { id:"P002", name:"美股科技组合", holdings:3, weight:"72%", capital:"500万", creator:"Kyra", share:"私人", shareType:"—", status:"启用", created:"2026/08/01 14:20" },
+  { id:"P003", name:"A股大金融", holdings:5, weight:"95%", capital:"800万", creator:"Grace", share:"已分享", shareType:"可编辑", status:"启用", created:"2026/06/22 09:00" },
+  { id:"P004", name:"港股地产研究池", holdings:6, weight:"65%", capital:"300万", creator:"David", share:"私人", shareType:"—", status:"停用", created:"2026/05/10 16:45" },
 ];
 const SHARED_PORTFOLIOS = [
   { id:"P001", name:"港股大消费模拟盘", holdings:4, weight:"87%", creator:"David", perm:"只读" },
@@ -2140,6 +2140,7 @@ function portRenderPortfolios() {
       <td>${p.creator}</td>
       <td>${shareTag}</td>
       <td><span class="tag ${stTag}">${p.status}</span></td>
+      <td class="cell-muted" style="font-variant-numeric:tabular-nums">${p.created || '—'}</td>
       <td class="right nowrap"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：查看')">查看</button></td>
     </tr>`;
   }).join("");
@@ -2506,7 +2507,7 @@ function buildPortfolio() {
           </div>
           <button class="btn btn-primary btn-sm" onclick="portOpenCreate()">＋ 新建组合</button>
         </div>
-        <div class="card-body" style="padding:0"><div class="list-scroll"><table class="data-table"><thead><tr><th>组合名称</th><th>持仓数</th><th>总权重</th><th>初始资金</th><th>创建人</th><th>分享</th><th>状态</th><th class="right">操作</th></tr></thead><tbody id="portBody"></tbody></table></div></div>
+        <div class="card-body" style="padding:0"><div class="list-scroll"><table class="data-table"><thead><tr><th>组合名称</th><th>持仓数</th><th>总权重</th><th>初始资金</th><th>创建人</th><th>分享</th><th>状态</th><th>创建时间</th><th class="right">操作</th></tr></thead><tbody id="portBody"></tbody></table></div></div>
       </div>
     </section>
 
@@ -2721,7 +2722,7 @@ function portDoCreate() {
   if (!capital) { document.getElementById("portCreateCapital").classList.add("error"); return; }
   // 创建新组合
   const newId = "P" + String(PORTFOLIOS.length + 1).padStart(3, "0");
-  PORTFOLIOS.unshift({ id: newId, name, holdings:0, weight:"—", capital, creator:"当前用户", share:"私人", shareType:"—", status:"启用", _strategy: document.getElementById("portCreateStrategy").value.trim(), _benchmark: benchmark });
+  PORTFOLIOS.unshift({ id: newId, name, holdings:0, weight:"—", capital, creator:"当前用户", share:"私人", shareType:"—", status:"启用", created: (d=>`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`)(new Date()), _strategy: document.getElementById("portCreateStrategy").value.trim(), _benchmark: benchmark });
   portCloseCreate();
   portRenderPortfolios();
 }
