@@ -325,7 +325,7 @@
       </div>
       <div class="submenu open" id="submenu-product-center">
         <div class="submenu-item active" onclick="openTab('product-management', '产品管理')">产品管理</div>
-        <div class="submenu-item" onclick="openTab('share-class', '份额类别')">份额类别</div>
+        <div class="submenu-item" onclick="openTab('share-class', '份额信息')">份额信息</div>
       </div>
     </div>
   </nav>
@@ -1169,9 +1169,9 @@ function buildContent(key) {
 function buildShareClass() {
   return `<div class="toolbar">
     <div class="flex gap-2">
-      <button class="btn btn-primary btn-sm" onclick="openTab('share-class-add','新增份额类别')">＋ 新增份额类别</button>
-      <button class="btn btn-secondary btn-sm" onclick="alert('原型：修改份额类别')">修改</button>
-      <button class="btn btn-ghost btn-sm" onclick="alert('原型：删除份额类别')">删除</button>
+      <button class="btn btn-primary btn-sm" onclick="openTab('share-class-add','新增份额')">＋ 新增份额</button>
+      <button class="btn btn-secondary btn-sm" onclick="alert('原型：修改份额')">修改份额</button>
+      <button class="btn btn-ghost btn-sm" onclick="alert('原型：删除份额')">删除份额</button>
     </div>
   </div>
   <div class="card"><div class="card-body"><div style="display:flex;flex-wrap:nowrap;gap:12px;align-items:center">
@@ -2744,8 +2744,8 @@ function openTabByHash(key) {
     'product-management': '产品管理',
     'product-add': '新增产品',
     'product-detail': '产品详情',
-    'share-class': '份额类别',
-    'share-class-add': '新增份额类别',
+    'share-class': '份额信息',
+    'share-class-add': '新增份额',
     'industry': '行业配置',
     'research-report': '研究报告',
     'stock-pool': '股票池',
