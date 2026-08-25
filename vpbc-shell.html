@@ -1464,9 +1464,9 @@ function buildShareClassAdd() {
     ${hdr('标识码')}
     ${row(['ISIN', `<input type="text" class="form-control" ${IN} id="sc-isinCode" placeholder="12字符，如 HK0000012345" maxlength="12" style="font-family:monospace">`], ['CUSIP', `<input type="text" class="form-control" ${IN} id="sc-cusip" placeholder="9位字母数字" maxlength="9" style="font-family:monospace">`], false, false)}
     ${row(['SEDOL', `<input type="text" class="form-control" ${IN} id="sc-sedol" placeholder="7位字母数字" maxlength="7" style="font-family:monospace">`], ['Bloomberg Ticker', `<input type="text" class="form-control" ${IN} id="sc-bloombergTicker" placeholder="如 VP0010A UH">`], false, false)}
-    ${row(['BBG ID Equity', `<input type="text" class="form-control" ${IN} id="sc-bbgIdEquity" placeholder="如 EQ0010A">`], ['股票代码', `<input type="text" class="form-control" ${IN} id="sc-stockCode" placeholder="1-5位数字" maxlength="5" style="font-family:monospace">`], false, false)}
+    ${row(['BBG ID Equity', `<input type="text" class="form-control" ${IN} id="sc-bbgIdEquity" placeholder="如 EQ0010A">`], ['Morningstar Performance ID', `<input type="text" class="form-control" ${IN} id="sc-morningstarPerfId" placeholder="选填">`], false, false)}
     ${row(['Morningstar Fund ID', `<input type="text" class="form-control" ${IN} id="sc-morningstarFundId" placeholder="选填">`], ['Morningstar Sec ID', `<input type="text" class="form-control" ${IN} id="sc-morningstarSecId" placeholder="选填">`], false, false)}
-    ${row(['Morningstar Performance ID', `<input type="text" class="form-control" ${IN} id="sc-morningstarPerfId" placeholder="选填">`], ['Valor Code', `<input type="text" class="form-control" ${IN} id="sc-valorCode" placeholder="选填">`], false, false)}
+    ${row(['股票代码', `<input type="text" class="form-control" ${IN} id="sc-stockCode" placeholder="1-5位数字" maxlength="5" style="font-family:monospace">`], ['Valor Code', `<input type="text" class="form-control" ${IN} id="sc-valorCode" placeholder="选填">`], false, false)}
     ${row(['Lipper Code', `<input type="text" class="form-control" ${IN} id="sc-lipperCode" placeholder="选填">`], ['', ''], false, false)}
 
     ${hdr('交易条款')}
