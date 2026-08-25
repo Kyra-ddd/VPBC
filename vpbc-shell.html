@@ -1452,14 +1452,14 @@ function buildShareClassAdd() {
     ${row(['基金代码', `<select class="form-control" ${IN} id="sc-fundCode"><option value="">请选择基金</option>${PRODUCTS.map(p => `<option value="${p.code}">${p.code} — ${p.nameEn}</option>`).join('')}</select>`], ['基金名称（英文）', `<input type="text" class="form-control" ${IN} id="sc-fundNameEn" disabled placeholder="选择基金后自动填充">`], true, false)}
     ${row(['基金名称（繁体）', `<input type="text" class="form-control" ${IN} id="sc-fundNameTc" disabled placeholder="选择基金后自动填充">`], ['基金名称（简体）', `<input type="text" class="form-control" ${IN} id="sc-fundNameSc" disabled placeholder="选择基金后自动填充">`], false, false)}
 
-    ${hdr('类别标识')}
-    ${row(['VPFS Class ID', `<input type="text" class="form-control" ${IN} id="sc-vpfsClassId" placeholder="如 VP0010-A-USD-ACC">`], ['份额类状态', `<select class="form-control" ${IN} id="sc-fundClassStatus"><option value="">请选择状态</option>${STATUS_OPTS.map(o => `<option>${o}</option>`).join('')}</select>`], true, true)}
-    ${row(['份额类货币', `<select class="form-control" ${IN} id="sc-classCurrency"><option value="">请选择货币</option>${CURRENCIES.map(c => `<option>${c}</option>`).join('')}</select>`], ['成立日期', `<input type="text" class="form-control" ${IN} id="sc-launchDate" placeholder="YYYY/MM/DD">`], true, true)}
-    ${row(['首次发行期结束日期', `<input type="text" class="form-control" ${IN} id="sc-endOfIopDate" placeholder="YYYY/MM/DD">`], ['', ''], false, false)}
+    ${hdr('份额名称')}
+    ${row(['份额名称（EN）', `<input type="text" class="form-control" ${IN} id="sc-shareClassNameEn" placeholder="Official English name，不超过200字符">`], ['份额名称（繁体）', `<input type="text" class="form-control" ${IN} id="sc-shareClassNameTc" placeholder="官方繁体中文名称，不超过200字符">`], true, true)}
+    ${row(['份额名称（简体）', `<input type="text" class="form-control" ${IN} id="sc-shareClassNameSc" placeholder="官方简体中文名称，不超过200字符">`], ['', ''], true, false)}
 
-    ${hdr('类别名称（三语）')}
-    ${row(['类别名称（EN）', `<input type="text" class="form-control" ${IN} id="sc-shareClassNameEn" placeholder="Official English name，不超过200字符">`], ['类别名称（繁体）', `<input type="text" class="form-control" ${IN} id="sc-shareClassNameTc" placeholder="官方繁体中文名称，不超过200字符">`], true, true)}
-    ${row(['类别名称（简体）', `<input type="text" class="form-control" ${IN} id="sc-shareClassNameSc" placeholder="官方简体中文名称，不超过200字符">`], ['', ''], true, false)}
+    ${hdr('份额标识')}
+    ${row(['Class ID', `<input type="text" class="form-control" ${IN} id="sc-vpfsClassId" placeholder="如 VP0010-A-USD-ACC">`], ['份额状态', `<select class="form-control" ${IN} id="sc-fundClassStatus"><option value="">请选择状态</option>${STATUS_OPTS.map(o => `<option>${o}</option>`).join('')}</select>`], true, true)}
+    ${row(['份额货币', `<select class="form-control" ${IN} id="sc-classCurrency"><option value="">请选择货币</option>${CURRENCIES.map(c => `<option>${c}</option>`).join('')}</select>`], ['成立日期', `<input type="text" class="form-control" ${IN} id="sc-launchDate" placeholder="YYYY/MM/DD">`], true, true)}
+    ${row(['首次发行期结束日期', `<input type="text" class="form-control" ${IN} id="sc-endOfIopDate" placeholder="YYYY/MM/DD">`], ['', ''], false, false)}
 
     ${hdr('标识码')}
     ${row(['ISIN Code', `<input type="text" class="form-control" ${IN} id="sc-isinCode" placeholder="12字符，如 HK0000012345" maxlength="12" style="font-family:monospace">`], ['CUSIP', `<input type="text" class="form-control" ${IN} id="sc-cusip" placeholder="9位字母数字" maxlength="9" style="font-family:monospace">`], false, false)}
