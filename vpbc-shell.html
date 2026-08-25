@@ -424,14 +424,14 @@ function updateSidebarActive(key) {
 
 // ========== Product Data ==========
 const PRODUCTS = [
-  { code:'VP0010', nameEn:'Value Partners Classic Fund',        nameTc:'Value Partners 經典基金',       type:'股票型基金',   domicile:'香港', status:'运作中',   date:'1993/04/01', currency:'USD', manager:'Value Partners Group', updater:'James', updateTime:'2026/08/20 14:30' },
-  { code:'VP0021', nameEn:'Value Partners High Dividend Equity', nameTc:'Value Partners 高股息股票基金',  type:'股票型基金',   domicile:'香港', status:'运作中',   date:'2005/08/15', currency:'USD', manager:'Value Partners Group', updater:'James', updateTime:'2026/08/21 09:15' },
-  { code:'VP0033', nameEn:'Value Partners A-Share Fund',         nameTc:'Value Partners A股基金',         type:'混合资产基金', domicile:'香港', status:'运作中',   date:'2010/11/22', currency:'CNY', manager:'Value Partners Group', updater:'Kevin', updateTime:'2026/08/19 16:45' },
-  { code:'VP0045', nameEn:'Value Partners Balanced Fund',        nameTc:'Value Partners 平衡基金',        type:'混合资产基金', domicile:'开曼', status:'募集中',   date:'2024/03/01', currency:'USD', manager:'Value Partners Group', updater:'Sophia', updateTime:'2026/08/22 10:00' },
-  { code:'VP0056', nameEn:'Value Partners Bond Fund',            nameTc:'Value Partners 债券基金',        type:'债券型基金',   domicile:'开曼', status:'运作中',   date:'2018/06/20', currency:'USD', manager:'Value Partners Group', updater:'James', updateTime:'2026/08/18 11:20' },
-  { code:'VP0067', nameEn:'Value Partners Money Market Fund',     nameTc:'Value Partners 货币市场基金',    type:'货币市场基金', domicile:'香港', status:'运作中',   date:'2020/01/10', currency:'HKD', manager:'Value Partners Group', updater:'Kevin', updateTime:'2026/08/20 15:30' },
-  { code:'VP0078', nameEn:'Value Partners Index Fund',            nameTc:'Value Partners 指数基金',        type:'指数基金',     domicile:'香港', status:'已终止',   date:'2015/06/30', currency:'USD', manager:'Value Partners Group', updater:'Sophia', updateTime:'2026/08/10 09:00' },
-  { code:'VP0089', nameEn:'Value Partners Growth Fund',           nameTc:'Value Partners 优选增长基金',    type:'股票型基金',   domicile:'卢森堡', status:'运作中',   date:'2022/09/01', currency:'EUR', manager:'Value Partners Group', updater:'James', updateTime:'2026/08/21 14:00' },
+  { code:'VP0010', nameEn:'Value Partners Classic Fund',        nameTc:'Value Partners 經典基金',       type:'股票型基金',   domicile:'香港', status:'运作中',   date:'1993/04/01', currency:'USD', manager:'Anthony Wong', updater:'James', updateTime:'2026/08/20 14:30' },
+  { code:'VP0021', nameEn:'Value Partners High Dividend Equity', nameTc:'Value Partners 高股息股票基金',  type:'股票型基金',   domicile:'香港', status:'运作中',   date:'2005/08/15', currency:'USD', manager:'Doris Ng', updater:'James', updateTime:'2026/08/21 09:15' },
+  { code:'VP0033', nameEn:'Value Partners A-Share Fund',         nameTc:'Value Partners A股基金',         type:'混合资产基金', domicile:'香港', status:'运作中',   date:'2010/11/22', currency:'CNY', manager:'Ken Chen', updater:'Kevin', updateTime:'2026/08/19 16:45' },
+  { code:'VP0045', nameEn:'Value Partners Balanced Fund',        nameTc:'Value Partners 平衡基金',        type:'混合资产基金', domicile:'开曼', status:'募集中',   date:'2024/03/01', currency:'USD', manager:'Rachel Lei', updater:'Sophia', updateTime:'2026/08/22 10:00' },
+  { code:'VP0056', nameEn:'Value Partners Bond Fund',            nameTc:'Value Partners 债券基金',        type:'债券型基金',   domicile:'开曼', status:'运作中',   date:'2018/06/20', currency:'USD', manager:'Michael Tu', updater:'James', updateTime:'2026/08/18 11:20' },
+  { code:'VP0067', nameEn:'Value Partners Money Market Fund',     nameTc:'Value Partners 货币市场基金',    type:'货币市场基金', domicile:'香港', status:'运作中',   date:'2020/01/10', currency:'HKD', manager:'Anna Lee', updater:'Kevin', updateTime:'2026/08/20 15:30' },
+  { code:'VP0078', nameEn:'Value Partners Index Fund',            nameTc:'Value Partners 指数基金',        type:'指数基金',     domicile:'香港', status:'已终止',   date:'2015/06/30', currency:'USD', manager:'Jason Fang', updater:'Sophia', updateTime:'2026/08/10 09:00' },
+  { code:'VP0089', nameEn:'Value Partners Growth Fund',           nameTc:'Value Partners 优选增长基金',    type:'股票型基金',   domicile:'卢森堡', status:'运作中',   date:'2022/09/01', currency:'EUR', manager:'Claire Zhou', updater:'James', updateTime:'2026/08/21 14:00' },
 ];
 const PROD_STATUS_TAG = { '运作中':'tag-green', '募集中':'tag-blue', '已终止':'tag-red', '清盘中':'tag-gray', '已停用':'tag-gray' };
 const PROD_TYPE_OPTIONS = ['股票型基金','债券型基金','混合资产基金','货币市场基金','指数基金','ETF','基金中基金','结构型基金','其他'];
