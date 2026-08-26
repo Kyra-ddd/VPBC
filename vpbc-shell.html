@@ -580,6 +580,7 @@ function indRenderUnified() {
       ...ind,
       _analystNames: analysts.length ? analysts.map(a => a.name).join("、") : "—",
       _updater: analysts.length ? analysts[0].name : "—",
+      _stockCount: ind.stocks ? ind.stocks.length : 0,
       _time: ind._time || ["2026/08/20 09:15:32","2026/08/18 14:22:07","2026/08/15 11:03:45","2026/08/12 16:40:18","2026/08/10 08:55:01","2026/08/08 10:30:44","2026/08/05 13:20:11","2026/08/03 15:07:38","2026/08/01 09:42:56","2026/07/30 17:18:22","2026/07/28 11:05:33"][i % 11]
     };
   });
@@ -592,6 +593,7 @@ function indRenderUnified() {
       else if (indSortField === "market")  { av = (a.marketNames || []).join(""); bv = (b.marketNames || []).join(""); }
       else if (indSortField === "analyst") { av = a._analystNames; bv = b._analystNames; }
       else if (indSortField === "updater") { av = a._updater; bv = b._updater; }
+      else if (indSortField === "stocks")  { av = a._stockCount; bv = b._stockCount; }
       else if (indSortField === "time")    { av = a._time; bv = b._time; }
       if (av < bv) return indSortDir === "asc" ? -1 : 1;
       if (av > bv) return indSortDir === "asc" ? 1 : -1;
@@ -600,12 +602,12 @@ function indRenderUnified() {
   }
 
   // Update sort icons
-  ["name","market","analyst","updater","time"].forEach(f => {
+  ["name","market","analyst","stocks","updater","time"].forEach(f => {
     const el = document.getElementById("sort-" + f);
     if (el) el.textContent = f === indSortField ? (indSortDir === "asc" ? "↑" : "↓") : "";
   });
 
-  if (!rows.length) { body.innerHTML = '<tr><td colspan="7" class="muted" style="text-align:center;padding:32px">暂无数据</td></tr>'; return; }
+  if (!rows.length) { body.innerHTML = '<tr><td colspan="8" class="muted" style="text-align:center;padding:32px">暂无数据</td></tr>'; return; }
   body.innerHTML = rows.map(ind => {
     const hasStocks = ind.stocks && ind.stocks.length > 0;
     const nameHtml = hasStocks
@@ -617,6 +619,7 @@ function indRenderUnified() {
       <td class="bold">${nameHtml}</td>
       <td>${(ind.marketNames || []).join("、")}</td>
       <td>${ind._analystNames}</td>
+      <td style="font-variant-numeric:tabular-nums">${ind._stockCount}</td>
       <td class="muted">${ind._updater}</td>
       <td class="muted" style="font-variant-numeric:tabular-nums">${ind._time}</td>
       <td><button class="btn btn-secondary btn-sm" onclick="indOpenImport('${ind.name}')">导入股票明细</button></td>
@@ -1982,6 +1985,7 @@ function buildIndustry() {
         <th class="sortable" onclick="indSort('name')">行业 <span class="sort-icon" id="sort-name"></span></th>
         <th class="sortable" onclick="indSort('market')">市场 <span class="sort-icon" id="sort-market"></span></th>
         <th class="sortable" onclick="indSort('analyst')">研究员 <span class="sort-icon" id="sort-analyst"></span></th>
+        <th class="sortable" onclick="indSort('stocks')">覆盖股票个数 <span class="sort-icon" id="sort-stocks"></span></th>
         <th class="sortable" onclick="indSort('updater')">更新人 <span class="sort-icon" id="sort-updater"></span></th>
         <th class="sortable" onclick="indSort('time')">更新时间 <span class="sort-icon" id="sort-time"></span></th>
         <th>操作</th>
