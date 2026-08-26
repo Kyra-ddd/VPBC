@@ -1812,7 +1812,7 @@ function prodDeleteSelected() { if (!prodSelected) { alert('请先选择一个�
 function buildProductAdd() {
   const L = 'style="display:flex;align-items:center;gap:8px"', LB = 'style="width:140px;flex-shrink:0;margin:0;font-weight:500"', IN = 'style="flex:1;min-width:0"';
   const R = '<span style="color:#dc2626;margin-right:2px">*</span>';
-  const hdr = (label) => `<div style="grid-column:1/-1;font-weight:600;color:var(--vp-green);padding:6px 0;border-bottom:1px solid var(--vp-green);margin-bottom:4px">${label}</div>`;
+  const hdr = (label) => '';
   const cell = (label, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
   const empty = `<div></div>`;
   const taCell = (label, id, ph, req) => `<div style="grid-column:1/-1;display:flex;align-items:flex-start;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><textarea class="form-control" style="flex:1" rows="2" id="${id}" placeholder="${ph}"></textarea></div>`;
