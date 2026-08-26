@@ -565,22 +565,21 @@ function indRenderUnified() {
     if (el) el.textContent = f === indSortField ? (indSortDir === "asc" ? "↑" : "↓") : "";
   });
 
-  if (!rows.length) { body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:32px">暂无数据</td></tr>'; return; }
+  if (!rows.length) { body.innerHTML = '<tr><td colspan="7" class="muted" style="text-align:center;padding:32px">暂无数据</td></tr>'; return; }
   body.innerHTML = rows.map(ind => {
     const hasStocks = ind.stocks && ind.stocks.length > 0;
     const nameHtml = hasStocks
       ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green)" onclick="indShowStocks('${ind.name}')">${ind.name}</span>`
       : ind.name;
+    const checked = indSelected === ind.name ? 'checked' : '';
     return `<tr>
+      <td><input type="checkbox" ${checked} onclick="indToggleSelect('${ind.name}')"></td>
       <td class="bold">${nameHtml}</td>
       <td>${(ind.marketNames || []).join("、")}</td>
       <td>${ind._analystNames}</td>
       <td class="muted">${ind._updater}</td>
       <td class="muted" style="font-variant-numeric:tabular-nums">${ind._time}</td>
-      <td>
-        <button class="btn btn-ghost btn-sm" onclick="indOpenImport('${ind.name}')">导入</button>
-        <button class="btn btn-ghost btn-sm" onclick="alert('编辑「${ind.name}」')">编辑</button>
-      </td>
+      <td><button class="btn btn-ghost btn-sm" onclick="indOpenImport('${ind.name}')">导入股票明细</button></td>
     </tr>`;
   }).join("");
 }
@@ -1922,8 +1921,15 @@ function prodSubmit() {
   alert('提交成功！');
 }
 
+let indSelected = "";
+function indToggleSelect(name) { indSelected = indSelected === name ? "" : name; indRenderUnified(); }
+
 function buildIndustry() {
-  return `<div class="toolbar"><div class="flex gap-2"><button class="btn btn-secondary btn-sm" onclick="indOpenAdd()">＋ 新增行业</button></div></div>
+  return `<div class="toolbar"><div class="flex gap-2">
+      <button class="btn btn-secondary btn-sm" onclick="indOpenAdd()">＋ 新增行业</button>
+      <button class="btn btn-ghost btn-sm" onclick="indSelected ? alert('修改行业：' + indSelected) : alert('请先勾选一条行业数据')">修改行业</button>
+      <button class="btn btn-ghost btn-sm" onclick="indSelected ? alert('删除行业：' + indSelected) : alert('请先勾选一条行业数据')">删除行业</button>
+    </div></div>
     <div class="card"><div class="card-body"><div style="display:flex;flex-wrap:nowrap;gap:12px;align-items:center">
       <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">市场</label><select class="form-control" style="width:auto" id="indFMarket" onchange="indDoFilter()"><option value="">全部市场</option></select></div>
       <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">行业</label><select class="form-control" style="width:auto" id="indFIndustry" onchange="indDoFilter()"><option value="">全部行业</option></select></div>
@@ -1932,6 +1938,7 @@ function buildIndustry() {
     </div></div></div>
     <div class="card"><div class="card-body" style="padding:0"><div style="max-height:264px;overflow-y:auto">
       <table class="data-table"><thead><tr>
+        <th style="width:40px"></th>
         <th class="sortable" onclick="indSort('name')">行业 <span class="sort-icon" id="sort-name"></span></th>
         <th class="sortable" onclick="indSort('market')">市场 <span class="sort-icon" id="sort-market"></span></th>
         <th class="sortable" onclick="indSort('analyst')">研究员 <span class="sort-icon" id="sort-analyst"></span></th>
