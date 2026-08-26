@@ -579,7 +579,7 @@ function indRenderUnified() {
       <td>${ind._analystNames}</td>
       <td class="muted">${ind._updater}</td>
       <td class="muted" style="font-variant-numeric:tabular-nums">${ind._time}</td>
-      <td><button class="btn btn-ghost btn-sm" onclick="indOpenImport('${ind.name}')">导入股票明细</button></td>
+      <td><button class="btn btn-secondary btn-sm" onclick="indOpenImport('${ind.name}')">导入股票明细</button></td>
     </tr>`;
   }).join("");
 }
@@ -1927,8 +1927,8 @@ function indToggleSelect(name) { indSelected = indSelected === name ? "" : name;
 function buildIndustry() {
   return `<div class="toolbar"><div class="flex gap-2">
       <button class="btn btn-secondary btn-sm" onclick="indOpenAdd()">＋ 新增行业</button>
-      <button class="btn btn-ghost btn-sm" onclick="indSelected ? alert('修改行业：' + indSelected) : alert('请先勾选一条行业数据')">修改行业</button>
-      <button class="btn btn-ghost btn-sm" onclick="indSelected ? alert('删除行业：' + indSelected) : alert('请先勾选一条行业数据')">删除行业</button>
+      <button class="btn btn-secondary btn-sm" onclick="indSelected ? alert('修改行业：' + indSelected) : alert('请先勾选一条行业数据')">修改行业</button>
+      <button class="btn btn-secondary btn-sm" onclick="indSelected ? alert('删除行业：' + indSelected) : alert('请先勾选一条行业数据')">删除行业</button>
     </div></div>
     <div class="card"><div class="card-body"><div style="display:flex;flex-wrap:nowrap;gap:12px;align-items:center">
       <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">市场</label><select class="form-control" style="width:auto" id="indFMarket" onchange="indDoFilter()"><option value="">全部市场</option></select></div>
