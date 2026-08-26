@@ -332,12 +332,6 @@
 </aside>
 
 <div class="main">
-  <header class="topbar">
-    <div class="topbar-breadcrumb" id="topbarBreadcrumb">产品管理</div>
-    <div class="topbar-right">
-      <div class="user-chip"><div class="user-avatar">KW</div><span>Kyra Wang</span></div>
-    </div>
-  </header>
   <div class="tabbar" id="tabbar"></div>
   <div class="content" id="content"></div>
 </div>
@@ -371,7 +365,7 @@ function closeTab(key, event) {
     } else {
       activeTabKey = null;
       renderContent('');
-      updateBreadcrumb('');
+      if (document.getElementById('topbarBreadcrumb')) updateBreadcrumb('');
       history.replaceState(null, '', location.pathname + location.search);
     }
   }
@@ -381,7 +375,6 @@ function activateTab(key) {
   activeTabKey = key;
   renderTabBar();
   renderContent(openTabs[key].content);
-  updateBreadcrumb(openTabs[key].title);
 }
 
 function renderTabBar() {
@@ -403,7 +396,7 @@ function renderContent(html) {
   if (activeTabKey === 'share-class-add') { scAddInit(); }
   if (activeTabKey === 'fee') { feeRender(); }
 }
-function updateBreadcrumb(text) { document.getElementById('topbarBreadcrumb').textContent = text; }
+function updateBreadcrumb(text) { if (document.getElementById('topbarBreadcrumb')) document.getElementById('topbarBreadcrumb').textContent = text; }
 
 function toggleSubmenu(id) {
   const sub = document.getElementById('submenu-' + id);
