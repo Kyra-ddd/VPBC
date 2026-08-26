@@ -478,7 +478,54 @@ function indSwitchMarket(code) {
   indRenderMarkets(); indInitFilters(); indRenderUnified();
 }
 
-function indOpenAdd() { alert("原型：新增行业"); }
+function indOpenAdd() {
+  document.getElementById('indAddModal').classList.add('show');
+  document.getElementById('indAddName').value = '';
+  const allMarkets = Object.keys(IND_DATA).map(code => ({ code, name: IND_DATA[code].name })).sort();
+  const mLeft = document.getElementById('indAddMarketLeft');
+  const aLeft = document.getElementById('indAddAnalystLeft');
+  mLeft.innerHTML = allMarkets.map(m => `<option value="${m.code}">${m.name}</option>`).join('');
+  document.getElementById('indAddMarketRight').innerHTML = '';
+  const allInds = indGetIndustries();
+  const analysts = [...new Set(allInds.flatMap(i => (i.analysts || []).filter(a => a.status === "在职").map(a => a.name)))].sort();
+  aLeft.innerHTML = analysts.map(n => `<option value="${n}">${n}</option>`).join('');
+  document.getElementById('indAddAnalystRight').innerHTML = '';
+  indUpdateTags('market');
+  indUpdateTags('analyst');
+}
+
+function indCloseAdd() { document.getElementById('indAddModal').classList.remove('show'); }
+
+function indAddMove(type, dir) {
+  const left = document.getElementById('indAdd' + (type === 'market' ? 'Market' : 'Analyst') + 'Left');
+  const right = document.getElementById('indAdd' + (type === 'market' ? 'Market' : 'Analyst') + 'Right');
+  if (dir === 'right') {
+    [...left.selectedOptions].forEach(opt => { right.appendChild(opt); });
+  } else {
+    [...right.selectedOptions].forEach(opt => { left.appendChild(opt); });
+  }
+  indUpdateTags(type);
+}
+
+function indUpdateTags(type) {
+  const right = document.getElementById('indAdd' + (type === 'market' ? 'Market' : 'Analyst') + 'Right');
+  const tags = document.getElementById('indAdd' + (type === 'market' ? 'Market' : 'Analyst') + 'Tags');
+  tags.innerHTML = [...right.options].map(o =>
+    `<span style="display:inline-flex;align-items:center;gap:2px;background:var(--vp-mint-50);border:1px solid var(--vp-border);border-radius:4px;padding:2px 6px;font-size:12px">${o.text}</span>`
+  ).join('');
+}
+
+function indSaveAdd() {
+  const name = document.getElementById('indAddName').value.trim();
+  if (!name) { alert('行业名称为必填项'); return; }
+  if (name.length > 50) { alert('行业名称最多50字符'); return; }
+  const marketOpts = [...document.getElementById('indAddMarketRight').options];
+  if (!marketOpts.length) { alert('市场为必填项'); return; }
+  const analystOpts = [...document.getElementById('indAddAnalystRight').options];
+  if (!analystOpts.length) { alert('研究员为必填项'); return; }
+  alert(`新增行业：${name}\n市场：${marketOpts.map(o=>o.text).join('、')}\n研究员：${analystOpts.map(o=>o.text).join('、')}`);
+  indCloseAdd();
+}
 
 function indInitFilters() {
   // Markets dropdown
@@ -1964,6 +2011,47 @@ function buildIndustry() {
           <div id="indFileName" style="font-size:13px;color:var(--vp-gray-500);text-align:center"></div>
         </div>
         <div class="modal-footer"><button class="btn btn-secondary" onclick="indCloseImport()">取消</button><button class="btn btn-primary" id="indUploadBtn" disabled onclick="indDoUpload()">确认上传</button></div>
+      </div>
+    </div>
+
+    <!-- 新增行业弹窗 -->
+    <div class="modal-mask" id="indAddModal"><div class="modal-overlay" onclick="indCloseAdd()"></div>
+      <div class="modal" onclick="event.stopPropagation()" style="max-width:480px">
+        <div class="modal-header"><div class="modal-title">新增行业</div><button class="modal-close" onclick="indCloseAdd()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <div class="modal-body" style="display:flex;flex-direction:column;gap:16px">
+          <div class="form-group" style="margin:0">
+            <label class="form-label" style="margin:0 0 6px">行业 <span style="color:var(--vp-red)">*</span></label>
+            <input type="text" class="form-control" id="indAddName" maxlength="50" placeholder="请输入行业名称，最多50字符">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label" style="margin:0 0 6px">市场 <span style="color:var(--vp-red)">*</span></label>
+            <div style="display:flex;gap:8px;align-items:flex-start">
+              <select class="form-control" id="indAddMarketLeft" size="5" multiple style="flex:1;min-width:0"></select>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <button class="btn btn-ghost btn-sm" onclick="indAddMove('market','right')">添加 →</button>
+                <button class="btn btn-ghost btn-sm" onclick="indAddMove('market','left')">← 移除</button>
+              </div>
+              <select class="form-control" id="indAddMarketRight" size="5" multiple style="flex:1;min-width:0"></select>
+            </div>
+            <div id="indAddMarketTags" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px"></div>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label" style="margin:0 0 6px">研究员 <span style="color:var(--vp-red)">*</span></label>
+            <div style="display:flex;gap:8px;align-items:flex-start">
+              <select class="form-control" id="indAddAnalystLeft" size="5" multiple style="flex:1;min-width:0"></select>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <button class="btn btn-ghost btn-sm" onclick="indAddMove('analyst','right')">添加 →</button>
+                <button class="btn btn-ghost btn-sm" onclick="indAddMove('analyst','left')">← 移除</button>
+              </div>
+              <select class="form-control" id="indAddAnalystRight" size="5" multiple style="flex:1;min-width:0"></select>
+            </div>
+            <div id="indAddAnalystTags" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost btn-sm" onclick="indCloseAdd()">取消</button>
+          <button class="btn btn-primary btn-sm" onclick="indSaveAdd()">保存</button>
+        </div>
       </div>
     </div>
 
