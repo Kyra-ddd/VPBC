@@ -960,7 +960,7 @@ function poolRenderDetail() {
 
 // ========== Product Center Data ==========
 // --- Share Class ---
-let scLang = 'zh';
+let scLang = 'en';
 const SC_RECORDS = [
   { fund:"VP0010", className:"A类 美元 accumulation", vpid:"VP0010-A-USD-ACC", isin:"HK0000012345", ccy:"USD", status:"运行中", launch:"1993/04/01", cutoff:"16:00 HKT", freq:"每日", mgmtFee:"1.25%", ter:"1.65%", settle:"T+3" },
   { fund:"VP0010", className:"A类 港币 accumulation", vpid:"VP0010-A-HKD-ACC", isin:"HK0000012346", ccy:"HKD", status:"运行中", launch:"1993/04/01", cutoff:"16:00 HKT", freq:"每日", mgmtFee:"1.25%", ter:"1.65%", settle:"T+3" },
@@ -986,7 +986,7 @@ function scRender() {
     return matchCode && matchName && matchCcy && matchSt;
   });
   body.innerHTML = rows.length === 0
-    ? `<tr><td colspan="12" class="muted" style="text-align:center;padding:32px">暂无符合条件的份额类别</td></tr>`
+    ? `<tr><td colspan="11" class="muted" style="text-align:center;padding:32px">暂无符合条件的份额类别</td></tr>`
     : rows.map(r => {
       const stTag = `<span class="tag ${SC_STATUS_TAG[r.status] || 'tag-gray'}">${r.status}</span>`;
       return `<tr>
@@ -1001,7 +1001,6 @@ function scRender() {
         <td>${r.freq}</td>
         <td class="cell-muted">${r.mgmtFee}</td>
         <td class="cell-muted">${r.settle}</td>
-        <td class="right"><button class="btn btn-secondary btn-sm" onclick="scOpenDetail('${r.vpid}')">查看</button></td>
       </tr>`;
     }).join("");
 }
@@ -1224,14 +1223,14 @@ function buildShareClass() {
   </div>
   <div class="card"><div class="card-body"><div style="display:flex;flex-wrap:nowrap;gap:12px;align-items:center">
     <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">基金代码</label><input type="text" class="form-control" id="scFundCode" placeholder="如 VP0010"></div>
-    <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">类别名称</label><input type="text" class="form-control" id="scName" placeholder="搜索名称..."></div>
+    <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">份额名称</label><input type="text" class="form-control" id="scName" placeholder="搜索名称..."></div>
     <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">货币</label><select class="form-control" id="scCcy"><option value="">全部货币</option><option>USD</option><option>HKD</option><option>CNY</option><option>CNH</option><option>EUR</option><option>GBP</option><option>JPY</option><option>SGD</option><option>CHF</option><option>AUD</option><option>CAD</option></select></div>
     <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">状态</label><select class="form-control" id="scSt"><option value="">全部状态</option><option>运行中</option><option>已停用</option><option>已终止</option></select></div>
     <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="scResetFilter()">重置</button>
     <button class="btn btn-primary btn-sm" style="flex-shrink:0" onclick="scDoFilter()">搜索</button>
   </div></div></div>
   <div class="card"><div style="overflow-x:auto;">
-    <table class="data-table"><thead><tr><th>基金代码</th><th>类别名称</th><th>VPFS Class ID</th><th>ISIN</th><th>货币</th><th>状态</th><th>成立日期</th><th>截止时间</th><th>交易频率</th><th>管理费</th><th>TER</th><th>赎回结算</th><th></th></tr></thead>
+    <table class="data-table"><thead><tr><th>基金代码</th><th>份额名称</th><th>VPFS Class ID</th><th>ISIN</th><th>货币</th><th>状态</th><th>成立日期</th><th>截止时间</th><th>交易频率</th><th>管理费</th><th>TER</th></tr></thead>
     <tbody id="scBody"></tbody>
     </table>
     <div class="pagination-bar"><span class="pagination-info">共 ${SC_RECORDS.length} 条</span><div class="pagination"><button class="page-btn" disabled>←</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">→</button></div></div>
