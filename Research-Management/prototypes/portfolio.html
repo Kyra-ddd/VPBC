@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>模拟组合 - 投研管理系统</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       VP Design System Tokens
+       ======================================== */
+    :root {
+      --vp-green-dark: #0A3726;
+      --vp-green: #20A06E;
+      --vp-green-2: #1B8A5F;
+      --vp-jade: #6BBD9C;
+      --vp-green-bright: #7CC366;
+      --vp-lime: #BDD646;
+      --vp-mint-50: #F2F8F4;
+      --vp-mint-100: #E8F3EC;
+      --vp-mint-200: #D6E9DE;
+      --vp-mint-300: #BADCC8;
+      --vp-green-bg: #E4F3EA;
+      --vp-gray-100: #EFF5F1;
+      --vp-white: #FFFFFF;
+      --vp-footer-bg: #F1F2F2;
+      --vp-ink: #1E2B24;
+      --vp-gray: #5A6B61;
+      --vp-gray-light: #8FA398;
+      --vp-danger: #B23A48;
+      --vp-danger-bg: #F9EEF0;
+      --vp-gold: #C7A252;
+      --vp-silver: #C0C0C0;
+      --vp-bronze: #CD7F32;
+      --vp-space-1: 4px;
+      --vp-space-2: 8px;
+      --vp-space-3: 12px;
+      --vp-space-4: 16px;
+      --vp-space-5: 24px;
+      --vp-space-6: 32px;
+      --vp-space-7: 48px;
+      --vp-radius-sm: 4px;
+      --vp-radius-md: 8px;
+      --vp-radius-lg: 12px;
+      --vp-radius-pill: 999px;
+      --vp-shadow-sm: 0 1px 3px rgba(10, 55, 38, 0.08);
+      --vp-shadow-md: 0 4px 12px rgba(10, 55, 38, 0.10);
+      --vp-shadow-lg: 0 8px 24px rgba(10, 55, 38, 0.12);
+    }
+
+    /* ========================================
+       Reset & Base
+       ======================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Open Sans', 'PingFang TC', 'Microsoft JhengHei', 'Noto Sans TC', Arial, sans-serif;
+      font-size: 16px;
+      line-height: 24px;
+      color: var(--vp-ink);
+      background-color: var(--vp-mint-50);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Poppins', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    }
+
+    .font-tabular {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ========================================
+       Top Bar
+       ======================================== */
+    .top-bar {
+      background: var(--vp-green);
+      height: 53px;
+      padding: 0 var(--vp-space-4);
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(10, 55, 38, 0.10);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .top-bar__logo {
+      height: 34px;
+      width: auto;
+    }
+
+    .top-bar__divider {
+      width: 1px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.35);
+      margin: 0 var(--vp-space-3);
+    }
+
+    .top-bar__title {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .top-bar__nav {
+      margin-left: auto;
+      display: flex;
+      gap: var(--vp-space-2);
+    }
+
+    .top-bar__nav-item {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: var(--vp-radius-sm);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .top-bar__nav-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    .top-bar__nav-item--active {
+      background: var(--vp-green-bright);
+      color: white;
+    }
+
+    /* ========================================
+       Page Header
+       ======================================== */
+    .page-header {
+      padding: var(--vp-space-4) var(--vp-space-5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--vp-space-3);
+    }
+
+    .page-header__left {
+      display: flex;
+      align-items: center;
+      gap: var(--vp-space-2);
+    }
+
+    .page-header__icon {
+      width: 24px;
+      height: 24px;
+      color: var(--vp-green);
+    }
+
+    .page-header__title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--vp-ink);
+    }
+
+    .page-header__meta {
+      font-size: 14px;
+      color: var(--vp-gray);
+      text-align: right;
+    }
+
+    /* ========================================
+       Main Content Container
+       ======================================== */
+    .main-content {
+      padding: 0 var(--vp-space-5) var(--vp-space-7);
+      max-width: 1600px;
+    }
+
+    /* ========================================
+       Section Card
+       ======================================== */
+    .card {
+      background: var(--vp-white);
+      border-radius: var(--vp-radius-md);
+      border: 1px solid var(--vp-mint-200);
+      box-shadow: var(--vp-shadow-sm);
+      margin-bottom: var(--vp-space-5);
+    }
+
+    .card__header {
+      padding: var(--vp-space-4) var(--vp-space-5);
+      border-bottom: 1px solid var(--vp-gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--vp-space-3);
+    }
+
+    .card__title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--vp-ink);
+      display: flex;
+      align-items: center;
+      gap: var(--vp-space-2);
+    }
+
+    .card__title-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--vp-green);
+    }
+
+    .card__body {
+      padding: var(--vp-space-5);
+    }
+
+    .card__body--no-padding {
+      padding: 0;
+    }
+
+    /* ========================================
+       KPI Row
+       ======================================== */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--vp-space-5);
+    }
+
+    .kpi-card {
+      background: var(--vp-white);
+      border-radius: var(--vp-radius-md);
+      border: 1px solid var(--vp-mint-200);
+      box-shadow: var(--vp-shadow-sm);
+      padding: var(--vp-space-5);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--vp-space-4);
+    }
+
+    .kpi-card__icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(32, 160, 110, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .kpi-card__icon svg {
+      width: 24px;
+      height: 24px;
+      color: var(--vp-green);
+    }
+
+    .kpi-card__content {
+      flex: 1;
+    }
+
+    .kpi-card__value {
+      font-family: 'Poppins', sans-serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--vp-ink);
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .kpi-card__label {
+      font-size: 14px;
+      color: var(--vp-gray);
+      margin-top: 2px;
+    }
+
+    .kpi-card__change {
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: var(--vp-space-1);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .kpi-card__change--up {
+      color: var(--vp-danger);
+    }
+
+    .kpi-card__change--down {
+      color: var(--vp-green);
+    }
+
+    /* ========================================
+       Portfolio Overview Row
+       ======================================== */
+    .overview-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--vp-space-5);
+    }
+
+    .overview-item {
+      display: flex;
+      flex-direction: column;
+      gap: var(--vp-space-1);
+    }
+
+    .overview-item__label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--vp-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .overview-item__value {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--vp-ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ========================================
+       Data Table
+       ======================================== */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .data-table thead {
+      background: var(--vp-gray-100);
+    }
+
+    .data-table th {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--vp-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 8px 12px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .data-table th--right {
+      text-align: right;
+    }
+
+    .data-table tbody tr {
+      border-bottom: 1px solid var(--vp-gray-100);
+    }
+
+    .data-table tbody tr:nth-child(even) {
+      background: var(--vp-mint-50);
+    }
+
+    .data-table tbody tr:hover {
+      background: var(--vp-mint-100);
+    }
+
+    .data-table td {
+      padding: 6px 12px;
+      color: var(--vp-ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .data-table td--right {
+      text-align: right;
+    }
+
+    .data-table__stock {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .data-table__stock-code {
+      font-weight: 600;
+      color: var(--vp-ink);
+    }
+
+    .data-table__stock-name {
+      font-size: 12px;
+      color: var(--vp-gray);
+    }
+
+    .data-table__market {
+      font-size: 12px;
+      color: var(--vp-gray);
+    }
+
+    /* Stock weights with mini bar */
+    .weight-cell {
+      display: flex;
+      align-items: center;
+      gap: var(--vp-space-2);
+    }
+
+    .weight-bar {
+      width: 40px;
+      height: 6px;
+      background: var(--vp-mint-200);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .weight-bar__fill {
+      height: 100%;
+      background: var(--vp-green);
+      border-radius: 3px;
+    }
+
+    /* Change values */
+    .change--up {
+      color: var(--vp-danger);
+      font-weight: 600;
+    }
+
+    .change--down {
+      color: var(--vp-green);
+      font-weight: 600;
+    }
+
+    /* ========================================
+       Return Comparison Section
+       ======================================== */
+    .return-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--vp-space-5);
+    }
+
+    .return-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--vp-space-3);
+    }
+
+    .return-group__title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--vp-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .return-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--vp-space-3);
+    }
+
+    .return-item {
+      background: var(--vp-mint-50);
+      border-radius: var(--vp-radius-sm);
+      padding: var(--vp-space-3);
+      text-align: center;
+    }
+
+    .return-item__period {
+      font-size: 12px;
+      color: var(--vp-gray);
+      margin-bottom: var(--vp-space-1);
+    }
+
+    .return-item__value {
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .return-item__value--up {
+      color: var(--vp-danger);
+    }
+
+    .return-item__value--down {
+      color: var(--vp-green);
+    }
+
+    /* Benchmark badge */
+    .benchmark-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--vp-space-1);
+      background: var(--vp-gray-100);
+      padding: 4px 10px;
+      border-radius: var(--vp-radius-pill);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--vp-gray);
+    }
+
+    .benchmark-badge__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--vp-gold);
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: var(--vp-space-5);
+      padding: var(--vp-space-4) 0;
+      border-top: 1px solid var(--vp-gray-100);
+      margin-top: var(--vp-space-4);
+    }
+
+    .legend__item {
+      display: flex;
+      align-items: center;
+      gap: var(--vp-space-2);
+      font-size: 12px;
+      color: var(--vp-gray);
+    }
+
+    .legend__line {
+      width: 20px;
+      height: 2px;
+      border-radius: 1px;
+    }
+
+    .legend__line--portfolio {
+      background: var(--vp-green);
+    }
+
+    .legend__line--benchmark {
+      background: var(--vp-gold);
+    }
+
+    /* ========================================
+       Action Buttons
+       ======================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--vp-space-2);
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: var(--vp-radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn--primary {
+      background: var(--vp-green);
+      color: white;
+      border-color: var(--vp-green);
+    }
+
+    .btn--primary:hover {
+      background: var(--vp-green-2);
+      border-color: var(--vp-green-2);
+    }
+
+    .btn--secondary {
+      background: var(--vp-white);
+      color: var(--vp-green);
+      border-color: var(--vp-green);
+    }
+
+    .btn--secondary:hover {
+      background: var(--vp-green-bg);
+    }
+
+    .btn--danger {
+      background: var(--vp-white);
+      color: var(--vp-danger);
+      border-color: var(--vp-danger);
+    }
+
+    .btn--danger:hover {
+      background: var(--vp-danger-bg);
+    }
+
+    .btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ========================================
+       Toolbar
+       ======================================== */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: var(--vp-space-3);
+      flex-wrap: wrap;
+    }
+
+    .toolbar__left {
+      display: flex;
+      align-items: center;
+      gap: var(--vp-space-3);
+    }
+
+    .toolbar__right {
+      margin-left: auto;
+    }
+
+    /* Search Input */
+    .search-input {
+      position: relative;
+      width: 220px;
+    }
+
+    .search-input__icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: var(--vp-gray);
+    }
+
+    .search-input input {
+      width: 100%;
+      height: 35px;
+      padding: 6px 16px 6px 34px;
+      font-size: 14px;
+      font-family: inherit;
+      border: 1px solid var(--vp-mint-200);
+      border-radius: var(--vp-radius-sm);
+      background: var(--vp-mint-50);
+      color: var(--vp-ink);
+      transition: all 0.2s;
+    }
+
+    .search-input input::placeholder {
+      color: var(--vp-gray-light);
+    }
+
+    .search-input input:focus {
+      outline: none;
+      border-color: var(--vp-green);
+      background: var(--vp-white);
+      box-shadow: 0 0 0 3px rgba(107, 189, 156, 0.2);
+    }
+
+    /* ========================================
+       Pills / Tabs
+       ======================================== */
+    .pills {
+      display: inline-flex;
+      background: var(--vp-mint-100);
+      border-radius: var(--vp-radius-md);
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .pill {
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: var(--vp-radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--vp-gray);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .pill:hover {
+      color: var(--vp-ink);
+    }
+
+    .pill--active {
+      background: var(--vp-white);
+      color: var(--vp-green-dark);
+      box-shadow: var(--vp-shadow-sm);
+    }
+
+    /* ========================================
+       Status Badge
+       .status
+       ======================================== */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: var(--vp-radius-pill);
+    }
+
+    .status-badge--active {
+      background: var(--vp-green-bg);
+      color: var(--vp-green);
+    }
+
+    .status-badge--shared {
+      background: var(--vp-mint-100);
+      color: var(--vp-gray);
+    }
+
+    /* ========================================
+       Responsive
+       ======================================== */
+    @media (max-width: 1200px) {
+      .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .return-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .kpi-row {
+        grid-template-columns: 1fr;
+      }
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .toolbar__right {
+        margin-left: 0;
+      }
+    }
+
+    /* ========================================
+       Chart placeholder area
+       ======================================== */
+    .chart-area {
+      height: 120px;
+      background: linear-gradient(180deg, var(--vp-mint-50) 0%, var(--vp-white) 100%);
+      border-radius: var(--vp-radius-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-grid {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+
+    .chart-grid__line {
+      border-top: 1px dashed var(--vp-mint-200);
+      flex: 1;
+    }
+
+    .chart-lines {
+      position: absolute;
+      inset: 16px;
+    }
+
+    .chart-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+    }
+
+    .chart-line--portfolio {
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60'%3E%3Cpath d='M0,50 Q20,45 40,35 T80,30 T120,15 T160,20 T200,5' fill='none' stroke='%2320A06E' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+      background-size: 200px 60px;
+      animation: chartMove 20s linear infinite;
+    }
+
+    .chart-line--benchmark {
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60'%3E%3Cpath d='M0,45 Q20,40 40,38 T80,35 T120,30 T160,25 T200,18' fill='none' stroke='%23C7A252' stroke-width='2' stroke-dasharray='4,2'/%3E%3C/svg%3E") repeat-x;
+      background-size: 200px 60px;
+      animation: chartMove 20s linear infinite;
+      opacity: 0.7;
+      height: 70px;
+      bottom: 5px;
+    }
+
+    @keyframes chartMove {
+      from { background-position-x: 0; }
+      to { background-position-x: 200px; }
+    }
+
+    .chart-labels {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 8px;
+    }
+
+    .chart-label {
+      font-size: 10px;
+      color: var(--vp-gray-light);
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="top-bar">
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 203 90'%3E%3Crect fill='%2320A06E' width='203' height='90' rx='8'/%3E%3Ctext x='50%25' y='55' font-family='Arial' font-size='40' font-weight='bold' fill='white' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E" alt="VP Logo" class="top-bar__logo">
+    <div class="top-bar__divider"></div>
+    <span class="top-bar__title">Value Partners</span>
+    <nav class="top-bar__nav">
+      <a href="#" class="top-bar__nav-item">投研</a>
+      <a href="#" class="top-bar__nav-item top-bar__nav-item--active">模拟组合</a>
+      <a href="#" class="top-bar__nav-item">产品中心</a>
+      <a href="#" class="top-bar__nav-item">研报</a>
+    </nav>
+  </header>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header__left">
+      <svg class="page-header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+        <line x1="12" y1="22.08" x2="12" y2="12"/>
+      </svg>
+      <h1 class="page-header__title">模拟组合</h1>
+    </div>
+    <div class="page-header__meta">
+      最后更新：2026-08-27 16:30
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Portfolio Selector & Actions -->
+    <div class="card">
+      <div class="card__header">
+        <div class="toolbar">
+          <div class="toolbar__left">
+            <span class="card__title">GC Analyst Model Portfolio</span>
+            <span class="status-badge status-badge--active">持仓中</span>
+            <span class="benchmark-badge">
+              <span class="benchmark-badge__dot"></span>
+              基准：恒生指数
+            </span>
+          </div>
+        </div>
+        <div class="toolbar">
+          <div class="toolbar__right">
+            <button class="btn btn--secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+              </svg>
+              分享
+            </button>
+            <button class="btn btn--primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              添加标的
+            </button>
+            <button class="btn btn--secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+              发起调仓
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+        </div>
+        <div class="kpi-card__content">
+          <div class="kpi-card__value font-tabular">1,000万</div>
+          <div class="kpi-card__label">初始资金</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="kpi-card__content">
+          <div class="kpi-card__value font-tabular">1,247万</div>
+          <div class="kpi-card__label">当前市值</div>
+          <div class="kpi-card__change kpi-card__change--up">+24.70%</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+          </svg>
+        </div>
+        <div class="kpi-card__content">
+          <div class="kpi-card__value font-tabular">+24.70%</div>
+          <div class="kpi-card__label">累计收益率</div>
+          <div class="kpi-card__change kpi-card__change--up">+247万</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div class="kpi-card__content">
+          <div class="kpi-card__value font-tabular">-8.32%</div>
+          <div class="kpi-card__label">最大回撤 (MDD)</div>
+          <div class="kpi-card__change kpi-card__change--down">2026-03 最大回撤</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Net Value Trend Chart -->
+    <div class="card">
+      <div class="card__header">
+        <span class="card__title">
+          <svg class="card__title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          区间表现
+        </span>
+        <div class="pills">
+          <button class="pill">近1月</button>
+          <button class="pill">近3月</button>
+          <button class="pill">近6月</button>
+          <button class="pill pill--active">近1年</button>
+          <button class="pill">上线来</button>
+          <button class="pill">全部</button>
+        </div>
+      </div>
+      <div class="card__body">
+        <div class="chart-area">
+          <div class="chart-grid">
+            <div class="chart-grid__line"></div>
+            <div class="chart-grid__line"></div>
+            <div class="chart-grid__line"></div>
+            <div class="chart-grid__line"></div>
+            <div class="chart-grid__line"></div>
+          </div>
+          <div class="chart-lines">
+            <div class="chart-line chart-line--portfolio"></div>
+            <div class="chart-line chart-line--benchmark"></div>
+          </div>
+        </div>
+        <div class="legend">
+          <div class="legend__item">
+            <span class="legend__line legend__line--portfolio"></span>
+            组合
+          </div>
+          <div class="legend__item">
+            <span class="legend__line legend__line--benchmark"></span>
+            恒生指数
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Holdings Table -->
+    <div class="card">
+      <div class="card__header">
+        <span class="card__title">
+          <svg class="card__title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          </svg>
+          持仓明细
+        </span>
+        <div class="toolbar">
+          <div class="search-input">
+            <svg class="search-input__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" placeholder="搜索股票代码/名称...">
+          </div>
+        </div>
+      </div>
+      <div class="card__body card__body--no-padding">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>股票代码</th>
+              <th>股票名称</th>
+              <th>市场/行业</th>
+              <th class="th--right">持仓量</th>
+              <th class="th--right">股价</th>
+              <th class="th--right">估算市值</th>
+              <th class="th--right">权重</th>
+              <th class="th--right">涨跌幅</th>
+              <th class="th--right">持仓收益</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>00700</td>
+              <td>
+                <div class="data-table__stock">
+                  <span class="data-table__stock-code">腾讯控股</span>
+                </div>
+              </td>
+              <td class="data-table__market">港交所 / 互联网</td>
+              <td class="td--right">5,000</td>
+              <td class="td--right">378.20</td>
+              <td class="td--right">189.10万</td>
+              <td class="td--right">
+                <div class="weight-cell">
+                  <span>18.91%</span>
+                  <div class="weight-bar"><div class="weight-bar__fill" style="width: 18.91%"></div></div>
+                </div>
+              </td>
+              <td class="td--right change--up">+2.34%</td>
+              <td class="td--right change--up">+12.56万</td>
+            </tr>
+            <tr>
+              <td>09988</td>
+              <td>
+                <div class="data-table__stock">
+                  <span class="data-table__stock-code">阿里巴巴-W</span>
+                </div>
+              </td>
+              <td class="data-table__market">港交所 / 电子商务</td>
+              <td class="td--right">8,000</td>
+              <td class="td--right">118.50</td>
+              <td class="td--right">94.80万</td>
+              <td class="td--right">
+                <div class="weight-cell">
+                  <span>9.48%</span>
+                  <div class="weight-bar"><div class="weight-bar__fill" style="width: 9.48%"></div></div>
+                </div>
+              </td>
+              <td class="td--right change--up">+1.87%</td>
+              <td class="td--right change--up">+8.23万</td>
+            </tr>
+            <tr>
+              <td>02318</td>
+              <td>
+                <div class="data-table__stock">
+                  <span class="data-table__stock-code">中国平安</span>
+                </div>
+              </td>
+              <td class="data-table__market">港交所 / 保险</td>
+              <td class="td--right">12,000</td>
+              <td class="td--right">52.30</td>
+              <td class="td--right">62.76万</td>
+              <td class="td--right">
+                <div class="weight-cell">
+                  <span>6.28%</span>
+                  <div class="weight-bar"><div class="weight-bar__fill" style="width: 6.28%"></div></div>
+                </div>
+              </td>
+              <td class="td--right change--down">-0.54%</td>
+              <td class="td--right change--down">-2.15万</td>
+            </tr>
+            <tr>
+              <td>00941</td>
+              <td>
+                <div class="data-table__stock">
+                  <span class="data-table__stock-code">中国移动</span>
+                </div>
+              </td>
+              <td class="data-table__market">港交所 / 电信</td>
+              <td class="td--right">15,000</td>
+              <td class="td--right">68.80</td>
+              <td class="td--right">103.20万</td>
+              <td class="td--right">
+                <div class="weight-cell">
+                  <span>10.32%</span>
+                  <div class="weight-bar"><div class="weight-bar__fill" style="width: 10.32%"></div></div>
+                </div>
+              </td>
+              <td class="td--right change--up">+0.89%</td>
+              <td class="td--right change--up">+5.67万</td>
+            </tr>
+            <tr>
+              <td>03690</td>
+              <td>
+                <div class="data-table__stock">
+                  <span class="data-table__stock-code">美团-W</span>
+                </div>
+              </td>
+              <td class="data-table__market">港交所 / 本地生活</td>
+              <td class="td--right">6,500</td>
+              <td class="td--right">142.60</td>
+              <td class="td--right">92.69万</td>
+              <td class="td--right">
+                <div class="weight-cell">
+                  <span>9.27%</span>
+                  <div class="weight-bar"><div class="weight-bar__fill" style="width: 9.27%"></div></div>
+                </div>
+              </td>
+              <td class="td--right change--up">+3.21%</td>
+              <td class="td--right change--up">+15.80万</td>
+            </tr>
+            <tr>
+              <td>09618</td>
+              <td>
+                <div class="data-table__stock">
+                  <span class="data-table__stock-code">京东集团-SW</span>
+                </div>
+              </td>
+              <td class="data-table__market">港交所 / 电子商务</td>
+              <td class="td--right">7,000</td>
+              <td class="td--right">125.40</td>
+              <td class="td--right">87.78万</td>
+              <td class="td--right">
+                <div class="weight-cell">
+                  <span>8.78%</span>
+                  <div class="weight-bar"><div class="weight-bar__fill" style="width: 8.78%"></div></div>
+                </div>
+              </td>
+              <td class="td--right change--down">-1.23%</td>
+              <td class="td--right change--down">-6.42万</td>
+            </tr>
+            <tr>
+              <td>01810</td>
+              <td>
+                <div class="data-table__stock">
+                  <span class="data-table__stock-code">小米集团-W</span>
+                </div>
+              </td>
+              <td class="data-table__market">港交所 / 消费电子</td>
+              <td class="td--right">25,000</td>
+              <td class="td--right">21.85</td>
+              <td class="td--right">54.63万</td>
+              <td class="td--right">
+                <div class="weight-cell">
+                  <span>5.46%</span>
+                  <div class="weight-bar"><div class="weight-bar__fill" style="width: 5.46%"></div></div>
+                </div>
+              </td>
+              <td class="td--right change--up">+4.56%</td>
+              <td class="td--right change--up">+18.92万</td>
+            </tr>
+            <tr>
+              <td>02269</td>
+              <td>
+                <div class="data-table__stock">
+                  <span class="data-table__stock-code">维达国际</span>
+                </div>
+              </td>
+              <td class="data-table__market">港交所 / 消费品</td>
+              <td class="td--right">18,000</td>
+              <td class="td--right">18.92</td>
+              <td class="td--right">34.06万</td>
+              <td class="td--right">
+                <div class="weight-cell">
+                  <span>3.41%</span>
+                  <div class="weight-bar"><div class="weight-bar__fill" style="width: 3.41%"></div></div>
+                </div>
+              </td>
+              <td class="td--right change--up">+0.78%</td>
+              <td class="td--right change--up">+2.15万</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Return Comparison -->
+    <div class="card">
+      <div class="card__header">
+        <span class="card__title">
+          <svg class="card__title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>
+          </svg>
+          区间收益
+        </span>
+      </div>
+      <div class="card__body">
+        <div class="return-section">
+          <!-- Portfolio Returns -->
+          <div class="return-group">
+            <span class="return-group__title">组合收益</span>
+            <div class="return-grid">
+              <div class="return-item">
+                <div class="return-item__period">年内</div>
+                <div class="return-item__value return-item__value--up">+18.45%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近1周</div>
+                <div class="return-item__value return-item__value--up">+2.34%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近1月</div>
+                <div class="return-item__value return-item__value--up">+5.67%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近3月</div>
+                <div class="return-item__value return-item__value--up">+12.23%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近6月</div>
+                <div class="return-item__value return-item__value--up">+15.89%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近1年</div>
+                <div class="return-item__value return-item__value--up">+24.70%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近3年</div>
+                <div class="return-item__value return-item__value--up">+42.15%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">成立以来</div>
+                <div class="return-item__value return-item__value--up">+89.36%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Benchmark Returns -->
+          <div class="return-group">
+            <span class="return-group__title">恒生指数</span>
+            <div class="return-grid">
+              <div class="return-item">
+                <div class="return-item__period">年内</div>
+                <div class="return-item__value return-item__value--up">+8.23%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近1周</div>
+                <div class="return-item__value return-item__value--up">+0.87%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近1月</div>
+                <div class="return-item__value return-item__value--up">+2.14%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近3月</div>
+                <div class="return-item__value return-item__value--up">+5.67%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近6月</div>
+                <div class="return-item__value return-item__value--up">+7.82%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近1年</div>
+                <div class="return-item__value return-item__value--up">+12.45%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">近3年</div>
+                <div class="return-item__value return-item__value--up">+18.92%</div>
+              </div>
+              <div class="return-item">
+                <div class="return-item__period">成立以来</div>
+                <div class="return-item__value return-item__value--up">+35.67%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Excess Return Summary -->
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--vp-gray-100);">
+          <div class="overview-row">
+            <div class="overview-item">
+              <span class="overview-item__label">相对基准超额收益</span>
+              <span class="overview-item__value" style="color: var(--vp-green);">+53.69%</span>
+            </div>
+            <div class="overview-item">
+              <span class="overview-item__label">Alpha (年化)</span>
+              <span class="overview-item__value" style="color: var(--vp-green);">+8.42%</span>
+            </div>
+            <div class="overview-item">
+              <span class="overview-item__label">夏普比率</span>
+              <span class="overview-item__value">1.85</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>

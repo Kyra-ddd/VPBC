@@ -310,6 +310,7 @@
         <div class="submenu-item" onclick="openTab('research-report', '研报管理')">研报管理</div>
         <div class="submenu-item" onclick="openTab('stock-pool', '股票池')">股票池</div>
         <div class="submenu-item" onclick="openTab('portfolio', '模拟组合')">模拟组合</div>
+        <div class="submenu-item" onclick="openTab('portfolio-new', '模拟组合(新)')">模拟组合(新)</div>
         <div class="submenu-item" onclick="openTab('config', '配置')">配置</div>
       </div>
     </div>
@@ -407,7 +408,7 @@ function toggleSubmenu(id) {
 
 function updateSidebarActive(key) {
   document.querySelectorAll('.submenu-item').forEach(el => el.classList.remove('active'));
-  const map = { 'industry':'industry', 'research-report':'research-report', 'stock-pool':'stock-pool', 'portfolio':'portfolio', 'config':'config', 'product-management':'product-management', 'share-class':'share-class' };
+  const map = { 'industry':'industry', 'research-report':'research-report', 'stock-pool':'stock-pool', 'portfolio':'portfolio', 'portfolio-new':'portfolio-new', 'config':'config', 'product-management':'product-management', 'share-class':'share-class' };
   if (key && map[key]) {
     document.querySelectorAll('.submenu-item').forEach(item => {
       if (item.getAttribute('onclick') && item.getAttribute('onclick').startsWith(`openTab('${map[key]}'`)) item.classList.add('active');
@@ -1202,6 +1203,7 @@ function buildContent(key) {
   if (key === 'research-report') return buildResearchReport();
   if (key === 'stock-pool') return buildStockPool();
   if (key === 'portfolio') return buildPortfolio();
+  if (key === 'portfolio-new') return buildPortfolioNew();
   if (key === 'config') return buildConfig();
   if (key === 'share-class') return buildShareClass();
   if (key === 'share-class-add') return buildShareClassAdd();
@@ -2758,6 +2760,329 @@ function buildPortfolio() {
         <div style="display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--vp-border)"><button class="btn btn-ghost btn-sm" onclick="portCloseCreate()">取消</button><button class="btn btn-primary btn-sm" onclick="portDoCreate()">创建</button></div>
       </div>
     </div>`;
+}
+
+function buildPortfolioNew() {
+  return `<div class="toolbar mb-4">
+    <div class="flex items-center gap-3">
+      <span class="card-title">GC Analyst Model Portfolio</span>
+      <span class="tag tag-green">持仓中</span>
+      <span class="tag" style="background:rgba(199,162,82,0.15);color:#C7A252">基准：恒生指数</span>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn btn-secondary btn-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        分享
+      </button>
+      <button class="btn btn-primary btn-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        添加标的
+      </button>
+      <button class="btn btn-secondary btn-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        发起调仓
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+    <div class="kpi">
+      <div class="kpi-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vp-green)" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      </div>
+      <div>
+        <div class="kpi-num">1,000万</div>
+        <div class="kpi-label">初始资金</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vp-green)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div>
+        <div class="kpi-num" style="color:var(--vp-green)">1,247万</div>
+        <div class="kpi-label">当前市值 <span style="color:var(--vp-red);font-weight:600">+24.70%</span></div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vp-green)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      </div>
+      <div>
+        <div class="kpi-num" style="color:var(--vp-green)">+24.70%</div>
+        <div class="kpi-label">累计收益率 <span style="color:var(--vp-red);font-weight:600">+247万</span></div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vp-green)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div>
+        <div class="kpi-num">-8.32%</div>
+        <div class="kpi-label">最大回撤 (MDD) <span style="color:var(--vp-gray-500);font-size:12px">2026-03 最大回撤</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Net Value Trend Chart -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-head">
+      <div class="card-title flex items-center gap-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--vp-green)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        区间表现
+      </div>
+      <div class="segmented">
+        <button class="seg">近1月</button>
+        <button class="seg">近3月</button>
+        <button class="seg">近6月</button>
+        <button class="seg active">近1年</button>
+        <button class="seg">上线来</button>
+        <button class="seg">全部</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="chart-legend"><span><i style="background:var(--vp-green)"></i>模拟组合</span><span><i style="background:#C7A252"></i>恒生指数</span></div>
+      <div style="height:120px;background:linear-gradient(180deg,var(--vp-mint-50) 0%,#fff 100%);border-radius:6px;position:relative;overflow:hidden;margin-top:8px">
+        <div style="position:absolute;inset:16px">
+          <svg viewBox="0 0 400 80" preserveAspectRatio="none" style="width:100%;height:100%">
+            <path d="M0,60 Q40,55 80,45 T160,35 T240,25 T320,20 T400,10" fill="none" stroke="var(--vp-green)" stroke-width="2"/>
+            <path d="M0,65 Q40,62 80,58 T160,52 T240,48 T320,42 T400,35" fill="none" stroke="#C7A252" stroke-width="2" stroke-dasharray="4,2"/>
+          </svg>
+        </div>
+        <div style="position:absolute;bottom:4px;left:0;right:0;display:flex;justify-content:space-between;padding:0 20px;font-size:11px;color:var(--vp-gray-500)">
+          <span>2025-08</span><span>2025-11</span><span>2026-02</span><span>2026-05</span><span>2026-08</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Holdings Table -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-head">
+      <div class="card-title flex items-center gap-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--vp-green)" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        持仓明细
+      </div>
+      <div class="flex gap-2">
+        <div style="position:relative">
+          <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--vp-gray-500)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="input" placeholder="搜索股票代码/名称..." style="padding-left:34px;width:200px">
+        </div>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>股票代码</th>
+            <th>股票名称</th>
+            <th>市场/行业</th>
+            <th class="right">持仓量</th>
+            <th class="right">股价</th>
+            <th class="right">估算市值</th>
+            <th class="right">权重</th>
+            <th class="right">涨跌幅</th>
+            <th class="right">持仓收益</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cell-code">00700</td>
+            <td class="bold">腾讯控股</td>
+            <td class="cell-muted">港交所 / 互联网</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">5,000</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">378.20</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">189.10万</td>
+            <td class="right"><span class="weight-bar"><span class="weight-fill" style="width:18.91%"></span></span> 18.91%</td>
+            <td class="right tag-up">+2.34%</td>
+            <td class="right tag-up">+12.56万</td>
+          </tr>
+          <tr>
+            <td class="cell-code">09988</td>
+            <td class="bold">阿里巴巴-W</td>
+            <td class="cell-muted">港交所 / 电子商务</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">8,000</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">118.50</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">94.80万</td>
+            <td class="right"><span class="weight-bar"><span class="weight-fill" style="width:9.48%"></span></span> 9.48%</td>
+            <td class="right tag-up">+1.87%</td>
+            <td class="right tag-up">+8.23万</td>
+          </tr>
+          <tr>
+            <td class="cell-code">02318</td>
+            <td class="bold">中国平安</td>
+            <td class="cell-muted">港交所 / 保险</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">12,000</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">52.30</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">62.76万</td>
+            <td class="right"><span class="weight-bar"><span class="weight-fill" style="width:6.28%"></span></span> 6.28%</td>
+            <td class="right tag-down">-0.54%</td>
+            <td class="right tag-down">-2.15万</td>
+          </tr>
+          <tr>
+            <td class="cell-code">00941</td>
+            <td class="bold">中国移动</td>
+            <td class="cell-muted">港交所 / 电信</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">15,000</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">68.80</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">103.20万</td>
+            <td class="right"><span class="weight-bar"><span class="weight-fill" style="width:10.32%"></span></span> 10.32%</td>
+            <td class="right tag-up">+0.89%</td>
+            <td class="right tag-up">+5.67万</td>
+          </tr>
+          <tr>
+            <td class="cell-code">03690</td>
+            <td class="bold">美团-W</td>
+            <td class="cell-muted">港交所 / 本地生活</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">6,500</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">142.60</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">92.69万</td>
+            <td class="right"><span class="weight-bar"><span class="weight-fill" style="width:9.27%"></span></span> 9.27%</td>
+            <td class="right tag-up">+3.21%</td>
+            <td class="right tag-up">+15.80万</td>
+          </tr>
+          <tr>
+            <td class="cell-code">09618</td>
+            <td class="bold">京东集团-SW</td>
+            <td class="cell-muted">港交所 / 电子商务</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">7,000</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">125.40</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">87.78万</td>
+            <td class="right"><span class="weight-bar"><span class="weight-fill" style="width:8.78%"></span></span> 8.78%</td>
+            <td class="right tag-down">-1.23%</td>
+            <td class="right tag-down">-6.42万</td>
+          </tr>
+          <tr>
+            <td class="cell-code">01810</td>
+            <td class="bold">小米集团-W</td>
+            <td class="cell-muted">港交所 / 消费电子</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">25,000</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">21.85</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">54.63万</td>
+            <td class="right"><span class="weight-bar"><span class="weight-fill" style="width:5.46%"></span></span> 5.46%</td>
+            <td class="right tag-up">+4.56%</td>
+            <td class="right tag-up">+18.92万</td>
+          </tr>
+          <tr>
+            <td class="cell-code">02269</td>
+            <td class="bold">维达国际</td>
+            <td class="cell-muted">港交所 / 消费品</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">18,000</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">18.92</td>
+            <td class="right" style="font-variant-numeric:tabular-nums">34.06万</td>
+            <td class="right"><span class="weight-bar"><span class="weight-fill" style="width:3.41%"></span></span> 3.41%</td>
+            <td class="right tag-up">+0.78%</td>
+            <td class="right tag-up">+2.15万</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Return Comparison -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title flex items-center gap-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--vp-green)" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        区间收益
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="split">
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--vp-gray-500);text-transform:uppercase;margin-bottom:12px">组合收益</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">年内</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+18.45%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近1周</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+2.34%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近1月</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+5.67%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近3月</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+12.23%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近6月</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+15.89%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近1年</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+24.70%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近3年</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+42.15%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">成立以来</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+89.36%</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--vp-gray-500);text-transform:uppercase;margin-bottom:12px">恒生指数</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">年内</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+8.23%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近1周</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+0.87%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近1月</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+2.14%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近3月</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+5.67%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近6月</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+7.82%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近1年</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+12.45%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">近3年</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+18.92%</div>
+            </div>
+            <div style="background:var(--vp-mint-50);border-radius:4px;padding:10px;text-align:center">
+              <div style="font-size:12px;color:var(--vp-gray-500)">成立以来</div>
+              <div style="font-size:16px;font-weight:600;color:var(--vp-green);font-variant-numeric:tabular-nums">+35.67%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--vp-border)">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--vp-gray-500);text-transform:uppercase">相对基准超额收益</div>
+            <div style="font-size:16px;font-weight:600;color:var(--vp-green)">+53.69%</div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--vp-gray-500);text-transform:uppercase">Alpha (年化)</div>
+            <div style="font-size:16px;font-weight:600;color:var(--vp-green)">+8.42%</div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--vp-gray-500);text-transform:uppercase">夏普比率</div>
+            <div style="font-size:16px;font-weight:600">1.85</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
 }
 
 function portSwitchTab(tab) {
