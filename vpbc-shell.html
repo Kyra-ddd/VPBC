@@ -1750,7 +1750,7 @@ function buildProductManagement() {
     <div class="flex gap-2">
       <button class="btn btn-primary btn-sm" onclick="openTab('product-add','新增产品')">＋ 新增产品</button>
       <button class="btn btn-secondary btn-sm" onclick="prodEditSelected()">修改产品</button>
-      <button class="btn btn-ghost btn-sm" onclick="prodDeleteSelected()">删除产品</button>
+      <button class="btn btn-secondary btn-sm" onclick="prodDeleteSelected()">删除产品</button>
     </div>
   </div>
   <div class="card"><div class="card-body"><div style="display:flex;flex-wrap:nowrap;gap:12px;align-items:center">
@@ -1874,7 +1874,7 @@ function buildProductAdd() {
     <div style="grid-column:1/-1;padding-top:16px;display:flex;gap:12px">
       <button class="btn btn-secondary" onclick="prodSaveDraft()">💾 保存草稿</button>
       <button class="btn btn-primary" onclick="prodSubmit()">提交</button>
-      <button class="btn btn-ghost" onclick="closeTab('product-add', event)">取消</button>
+      <button class="btn btn-secondary btn-sm" onclick="closeTab('product-add', event)">取消</button>
     </div>
 
   </div>`;
