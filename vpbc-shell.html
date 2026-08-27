@@ -435,22 +435,22 @@ const PROD_TYPE_OPTIONS = ['股票型基金','债券型基金','混合资产基�
 // ========== Industry Data ==========
 const IND_DATA = {
   HK: { name: "港股", industries: [
-    { code: "HK-RE", name: "地产", analysts: [{ id:"a01", name:"David", acct:"davidw", focus:"港股内房股", status:"在职" }, { id:"a02", name:"Emma", acct:"emma", focus:"物业管理", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、REITs", status:"在职" }], stocks: [{code:"00178.HK",name:"置富产业信托"},{code:"01109.HK",name:"华润置地"},{code:"06098.HK",name:"龙湖集团"}] },
-    { code: "HK-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"中资银行、券商", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、金融", status:"在职" }], stocks: [{code:"0939.HK",name:"建设银行"},{code:"1398.HK",name:"工商银行"},{code:"3988.HK",name:"中国银行"}] },
-    { code: "HK-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"互联网平台、消费电子", status:"在职" }, { id:"a06", name:"Kevin", acct:"kevinl", focus:"半导体代工", status:"在职" }], stocks: [{code:"00700.HK",name:"腾讯控股",issuer:"腾讯控股有限公司"},{code:"09988.HK",name:"阿里巴巴",issuer:"阿里巴巴集团控股有限公司"},{code:"02382.HK",name:"舜宇光学",issuer:"舜宇光学科技（集团）有限公司"},{code:"1810.HK",name:"小米集团",issuer:"小米集团"},{code:"3690.HK",name:"美团",issuer:"美团"},{code:"9618.HK",name:"京东集团",issuer:"京东集团股份有限公司"},{code:"9999.HK",name:"网易",issuer:"网易股份有限公司"}] },
+    { code: "HK-RE", name: "地产", analysts: [{ id:"a01", name:"David", acct:"davidw", focus:"港股内房股", status:"在职" }, { id:"a02", name:"Emma", acct:"emma", focus:"物业管理", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、REITs", status:"在职" }], stocks: [{code:"00178.HK",name:"置富产业信托",r3Score:72},{code:"01109.HK",name:"华润置地",r3Score:85},{code:"06098.HK",name:"龙湖集团",r3Score:68}] },
+    { code: "HK-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"中资银行、券商", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、金融", status:"在职" }], stocks: [{code:"0939.HK",name:"建设银行",r3Score:90},{code:"1398.HK",name:"工商银行",r3Score:88},{code:"3988.HK",name:"中国银行",r3Score:86}] },
+    { code: "HK-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"互联网平台、消费电子", status:"在职" }, { id:"a06", name:"Kevin", acct:"kevinl", focus:"半导体代工", status:"在职" }], stocks: [{code:"00700.HK",name:"腾讯控股",issuer:"腾讯控股有限公司",r3Score:95},{code:"09988.HK",name:"阿里巴巴",issuer:"阿里巴巴集团控股有限公司",r3Score:92},{code:"02382.HK",name:"舜宇光学",issuer:"舜宇光学科技（集团）有限公司",r3Score:78},{code:"1810.HK",name:"小米集团",issuer:"小米集团",r3Score:80},{code:"3690.HK",name:"美团",issuer:"美团",r3Score:83},{code:"9618.HK",name:"京东集团",issuer:"京东集团股份有限公司",r3Score:81},{code:"9999.HK",name:"网易",issuer:"网易股份有限公司",r3Score:79}] },
     { code: "HK-CONS", name: "消费", analysts: [{ id:"a02", name:"Emma", acct:"emma", focus:"消费、物业管理", status:"在职" }] },
   ]},
   US: { name: "美股", industries: [
-    { code: "US-SEM", name: "半导体", analysts: [{ id:"a06", name:"Kevin", acct:"kevinl", focus:"美股半导体（跨市场）", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片", status:"在职" }], stocks: [{code:"NVDA.US",name:"英伟达"},{code:"AMD.US",name:"超微半导体"},{code:"INTC.US",name:"英特尔"}] },
+    { code: "US-SEM", name: "半导体", analysts: [{ id:"a06", name:"Kevin", acct:"kevinl", focus:"美股半导体（跨市场）", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片", status:"在职" }], stocks: [{code:"NVDA.US",name:"英伟达",r3Score:98},{code:"AMD.US",name:"超微半导体",r3Score:74},{code:"INTC.US",name:"英特尔",r3Score:65}] },
     { code: "US-BIO", name: "生物科技", analysts: [{ id:"a08", name:"Nancy", acct:"nancym", focus:"创新药、CXO", status:"在职" }] },
-    { code: "US-NET", name: "互联网", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"美股互联网（跨市场）", status:"在职" }], stocks: [{code:"GOOGL.US",name:"Alphabet"},{code:"META.US",name:"Meta Platforms"},{code:"AMZN.US",name:"亚马逊"}] },
-    { code: "US-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"AI 上游平台", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片与硬件", status:"在职" }], stocks: [{code:"AAPL.US",name:"Apple",issuer:"Apple Inc."},{code:"MSFT.US",name:"Microsoft",issuer:"Microsoft Corporation"},{code:"GOOGL.US",name:"Alphabet",issuer:"Alphabet Inc."},{code:"AMZN.US",name:"Amazon",issuer:"Amazon.com, Inc."},{code:"TSLA.US",name:"Tesla",issuer:"Tesla, Inc."},{code:"META.US",name:"Meta",issuer:"Meta Platforms, Inc."}] },
+    { code: "US-NET", name: "互联网", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"美股互联网（跨市场）", status:"在职" }], stocks: [{code:"GOOGL.US",name:"Alphabet",r3Score:94},{code:"META.US",name:"Meta Platforms",r3Score:91},{code:"AMZN.US",name:"亚马逊",r3Score:89}] },
+    { code: "US-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"AI 上游平台", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片与硬件", status:"在职" }], stocks: [{code:"AAPL.US",name:"Apple",issuer:"Apple Inc.",r3Score:96},{code:"MSFT.US",name:"Microsoft",issuer:"Microsoft Corporation",r3Score:97},{code:"GOOGL.US",name:"Alphabet",issuer:"Alphabet Inc.",r3Score:94},{code:"AMZN.US",name:"Amazon",issuer:"Amazon.com, Inc.",r3Score:89},{code:"TSLA.US",name:"Tesla",issuer:"Tesla, Inc.",r3Score:82},{code:"META.US",name:"Meta",issuer:"Meta Platforms, Inc.",r3Score:91}] },
   ]},
   JP: { name: "日股", industries: [
     { code: "JP-AUTO", name: "汽车", analysts: [{ id:"a09", name:"Tanaka", acct:"tanakak", focus:"日系整车厂", status:"在职" }] },
-    { code: "JP-ELE", name: "电子", analysts: [{ id:"a10", name:"Sato", acct:"sato.t", focus:"电子元器件", status:"离职" }], stocks: [{code:"6758.JP",name:"索尼集团",issuer:"索尼グループ株式会社"},{code:"9984.JP",name:"软银集团",issuer:"SBG（SoftBank Group）"},{code:"8035.JP",name:"东京威力科创",issuer:"東京エレクトロン"}] },
+    { code: "JP-ELE", name: "电子", analysts: [{ id:"a10", name:"Sato", acct:"sato.t", focus:"电子元器件", status:"离职" }], stocks: [{code:"6758.JP",name:"索尼集团",issuer:"索尼グループ株式会社",r3Score:77},{code:"9984.JP",name:"软银集团",issuer:"SBG（SoftBank Group）",r3Score:71},{code:"8035.JP",name:"东京威力科创",issuer:"東京エレクトロン",r3Score:76}] },
   ]},
-  KR: { name: "韩股", industries: [{ code: "KR-TECH", name: "科技", analysts: [{ id:"a11", name:"Kim", acct:"kim", focus:"韩国科技巨头", status:"在职" }], stocks: [{code:"005930.KS",name:"三星电子",issuer:"Samsung Electronics Co., Ltd."},{code:"000660.KS",name:"SK海力士",issuer:"SK Hynix Inc."},{code:"035420.KS",name:"NAVER",issuer:"NAVER Corporation"}] }] },
+  KR: { name: "韩股", industries: [{ code: "KR-TECH", name: "科技", analysts: [{ id:"a11", name:"Kim", acct:"kim", focus:"韩国科技巨头", status:"在职" }], stocks: [{code:"005930.KS",name:"三星电子",issuer:"Samsung Electronics Co., Ltd.",r3Score:84},{code:"000660.KS",name:"SK海力士",issuer:"SK Hynix Inc.",r3Score:73},{code:"035420.KS",name:"NAVER",issuer:"NAVER Corporation",r3Score:80}] }] },
 };
 
 let indCurrentMarket = "ALL";
@@ -656,13 +656,14 @@ function indShowStocks(name) {
   });
   title.textContent = name + " — 股票明细";
   if (!allStocks.length) {
-    tbody.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center;padding:24px">暂无股票数据，请先上传</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">暂无股票数据，请先上传</td></tr>';
   } else {
     tbody.innerHTML = allStocks.map(s => {
       return `<tr>
         <td>${s._market}</td>
         <td><span class="cell-code">${s.code}</span></td>
         <td>${s.name}</td>
+        <td style="font-variant-numeric:tabular-nums">${s.r3Score != null ? s.r3Score : '—'}</td>
         <td class="muted">${s.issuer || "—"}</td>
       </tr>`;
     }).join("");
@@ -2009,7 +2010,7 @@ function buildIndustry() {
     <div class="card mt-4" id="indStockPanel" style="display:none">
       <div class="card-head"><div class="card-title" id="indStockTitle"></div></div>
       <div class="card-body" style="padding:0"><div style="max-height:440px;overflow-y:auto">
-        <table class="data-table"><thead><tr><th>市场</th><th>股票代码</th><th>股票名称</th><th>发行人</th></tr></thead>
+        <table class="data-table"><thead><tr><th>市场</th><th>股票代码</th><th>股票名称</th><th>3R评分</th><th>发行人</th></tr></thead>
         <tbody id="indStockBody"></tbody></table></div></div>
     </div>
 
