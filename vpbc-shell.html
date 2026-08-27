@@ -960,6 +960,7 @@ function poolRenderDetail() {
 
 // ========== Product Center Data ==========
 // --- Share Class ---
+let scLang = 'zh';
 const SC_RECORDS = [
   { fund:"VP0010", className:"A类 美元 accumulation", vpid:"VP0010-A-USD-ACC", isin:"HK0000012345", ccy:"USD", status:"运行中", launch:"1993/04/01", cutoff:"16:00 HKT", freq:"每日", mgmtFee:"1.25%", ter:"1.65%", settle:"T+3" },
   { fund:"VP0010", className:"A类 港币 accumulation", vpid:"VP0010-A-HKD-ACC", isin:"HK0000012346", ccy:"HKD", status:"运行中", launch:"1993/04/01", cutoff:"16:00 HKT", freq:"每日", mgmtFee:"1.25%", ter:"1.65%", settle:"T+3" },
@@ -1467,73 +1468,101 @@ function scSave() { alert("原型：保存份额类别（已校验必填字段�
 function buildShareClassAdd() {
   const L = 'style="display:flex;align-items:center;gap:8px"', LB = 'style="width:150px;flex-shrink:0;margin:0;font-weight:500;text-align:right"', IN = 'style="flex:1;min-width:0"';
   const R = '<span style="color:#dc2626;margin-right:2px">*</span>';
-  const hdr = (label) => `<div style="grid-column:1/-1;font-weight:600;color:var(--vp-green);padding:6px 0;border-bottom:1px solid var(--vp-green);margin-bottom:4px">${label}</div>`;
-  const cell = (label, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
+  // scL(zh, en) returns span with both texts, data attr for lang switch
+  const scL = (zh, en) => `<span data-zh="${zh}" data-en="${en}">${scLang === 'en' ? en : zh}</span>`;
+  const cell = (zh, en, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${scL(zh, en)}</label>${field}</div>`;
   const empty = `<div></div>`;
-  const row = (a, b, reqA, reqB) => b ? `${cell(a[0], a[1], reqA)}${cell(b[0], b[1], reqB)}` : `${cell(a[0], a[1], reqA)}${empty}`;
+  const row = (a, b, reqA, reqB) => b ? `${cell(a[0], a[1], a[2], reqA)}${cell(b[0], b[1], b[2], reqB)}` : `${cell(a[0], a[1], a[2], reqA)}${empty}`;
 
   const CURRENCIES = ['USD','HKD','CNY','CNH（离岸人民币）','EUR','GBP','JPY','SGD','CHF','AUD','CAD','NZD','RMB'];
   const TZ_OPTS = ['HKT','IRL','CHN','JPN','GBR','USA','SGP','CHE'];
-  const STATUS_OPTS = ['Active 运作中','Inactive 非运作','Terminated 已终止'];
-  const DIST_OPTS = ['Monthly 月度','Quarterly 季度','Annually 年度','N/A 不适用'];
+  const STATUS_OPTS_ZH = ['Active 运作中','Inactive 非运作','Terminated 已终止'];
+  const STATUS_OPTS_EN = ['Active','Inactive','Terminated'];
+  const DIST_OPTS_ZH = ['Monthly 月度','Quarterly 季度','Annually 年度','N/A 不适用'];
+  const DIST_OPTS_EN = ['Monthly','Quarterly','Annually','N/A'];
   const PREC_OPTS = ['2','3','4'];
   const NAV_PREC_OPTS = ['0','2','4'];
-  const FY_OPTS = ['31-March 3月31日','30-June 6月30日','31-December 12月31日'];
+  const FY_OPTS_ZH = ['31-March 3月31日','30-June 6月30日','31-December 12月31日'];
+  const FY_OPTS_EN = ['31 March','30 June','31 December'];
   const CAL_OPTS = [
-    { val:'Hong Kong 香港', label:'香港' },
-    { val:'Taiwan 台湾', label:'台湾' },
-    { val:'Japan 日本', label:'日本' },
-    { val:'PRC - Stock Exchange 中国—证券交易所', label:'中国大陆 — 交易所' },
-    { val:'PRC - Bank 中国—银行', label:'中国大陆 — 银行' },
-    { val:'Ireland 爱尔兰', label:'爱尔兰' },
-    { val:'UK 英国', label:'英国' },
-    { val:'Relevant Market as per Prospectus 招募说明书规定的相关市场', label:'相关市场（章程）' },
+    { val:'Hong Kong', zh:'香港', en:'Hong Kong' },
+    { val:'Taiwan', zh:'台湾', en:'Taiwan' },
+    { val:'Japan', zh:'日本', en:'Japan' },
+    { val:'PRC - Stock Exchange', zh:'中国大陆 — 交易所', en:'PRC — Stock Exchange' },
+    { val:'PRC - Bank', zh:'中国大陆 — 银行', en:'PRC — Bank' },
+    { val:'Ireland', zh:'爱尔兰', en:'Ireland' },
+    { val:'UK', zh:'英国', en:'UK' },
+    { val:'Relevant Market as per Prospectus', zh:'相关市场（章程）', en:'Relevant Market as per Prospectus' },
   ];
-  const PRICING_OPTS = ['Amortization 摊销','Cost 成本','Mark to Market 市价计量'];
-  const FREQ_OPTS = ['Daily 每日','Weekly 每周','Monthly 每月','Quarterly 每季','Yearly 每年'];
+  const PRICING_ZH = ['Amortization 摊销','Cost 成本','Mark to Market 市价计量'];
+  const PRICING_EN = ['Amortization','Cost','Mark to Market'];
+  const FREQ_ZH = ['Daily 每日','Weekly 每周','Monthly 每月','Quarterly 每季','Yearly 每年'];
+  const FREQ_EN = ['Daily','Weekly','Monthly','Quarterly','Yearly'];
+
+  const distOpts = scLang === 'en' ? DIST_OPTS_EN : DIST_OPTS_ZH;
+  const statusOpts = scLang === 'en' ? STATUS_OPTS_EN : STATUS_OPTS_ZH;
+  const fyOpts = scLang === 'en' ? FY_OPTS_EN : FY_OPTS_ZH;
+  const freqOpts = scLang === 'en' ? FREQ_EN : FREQ_ZH;
+  const pricingOpts = scLang === 'en' ? PRICING_EN : PRICING_ZH;
+  const placeholderFund = scLang === 'en' ? 'Select a fund to auto-fill' : '选择基金后自动填充';
+  const placeholderScEn = scLang === 'en' ? 'Official English name, max 200 chars' : 'Official English name，不超过200字符';
+  const placeholderScTc = scLang === 'en' ? 'Official Traditional Chinese name' : '官方繁体中文名称，不超过200字符';
+  const placeholderScSc = scLang === 'en' ? 'Official Simplified Chinese name' : '官方简体中文名称，不超过200字符';
+  const calLabels = CAL_OPTS.map(o => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${o.val}" id="sc-cal-${o.val.split(' ')[0]}" style="accent-color:var(--vp-green)"><span data-zh="${o.zh}" data-en="${o.en}">${scLang === 'en' ? o.en : o.zh}</span></label>`).join('');
 
   return `<div class="card"><div class="card-body" style="padding:20px">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+    <div class="lang-toggle" style="display:inline-flex;background:var(--vp-gray-100);border-radius:6px;padding:2px;gap:2px">
+      <button class="btn btn-sm ${scLang==='zh'?'btn-primary':'btn-ghost'}" onclick="scSwitchLang('zh')" style="padding:4px 12px;font-size:12px;border:none;background:none;border-radius:4px;cursor:pointer">简</button>
+      <button class="btn btn-sm ${scLang==='en'?'btn-primary':'btn-ghost'}" onclick="scSwitchLang('en')" style="padding:4px 12px;font-size:12px;border:none;background:none;border-radius:4px;cursor:pointer">EN</button>
+    </div>
+  </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
 
-    ${row(['基金代码', `<select class="form-control" ${IN} id="sc-fundCode"><option value="">请选择基金</option>${PRODUCTS.map(p => `<option value="${p.code}">${p.code} — ${p.nameEn}</option>`).join('')}</select>`], ['基金名称（英文）', `<input type="text" class="form-control" ${IN} id="sc-fundNameEn" disabled placeholder="选择基金后自动填充">`], true, false)}
-    ${row(['基金名称（繁体）', `<input type="text" class="form-control" ${IN} id="sc-fundNameTc" disabled placeholder="选择基金后自动填充">`], ['基金名称（简体）', `<input type="text" class="form-control" ${IN} id="sc-fundNameSc" disabled placeholder="选择基金后自动填充">`], false, false)}
+    ${row(['基金代码','Fund Code',`<select class="form-control" ${IN} id="sc-fundCode"><option value="">${scLang==='en'?'Select fund':'请选择基金'}</option>${PRODUCTS.map(p => `<option value="${p.code}">${p.code} — ${p.nameEn}</option>`).join('')}</select>`], ['基金名称（英文）','Fund Name (EN)',`<input type="text" class="form-control" ${IN} id="sc-fundNameEn" disabled placeholder="${placeholderFund}">`], true, false)}
+    ${row(['基金名称（繁体）','Fund Name (TC)',`<input type="text" class="form-control" ${IN} id="sc-fundNameTc" disabled placeholder="${placeholderFund}">`], ['基金名称（简体）','Fund Name (SC)',`<input type="text" class="form-control" ${IN} id="sc-fundNameSc" disabled placeholder="${placeholderFund}">`], false, false)}
 
-    ${row(['份额类名称（EN）', `<input type="text" class="form-control" ${IN} id="sc-shareClassNameEn" placeholder="Official English name，不超过200字符">`], ['份额类名称（繁体）', `<input type="text" class="form-control" ${IN} id="sc-shareClassNameTc" placeholder="官方繁体中文名称，不超过200字符">`], true, true)}
-    ${row(['份额类名称（简体）', `<input type="text" class="form-control" ${IN} id="sc-shareClassNameSc" placeholder="官方简体中文名称，不超过200字符">`], ['VPFS份额ID', `<input type="text" class="form-control" ${IN} id="sc-vpfsClassId" placeholder="如 VP0010-A-USD-ACC">`], true, true)}
+    ${row(['份额类名称（EN）','Share Class Name (EN)',`<input type="text" class="form-control" ${IN} id="sc-shareClassNameEn" placeholder="${placeholderScEn}">`], ['份额类名称（繁体）','Share Class Name (TC)',`<input type="text" class="form-control" ${IN} id="sc-shareClassNameTc" placeholder="${placeholderScTc}">`], true, true)}
+    ${row(['份额类名称（简体）','Share Class Name (SC)',`<input type="text" class="form-control" ${IN} id="sc-shareClassNameSc" placeholder="${placeholderScSc}">`], ['VPFS份额ID','VPFS Class ID',`<input type="text" class="form-control" ${IN} id="sc-vpfsClassId" placeholder="如 VP0010-A-USD-ACC / e.g. VP0010-A-USD-ACC">`], true, true)}
 
-    ${row(['ISIN代码', `<input type="text" class="form-control" ${IN} id="sc-isinCode" placeholder="12字符，如 HK0000012345" maxlength="12" style="font-family:monospace">`], ['CUSIP', `<input type="text" class="form-control" ${IN} id="sc-cusip" placeholder="9位字母数字" maxlength="9" style="font-family:monospace">`], false, false)}
-    ${row(['彭博代码', `<input type="text" class="form-control" ${IN} id="sc-bloombergTicker" placeholder="如 VP0010A UH">`], ['彭博Equity ID', `<input type="text" class="form-control" ${IN} id="sc-bbgIdEquity" placeholder="如 EQ0010A">`], false, false)}
-    ${row(['SEDOL', `<input type="text" class="form-control" ${IN} id="sc-sedol" placeholder="7位字母数字" maxlength="7" style="font-family:monospace">`], ['晨星基金ID', `<input type="text" class="form-control" ${IN} id="sc-morningstarFundId" placeholder="选填">`], false, false)}
-    ${row(['晨星证券ID', `<input type="text" class="form-control" ${IN} id="sc-morningstarSecId" placeholder="选填">`], ['晨星业绩ID', `<input type="text" class="form-control" ${IN} id="sc-morningstarPerfId" placeholder="选填">`], false, false)}
-    ${row(['股票代码', `<input type="text" class="form-control" ${IN} id="sc-stockCode" placeholder="1-5位数字" maxlength="5" style="font-family:monospace">`], ['Valor代码', `<input type="text" class="form-control" ${IN} id="sc-valorCode" placeholder="选填">`], false, false)}
-    ${row(['Lipper代码', `<input type="text" class="form-control" ${IN} id="sc-lipperCode" placeholder="选填">`], ['份额类状态', `<select class="form-control" ${IN} id="sc-fundClassStatus"><option value="">请选择状态</option>${STATUS_OPTS.map(o => `<option>${o}</option>`).join('')}</select>`], false, true)}
-    ${row(['份额类货币', `<select class="form-control" ${IN} id="sc-classCurrency"><option value="">请选择货币</option>${CURRENCIES.map(c => `<option>${c}</option>`).join('')}</select>`], ['首次发行期结束日期', `<input type="text" class="form-control" ${IN} id="sc-endOfIopDate" placeholder="YYYY/MM/DD">`], true, false)}
-    ${row(['成立日期', `<input type="text" class="form-control" ${IN} id="sc-launchDate" placeholder="YYYY/MM/DD">`], ['截止时间', `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-cutoffTime" value="17:00"><select class="form-control" style="flex:0 0 80px" id="sc-cutoffTz"><option>HKT</option>${TZ_OPTS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], true, true)}
+    ${row(['ISIN代码','ISIN Code',`<input type="text" class="form-control" ${IN} id="sc-isinCode" placeholder="12${scLang==='en'?' chars, e.g. HK0000012345':'字符，如 HK0000012345'}" maxlength="12" style="font-family:monospace">`], ['CUSIP','CUSIP',`<input type="text" class="form-control" ${IN} id="sc-cusip" placeholder="${scLang==='en'?'9 chars':'9位字母数字'}" maxlength="9" style="font-family:monospace">`], false, false)}
+    ${row(['彭博Ticker','Bloomberg Ticker',`<input type="text" class="form-control" ${IN} id="sc-bloombergTicker" placeholder="如 VP0010A UH / e.g. VP0010A UH">`], ['彭博Equity ID','BBG ID Equity',`<input type="text" class="form-control" ${IN} id="sc-bbgIdEquity" placeholder="如 EQ0010A / e.g. EQ0010A">`], false, false)}
+    ${row(['SEDOL','SEDOL',`<input type="text" class="form-control" ${IN} id="sc-sedol" placeholder="${scLang==='en'?'7 chars':'7位字母数字'}" maxlength="7" style="font-family:monospace">`], ['晨星基金ID','Morningstar Fund ID',`<input type="text" class="form-control" ${IN} id="sc-morningstarFundId" placeholder="${scLang==='en'?'Optional':'选填'}">`], false, false)}
+    ${row(['晨星证券ID','Morningstar Sec ID',`<input type="text" class="form-control" ${IN} id="sc-morningstarSecId" placeholder="${scLang==='en'?'Optional':'选填'}">`], ['晨星业绩ID','Morningstar Performance ID',`<input type="text" class="form-control" ${IN} id="sc-morningstarPerfId" placeholder="${scLang==='en'?'Optional':'选填'}">`], false, false)}
+    ${row(['股票代码','Stock Code',`<input type="text" class="form-control" ${IN} id="sc-stockCode" placeholder="${scLang==='en'?'1-5 digits':'1-5位数字'}" maxlength="5" style="font-family:monospace">`], ['Valor代码','Valor Code',`<input type="text" class="form-control" ${IN} id="sc-valorCode" placeholder="${scLang==='en'?'Optional':'选填'}">`], false, false)}
+    ${row(['Lipper代码','Lipper Code',`<input type="text" class="form-control" ${IN} id="sc-lipperCode" placeholder="${scLang==='en'?'Optional':'选填'}">`], ['基金份额状态','Fund Class Status',`<select class="form-control" ${IN} id="sc-fundClassStatus"><option value="">${scLang==='en'?'Select status':'请选择状态'}</option>${statusOpts.map(o => `<option>${o}</option>`).join('')}</select>`], false, true)}
+    ${row(['份额币种','Class Currency',`<select class="form-control" ${IN} id="sc-classCurrency"><option value="">${scLang==='en'?'Select currency':'请选择货币'}</option>${CURRENCIES.map(c => `<option>${c}</option>`).join('')}</select>`], ['首次发行期结束日期','End of IOP Date',`<input type="text" class="form-control" ${IN} id="sc-endOfIopDate" placeholder="YYYY/MM/DD">`], true, false)}
+    ${row(['成立日期','Launch Date',`<input type="text" class="form-control" ${IN} id="sc-launchDate" placeholder="YYYY/MM/DD">`], ['截止时间','Cutoff Time',`<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-cutoffTime" value="17:00"><select class="form-control" style="flex:0 0 80px" id="sc-cutoffTz"><option>HKT</option>${TZ_OPTS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], true, true)}
 
-    ${row(['营业日定义', `<input type="text" class="form-control" ${IN} id="sc-businessDayDefinition" placeholder="如：非香港周六、日及公众假期">`], ['营业日历', `<div style="display:flex;flex-wrap:wrap;gap:8px;padding:2px 0">${CAL_OPTS.map(o => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${o.val}" id="sc-cal-${o.val.split(' ')[0]}" style="accent-color:var(--vp-green)">${o.label}</label>`).join('')}</div>`], true, true)}
+    ${row(['营业日定义','Business Day Definition',`<input type="text" class="form-control" ${IN} id="sc-businessDayDefinition" placeholder="${scLang==='en'?'e.g. Excl. HK Sat, Sun & public holidays':'如：非香港周六、日及公众假期'}">`], ['营业日历','Business Calendar',`<div style="display:flex;flex-wrap:wrap;gap:8px;padding:2px 0">${calLabels}</div>`], true, true)}
 
-    ${row(['分配政策', `<select class="form-control" ${IN} id="sc-distributionPolicy"><option value="">请选择</option>${DIST_OPTS.map(o => `<option>${o}</option>`).join('')}</select>`], ['对冲', `<select class="form-control" ${IN} id="sc-hedged"><option value="">请选择</option><option value="true">是</option><option value="false">否</option></select>`], true, true)}
-    ${row(['对冲货币', `<select class="form-control" ${IN} id="sc-hedgingCurrency"><option value="">自动（同类货币）</option>${CURRENCIES.map(c => `<option>${c}</option>`).join('')}</select>`], ['单位精度', `<select class="form-control" ${IN} id="sc-unitPrecision"><option value="">请选择</option>${PREC_OPTS.map(p => `<option>${p}</option>`).join('')}</select>`], false, true)}
-    ${row(['净值精度', `<select class="form-control" ${IN} id="sc-navPrecision"><option value="">请选择</option>${NAV_PREC_OPTS.map(p => `<option>${p}</option>`).join('')}</select>`], ['申购结算（T+）', `<input type="number" class="form-control" ${IN} id="sc-subscriptionSettlement" value="3" min="0">`], true, true)}
-    ${row(['赎回结算（T+）', `<input type="number" class="form-control" ${IN} id="sc-redemptionSettlement" value="3" min="0">`], ['最低首次申购金额', `<input type="number" class="form-control" ${IN} id="sc-minInitialSub" placeholder="如 10000" min="0">`], true, true)}
-    ${row(['最低追加申购金额', `<input type="number" class="form-control" ${IN} id="sc-minSubSub" placeholder="如 1000" min="0">`], ['最低赎回金额', `<input type="number" class="form-control" ${IN} id="sc-minRedemption" placeholder="如 500" min="0">`], true, true)}
-    ${row(['最低持有量', `<input type="number" class="form-control" ${IN} id="sc-minHolding" placeholder="如 1000" min="0">`], ['赎回费（%）', `<input type="number" class="form-control" ${IN} id="sc-redemptionCharge" placeholder="如 0.5" step="0.01" min="0">`], false, false)}
-    ${row(['管理费（%）', `<input type="number" class="form-control" ${IN} id="sc-managementFee" placeholder="如 1.25" step="0.01" min="0">`], ['业绩费（%）', `<input type="number" class="form-control" ${IN} id="sc-performanceFee" placeholder="如 15.00" step="0.01" min="0">`], false, false)}
-    ${row(['财政年度末', `<select class="form-control" ${IN} id="sc-financialYearEnd"><option value="">请选择</option>${FY_OPTS.map(f => `<option>${f}</option>`).join('')}</select>`], ['最新TER日期', `<input type="month" class="form-control" ${IN} id="sc-latestTerDate" placeholder="YYYY/MM">`], false, false)}
-    ${row(['最新TER比率（%）', `<input type="number" class="form-control" ${IN} id="sc-latestTerRate" placeholder="如 1.65" step="0.01" min="0">`], ['交易频率', `<select class="form-control" ${IN} id="sc-dealingFrequency"><option value="">请选择</option>${FREQ_OPTS.map(f => `<option>${f}</option>`).join('')}</select>`], false, true)}
-    ${row(['估值频率', `<select class="form-control" ${IN} id="sc-valuationFrequency"><option value="">请选择</option>${FREQ_OPTS.map(f => `<option>${f}</option>`).join('')}</select>`], ['交易截止', `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-dealingCutOff" value="16:00"><select class="form-control" style="flex:0 0 80px" id="sc-dealingCutOffTz"><option>HKT</option>${TZ_OPTS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], true, true)}
-    ${row(['估值时点', `<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-valuationPoint" value="09:30"><select class="form-control" style="flex:0 0 80px" id="sc-valuationPointTz"><option>IRL</option>${TZ_OPTS.filter(t=>t!=='IRL').map(t=>`<option>${t}</option>`).join('')}</select></div>`], ['合约单据交付日（T+）', `<input type="number" class="form-control" ${IN} id="sc-contractNoteDeliveryDay" placeholder="T+" min="0">`], true, false)}
-    ${row(['定价方法', `<div style="display:flex;flex-wrap:wrap;gap:8px;padding:2px 0">${PRICING_OPTS.map(p => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${p}" id="sc-pricing-${p.split(' ')[0]}" style="accent-color:var(--vp-green)">${p}</label>`).join('')}</div>`], ['估值发布时间', `<input type="number" class="form-control" ${IN} id="sc-valuationDeliveryTime" placeholder="正整数" min="0">`], true, false)}
-    ${row(['证券借贷', `<select class="form-control" ${IN} id="sc-securityLending"><option value="">请选择</option><option value="true">是</option><option value="false">否</option></select>`], ['', ''], false, false)}
+    ${row(['分配政策','Distribution Policy',`<select class="form-control" ${IN} id="sc-distributionPolicy"><option value="">${scLang==='en'?'Select':'请选择'}</option>${distOpts.map(o => `<option>${o}</option>`).join('')}</select>`], ['对冲','Hedged',`<select class="form-control" ${IN} id="sc-hedged"><option value="">${scLang==='en'?'Select':'请选择'}</option><option value="true">${scLang==='en'?'Yes':'是'}</option><option value="false">${scLang==='en'?'No':'否'}</option></select>`], true, true)}
+    ${row(['对冲货币','Hedging Currency',`<select class="form-control" ${IN} id="sc-hedgingCurrency"><option value="">${scLang==='en'?'Auto (same ccy)':'自动（同类货币）'}</option>${CURRENCIES.map(c => `<option>${c}</option>`).join('')}</select>`], ['单位精度','Unit Precision',`<select class="form-control" ${IN} id="sc-unitPrecision"><option value="">${scLang==='en'?'Select':'请选择'}</option>${PREC_OPTS.map(p => `<option>${p}</option>`).join('')}</select>`], false, true)}
+    ${row(['净值精度','NAV Precision',`<select class="form-control" ${IN} id="sc-navPrecision"><option value="">${scLang==='en'?'Select':'请选择'}</option>${NAV_PREC_OPTS.map(p => `<option>${p}</option>`).join('')}</select>`], ['申购结算（T+）','Subscription Settlement',`<input type="number" class="form-control" ${IN} id="sc-subscriptionSettlement" value="3" min="0">`], true, true)}
+    ${row(['赎回结算（T+）','Redemption Settlement',`<input type="number" class="form-control" ${IN} id="sc-redemptionSettlement" value="3" min="0">`], ['最低首次申购','Min Initial Subscription',`<input type="number" class="form-control" ${IN} id="sc-minInitialSub" placeholder="${scLang==='en'?'e.g. 10000':'如 10000'}" min="0">`], true, true)}
+    ${row(['最低追加申购','Min Subsequent Subscription',`<input type="number" class="form-control" ${IN} id="sc-minSubSub" placeholder="${scLang==='en'?'e.g. 1000':'如 1000'}" min="0">`], ['最低赎回','Minimum Redemption',`<input type="number" class="form-control" ${IN} id="sc-minRedemption" placeholder="${scLang==='en'?'e.g. 500':'如 500'}" min="0">`], true, true)}
+    ${row(['最低持有量','Minimum Holding',`<input type="number" class="form-control" ${IN} id="sc-minHolding" placeholder="${scLang==='en'?'e.g. 1000':'如 1000'}" min="0">`], ['赎回费','Redemption Charge',`<input type="number" class="form-control" ${IN} id="sc-redemptionCharge" placeholder="${scLang==='en'?'e.g. 0.5':'如 0.5'}" step="0.01" min="0">`], false, false)}
+    ${row(['管理费（%）','Management Fee (%)',`<input type="number" class="form-control" ${IN} id="sc-managementFee" placeholder="${scLang==='en'?'e.g. 1.25':'如 1.25'}" step="0.01" min="0">`], ['业绩费（%）','Performance Fee (%)',`<input type="number" class="form-control" ${IN} id="sc-performanceFee" placeholder="${scLang==='en'?'e.g. 15.00':'如 15.00'}" step="0.01" min="0">`], false, false)}
+    ${row(['财政年度末','Financial Year End',`<select class="form-control" ${IN} id="sc-financialYearEnd"><option value="">${scLang==='en'?'Select':'请选择'}</option>${fyOpts.map(f => `<option>${f}</option>`).join('')}</select>`], ['最新TER日期','Latest TER Date',`<input type="month" class="form-control" ${IN} id="sc-latestTerDate" placeholder="YYYY/MM">`], false, false)}
+    ${row(['最新TER比率（%）','Latest TER Rate (%)',`<input type="number" class="form-control" ${IN} id="sc-latestTerRate" placeholder="${scLang==='en'?'e.g. 1.65':'如 1.65'}" step="0.01" min="0">`], ['交易频率','Dealing Frequency',`<select class="form-control" ${IN} id="sc-dealingFrequency"><option value="">${scLang==='en'?'Select':'请选择'}</option>${freqOpts.map(f => `<option>${f}</option>`).join('')}</select>`], false, true)}
+    ${row(['估值频率','Valuation Frequency',`<select class="form-control" ${IN} id="sc-valuationFrequency"><option value="">${scLang==='en'?'Select':'请选择'}</option>${freqOpts.map(f => `<option>${f}</option>`).join('')}</select>`], ['交易截止','Dealing Cut-off',`<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-dealingCutOff" value="16:00"><select class="form-control" style="flex:0 0 80px" id="sc-dealingCutOffTz"><option>HKT</option>${TZ_OPTS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], true, true)}
+    ${row(['估值时点','Valuation Point',`<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-valuationPoint" value="09:30"><select class="form-control" style="flex:0 0 80px" id="sc-valuationPointTz"><option>IRL</option>${TZ_OPTS.filter(t=>t!=='IRL').map(t=>`<option>${t}</option>`).join('')}</select></div>`], ['合约单据交付日（T+）','Contract Note Delivery Day (T+)',`<input type="number" class="form-control" ${IN} id="sc-contractNoteDeliveryDay" placeholder="T+" min="0">`], true, false)}
+    ${row(['定价方法','Pricing Methodology',`<div style="display:flex;flex-wrap:wrap;gap:8px;padding:2px 0">${pricingOpts.map((p, i) => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${p}" id="sc-pricing-${p.split(' ')[0]}" style="accent-color:var(--vp-green)">${p}</label>`).join('')}</div>`], ['估值发布时间','Valuation Delivery Time',`<input type="number" class="form-control" ${IN} id="sc-valuationDeliveryTime" placeholder="${scLang==='en'?'Positive integer':'正整数'}" min="0">`], true, false)}
+    ${row(['证券借贷','Security Lending',`<select class="form-control" ${IN} id="sc-securityLending"><option value="">${scLang==='en'?'Select':'请选择'}</option><option value="true">${scLang==='en'?'Yes':'是'}</option><option value="false">${scLang==='en'?'No':'否'}</option></select>`], ['','',''], false, false)}
 
     <div style="grid-column:1/-1;padding-top:20px;display:flex;gap:12px;border-top:1px solid var(--vp-border);margin-top:8px">
-      <button class="btn btn-secondary" onclick="scAddSaveDraft()">💾 保存草稿</button>
-      <button class="btn btn-primary" onclick="scAddSubmit()">提交</button>
-      <button class="btn btn-secondary" onclick="closeTab('share-class-add', event)">取消</button>
+      <button class="btn btn-secondary" onclick="scAddSaveDraft()">💾 ${scLang==='en'?'Save Draft':'保存草稿'}</button>
+      <button class="btn btn-primary" onclick="scAddSubmit()">${scLang==='en'?'Submit':'提交'}</button>
+      <button class="btn btn-secondary" onclick="closeTab('share-class-add', event)">${scLang==='en'?'Cancel':'取消'}</button>
     </div>
 
   </div>
   </div></div>`;
+}
+
+function scSwitchLang(lang) {
+  scLang = lang;
+  openTab('share-class-add', lang === 'en' ? 'Add Share Class' : '新增份额');
 }
 
 function scAddInit() {
