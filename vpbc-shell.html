@@ -1859,15 +1859,15 @@ function buildProductAdd() {
     <div style="grid-column:1/-1;display:flex;align-items:flex-start;gap:8px;padding:4px 0">
       <label class="form-label" ${LB}>附件上传</label>
       <div style="flex:1;width:100%">
-        <div style="display:grid;grid-template-columns:auto 1fr auto auto;gap:0;background:var(--vp-gray-100);border-radius:6px 6px 0 0;font-weight:600;font-size:13px;color:var(--vp-gray-600);padding:8px 12px">
+        <div style="display:grid;grid-template-columns:auto 1fr auto auto auto;gap:0;background:var(--vp-gray-100);border-radius:6px 6px 0 0;font-weight:600;font-size:13px;color:var(--vp-gray-600);padding:8px 12px">
           <div style="width:120px">文件类型</div>
           <div>文件名</div>
           <div style="width:100px;text-align:right;padding-right:8px">大小</div>
-          <div style="width:40px"></div>
+          <div style="width:80px;text-align:right;padding-right:8px">上传日期</div>
+          <div style="width:80px;text-align:center">操作</div>
         </div>
         <div id="f-assetTableBody" style="border:1px solid var(--vp-gray-200);border-top:none;border-radius:0 0 6px 6px;background:#fff;margin-bottom:8px"></div>
         <button class="btn btn-secondary btn-sm" onclick="addAssetRow()" style="font-size:12px">＋ 添加附件</button>
-        <input type="file" id="f-assetFileHidden" style="display:none" onchange="assetFileChanged(this)">
       </div>
     </div>
 
@@ -1884,29 +1884,38 @@ function buildProductAdd() {
 
 function addAssetRow() {
   const body = document.getElementById('f-assetTableBody');
+  const id = Date.now();
   const row = document.createElement('div');
-  row.style = 'display:grid;grid-template-columns:auto 1fr auto auto;gap:0;padding:6px 12px;border-bottom:1px solid var(--vp-gray-200);align-items:center';
+  row.style = 'display:grid;grid-template-columns:auto 1fr auto auto auto;gap:0;padding:6px 12px;border-bottom:1px solid var(--vp-gray-200);align-items:center';
   row.innerHTML = `
-    <select class="form-control" style="width:120px;height:30px;font-size:12px" id="asset-type-${Date.now()}">
+    <select class="form-control" style="width:120px;height:30px;font-size:12px" id="asset-type-${id}">
       <option>招募说明书</option><option>年报</option><option>半年报</option><option>季报</option><option>净值报告</option><option>合同</option><option>其他</option>
     </select>
-    <div class="form-label" style="padding:0 8px;font-size:12px;color:var(--vp-gray-500)">未选择文件</div>
-    <div class="form-label" style="width:100px;text-align:right;padding-right:8px;font-size:12px;color:var(--vp-gray-400)">—</div>
-    <button class="btn btn-ghost btn-sm" style="width:32px;height:32px;padding:0;font-size:16px;color:var(--vp-gray-400)" onclick="this.closest('[style*=\'grid-template-columns\']').remove()">×</button>`;
+    <div class="form-label" id="asset-name-${id}" style="padding:0 8px;font-size:12px;color:var(--vp-gray-500)">—</div>
+    <div class="form-label" id="asset-size-${id}" style="width:100px;text-align:right;padding-right:8px;font-size:12px;color:var(--vp-gray-400)">—</div>
+    <div class="form-label" id="asset-date-${id}" style="width:80px;text-align:right;padding-right:8px;font-size:12px;color:var(--vp-gray-400)"></div>
+    <div style="width:80px;text-align:center">
+      <button class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:12px;color:var(--vp-green)" onclick="document.getElementById('asset-upload-${id}').click()">上传</button>
+      <button class="btn btn-ghost btn-sm" style="width:28px;height:28px;padding:0;font-size:14px;color:var(--vp-gray-400)" onclick="this.closest('[style*=\'grid-template-columns\']').remove()">×</button>
+    </div>
+    <input type="file" id="asset-upload-${id}" style="display:none" onchange="assetFileChanged(this, '${id}')">`;
   body.appendChild(row);
 }
 
-function assetFileChanged(input) {
+function assetFileChanged(input, id) {
   const file = input.files[0];
   if (!file) return;
-  const id = 'asset-type-' + Date.now();
-  const row = input.closest('div[style*="grid-template-columns"]') || document.getElementById('f-assetTableBody').lastChild;
-  if (row) {
-    const nameDiv = row.querySelector('div:nth-child(2)');
-    const sizeDiv = row.querySelector('div:nth-child(3)');
-    if (nameDiv) nameDiv.textContent = file.name;
-    if (sizeDiv) sizeDiv.textContent = (file.size / 1024).toFixed(1) + ' KB';
+  const nameEl = document.getElementById('asset-name-' + id);
+  const sizeEl = document.getElementById('asset-size-' + id);
+  const dateEl = document.getElementById('asset-date-' + id);
+  if (nameEl) { nameEl.textContent = file.name; nameEl.style.color = ''; }
+  if (sizeEl) { sizeEl.textContent = (file.size / 1024).toFixed(1) + ' KB'; sizeEl.style.color = ''; }
+  if (dateEl) {
+    const d = new Date();
+    dateEl.textContent = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+    dateEl.style.color = '';
   }
+}
   input.value = '';
 }
 
