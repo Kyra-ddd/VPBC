@@ -1633,10 +1633,23 @@ function scSwitchLang(lang) {
     const sel = document.getElementById(id);
     if (!sel || !sel.options.length) return;
     if (opts.length) {
-      const firstVal = sel.options[0].value;
       sel.innerHTML = opts.map(o => `<option value="${o === opts[0] ? '' : o}">${o}</option>`).join('');
     }
   });
+
+  // For selects that have dynamic options (e.g. currencies), just update the first placeholder option text
+  const hedgingCcySel = document.getElementById('sc-hedgingCurrency');
+  if (hedgingCcySel && hedgingCcySel.options.length) {
+    hedgingCcySel.options[0].textContent = isEn ? 'Auto (same ccy)' : '自动（同类货币）';
+  }
+  const classCcySel = document.getElementById('sc-classCurrency');
+  if (classCcySel && classCcySel.options.length) {
+    classCcySel.options[0].textContent = isEn ? 'Select currency' : '请选择货币';
+  }
+  const fundSel = document.getElementById('sc-fundCode');
+  if (fundSel && fundSel.options.length) {
+    fundSel.options[0].textContent = isEn ? 'Select fund' : '请选择基金';
+  }
 
   // Update pricing checkbox labels — use data-zh/en on the span inside label
   card.querySelectorAll('[id^="sc-pricing-"]').forEach(chk => {
