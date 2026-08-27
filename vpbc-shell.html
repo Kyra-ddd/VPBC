@@ -787,38 +787,14 @@ function reportRender() {
         <td>${r.creator}</td>
         <td class="cell-muted">${r.time}</td>
         <td>${att}</td>
-        <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();reportShowDetail('${r.id}')">查看</button></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openTab('report-edit','修改研报')">修改</button></td>
       </tr>`;
     }).join("");
 }
 
 function reportShowDetail(id) {
-  const r = REPORTS.find(x => x.id === id);
-  if (!r) return;
-  document.getElementById("detailTitle").textContent = r.title;
-  document.getElementById("detailMeta").innerHTML = `
-    <span class="tag tag-blue">${r.industry}报告</span>
-    <span>${r.market} · ${r.industry}</span>
-    <span class="tag ${r.ratingCls}">${r.rating}</span>
-    <span>关联股票：<strong>${r.stock} ${r.company}</strong></span>`;
-  document.getElementById("detailInfo").innerHTML = `
-    <span>创建人：${r.creator}</span>
-    <span>创建时间：${r.time}</span>
-    <span>版本：v1.0</span>`;
-  document.getElementById("detailBody").innerHTML = `
-    <p><strong>一、行业 Overview</strong></p>
-    <p>${r.title}。本报告由 ${r.creator} 于 ${r.time} 发布，覆盖 ${r.stock} ${r.company}。</p>
-    <p style="margin-top:16px"><strong>二、核心观点</strong></p>
-    <p>基于当前市场环境和技术发展趋势，我们对 ${r.company} 维持 <strong>${r.rating}</strong> 评级，建议关注...</p>
-    <p style="margin-top:16px"><strong>三、风险提示</strong></p>
-    <p>宏观经济波动、行业竞争加剧、政策变化等风险...</p>`;
-  document.getElementById("detailStocks").innerHTML = r.attachment
-    ? `<div class="stock-chip">${r.stock} ${r.company}</div>`
-    : '<span class="muted">暂无关联股票</span>';
-  document.getElementById("detailModal").classList.add("show");
+  openTab('report-edit', '修改研报');
 }
-
-function reportCloseDetail() { document.getElementById("detailModal").classList.remove("show"); }
 
 function reportShowAttachment(id) {
   const r = REPORTS.find(x => x.id === id);
@@ -827,20 +803,7 @@ function reportShowAttachment(id) {
 }
 
 function reportShowEditor() {
-  document.getElementById("editorTitle").textContent = "新建研报";
-  document.getElementById("editorModal").classList.add("show");
-}
-
-function reportCloseEditor() { document.getElementById("editorModal").classList.remove("show"); }
-
-function reportValidate() {
-  const code = document.getElementById("stockCodeInput")?.value.trim();
-  const pattern = /(?:\d{5,6}\.(?:HK|US|SH|SZ|CN)|[A-Za-z0-9]+\.(?:HK|US|SH|SZ|CN))/i;
-  if (!code) { alert("股票代码为必填项，且必须包含市场后缀，如：00700.HK、NVDA.US"); return false; }
-  if (!pattern.test(code)) { alert("股票代码必须带市场后缀，例如 00700.HK / NVDA.US / 600519.SH"); return false; }
-  alert("原型：已校验通过，准备发布研报");
-  reportCloseEditor();
-  return true;
+  openTab('report-create', '新建研报');
 }
 
 // ========== Stock Pool Data ==========
@@ -1204,6 +1167,8 @@ function buildContent(key) {
   if (key === 'product-add') return buildProductAdd();
   if (key === 'industry') return buildIndustry();
   if (key === 'research-report') return buildResearchReport();
+  if (key === 'report-create') return buildReportCreate();
+  if (key === 'report-edit') return buildReportEdit();
   if (key === 'stock-pool') return buildStockPool();
   if (key === 'portfolio') return buildPortfolio();
   if (key === 'portfolio-new') return buildPortfolioNew();
@@ -2224,7 +2189,7 @@ function buildIndustry() {
 }
 
 function buildResearchReport() {
-  return `<div class="page-header"><div></div><button class="btn btn-primary" onclick="reportShowEditor()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>新建研报</button></div>
+  return `<div class="page-header"><button class="btn btn-primary" onclick="reportShowEditor()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>新建研报</button></div>
     <div class="card"><div class="card-body" style="padding:12px 16px"><div class="flex items-center gap-3 flex-wrap">
       <input id="searchStock" class="input" placeholder="股票代码" style="width:120px" oninput="reportRender()">
       <input id="searchCompany" class="input" placeholder="公司名" style="width:140px" oninput="reportRender()">
@@ -2235,38 +2200,47 @@ function buildResearchReport() {
       <select id="filterStatus" class="select filter-select" style="min-width:86px" onchange="reportRender()"><option value="">全部状态</option><option>已发布</option><option>草稿</option></select>
     </div></div></div>
     <div class="card"><div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>股票</th><th>研报标题</th><th>市场-行业</th><th>评级</th><th>创建人</th><th>创建时间</th><th>附件</th><th>操作</th></tr></thead><tbody id="reportBody"></tbody></table></div></div>
-    <div class="notice mt-4"><span class="ico">ⓘ</span>研究员仅能查看其覆盖行业内的研报；管理员可查看全部研报。涨跌色采用<strong>港式惯例</strong>：上涨=#B23A48，下跌=#20A06E。</div>
+    <div class="notice mt-4"><span class="ico">ⓘ</span>研究员仅能查看其覆盖行业内的研报；管理员可查看全部研报。涨跌色采用<strong>港式惯例</strong>：上涨=#B23A48，下跌=#20A06E。</div>`;
+}
 
-    <!-- 详情弹窗 -->
-    <div class="modal" id="detailModal"><div class="modal-overlay" onclick="reportCloseDetail()"></div>
-      <div class="modal-panel"><div class="modal-header"><div class="modal-title" id="detailTitle"></div><button class="btn btn-ghost btn-sm" onclick="reportCloseDetail()">✕</button></div>
-        <div class="modal-body">
-          <div class="flex gap-3 flex-wrap mb-4" style="font-size:13px" id="detailMeta"></div>
-          <div class="flex gap-4 mb-4" style="font-size:12px;color:var(--vp-gray-500)" id="detailInfo"></div>
-          <hr style="border:none;border-top:1px solid var(--vp-gray-100);margin:16px 0">
-          <div id="detailBody" style="font-size:14px;line-height:1.8"></div>
-          <div style="margin-top:24px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">关联股票</div><div id="detailStocks"></div></div>
-        </div>
-        <div class="modal-footer"><button class="btn btn-ghost btn-sm" onclick="reportCloseDetail()">关闭</button><button class="btn btn-ghost btn-sm" onclick="alert('原型：编辑研报')">✏️ 编辑</button><button class="btn btn-ghost btn-sm" onclick="alert('原型：分享')">📤 分享</button></div>
-      </div>
-    </div>
+// ========== Report Create / Edit Pages ==========
+function buildReportCreate() {
+  return `<div class="page-header"><div></div></div>
+    <div class="card"><div class="card-body">
+      <div class="form-row"><label class="form-label required">研报标题</label><input class="input" style="width:100%" placeholder="如：港股科技行业深度报告"></div>
+      <div class="form-row"><label class="form-label required">市场</label><select class="select" style="width:100%"><option value="">请选择市场</option><option>港股</option><option>美股</option><option>A股</option></select></div>
+      <div class="form-row"><label class="form-label required">行业</label><select class="select" style="width:100%"><option value="">请先选择市场</option></select></div>
+      <div class="form-row"><label class="form-label required">股票代码（含市场后缀）</label><input id="stockCodeInput" class="input" style="width:100%" placeholder="如：00700.HK、NVDA.US、600519.SH"></div>
+      <div class="form-row"><label class="form-label">关联组合</label><select class="select" style="width:100%"><option value="">不关联组合</option><option>港股大消费模拟盘</option><option>美股科技组合</option></select></div>
+      <div class="form-row"><label class="form-label required">评级</label><select class="select" style="width:100%"><option value="">请选择评级</option><option>AAA+</option><option>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option><option>A+</option><option>A</option><option>BBB+</option><option>BBB</option><option>BBB-</option></select></div>
+      <div class="form-row"><label class="form-label required">正文</label><textarea class="textarea" style="width:100%;height:200px" placeholder="请输入研报正文内容..."></textarea></div>
+      <div class="form-row"><label class="form-label">附件</label><input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%"></div>
+      <div class="form-row"><label class="form-label">标签</label><input class="input" style="width:100%" placeholder="多个标签用逗号分隔，如：AI、半导体、消费"></div>
+    </div></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+      <button class="btn btn-secondary" onclick="openTab('research-report','研报中心')">取消</button>
+      <button class="btn btn-secondary" onclick="alert('原型：保存草稿')">💾 存草稿</button>
+      <button class="btn btn-primary" onclick="alert('原型：发布研报');openTab('research-report','研报中心')">🚀 发布</button>
+    </div>`;
+}
 
-    <!-- 新建/编辑弹窗 -->
-    <div class="modal" id="editorModal"><div class="modal-overlay" onclick="reportCloseEditor()"></div>
-      <div class="modal-panel" style="max-width:700px"><div class="modal-header"><div class="modal-title" id="editorTitle">新建研报</div><button class="btn btn-ghost btn-sm" onclick="reportCloseEditor()">✕</button></div>
-        <div class="modal-body">
-          <div class="form-row"><label class="form-label required">研报标题</label><input class="input" style="width:100%" placeholder="如：港股科技行业深度报告"></div>
-          <div class="form-row"><label class="form-label required">市场</label><select class="select" style="width:100%"><option value="">请选择市场</option><option>港股</option><option>美股</option><option>A股</option></select></div>
-          <div class="form-row"><label class="form-label required">行业</label><select class="select" style="width:100%"><option value="">请先选择市场</option></select></div>
-          <div class="form-row"><label class="form-label required">股票代码（含市场后缀）</label><input id="stockCodeInput" class="input" style="width:100%" placeholder="如：00700.HK、NVDA.US、600519.SH"></div>
-          <div class="form-row"><label class="form-label">关联组合</label><select class="select" style="width:100%"><option value="">不关联组合</option><option>港股大消费模拟盘</option><option>美股科技组合</option></select></div>
-          <div class="form-row"><label class="form-label required">评级</label><select class="select" style="width:100%"><option value="">请选择评级</option><option>AAA+</option><option>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option><option>A+</option><option>A</option><option>BBB+</option><option>BBB</option><option>BBB-</option><option>BB+</option><option>BB</option><option>B+</option><option>B</option></select></div>
-          <div class="form-row"><label class="form-label required">正文</label><textarea class="textarea" style="width:100%;height:200px" placeholder="请输入研报正文内容..."></textarea></div>
-          <div class="form-row"><label class="form-label">附件</label><input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%"></div>
-          <div class="form-row"><label class="form-label">标签</label><input class="input" style="width:100%" placeholder="多个标签用逗号分隔，如：AI、半导体、消费"></div>
-        </div>
-        <div class="modal-footer"><button class="btn btn-ghost btn-sm" onclick="reportCloseEditor()">取消</button><button class="btn btn-ghost btn-sm" onclick="alert('原型：保存草稿')">💾 存草稿</button><button class="btn btn-primary btn-sm" onclick="reportValidate()">🚀 发布</button></div>
-      </div>
+function buildReportEdit() {
+  return `<div class="page-header"><div></div></div>
+    <div class="card"><div class="card-body">
+      <div class="form-row"><label class="form-label required">研报标题</label><input class="input" style="width:100%" value="腾讯控股深度覆盖报告"></div>
+      <div class="form-row"><label class="form-label required">市场</label><select class="select" style="width:100%"><option>港股</option><option>美股</option><option>A股</option></select></div>
+      <div class="form-row"><label class="form-label required">行业</label><select class="select" style="width:100%"><option>科技</option><option>金融</option><option>消费</option></select></div>
+      <div class="form-row"><label class="form-label required">股票代码（含市场后缀）</label><input id="stockCodeInput" class="input" style="width:100%" value="00700.HK"></div>
+      <div class="form-row"><label class="form-label">关联组合</label><select class="select" style="width:100%"><option value="">不关联组合</option><option selected>港股大消费模拟盘</option><option>美股科技组合</option></select></div>
+      <div class="form-row"><label class="form-label required">评级</label><select class="select" style="width:100%"><option>AAA+</option><option selected>AAA</option><option>AAA-</option><option>AA+</option></select></div>
+      <div class="form-row"><label class="form-label required">正文</label><textarea class="textarea" style="width:100%;height:200px">基于当前市场环境和技术发展趋势，我们对腾讯控股维持 AAA 评级，建议关注...</textarea></div>
+      <div class="form-row"><label class="form-label">附件</label><input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%"></div>
+      <div class="form-row"><label class="form-label">标签</label><input class="input" style="width:100%" value="AI、半导体、科技"></div>
+    </div></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+      <button class="btn btn-secondary" onclick="openTab('research-report','研报中心')">取消</button>
+      <button class="btn btn-secondary" onclick="alert('原型：保存草稿')">💾 存草稿</button>
+      <button class="btn btn-primary" onclick="alert('原型：更新研报');openTab('research-report','研报中心')">🚀 更新</button>
     </div>`;
 }
 
