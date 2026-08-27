@@ -1508,7 +1508,7 @@ function buildShareClassAdd() {
   const placeholderScEn = scLang === 'en' ? 'Official English name, max 200 chars' : 'Official English name，不超过200字符';
   const placeholderScTc = scLang === 'en' ? 'Official Traditional Chinese name' : '官方繁体中文名称，不超过200字符';
   const placeholderScSc = scLang === 'en' ? 'Official Simplified Chinese name' : '官方简体中文名称，不超过200字符';
-  const calLabels = CAL_OPTS.map(o => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${o.val}" id="sc-cal-${o.val.split(' ')[0]}" style="accent-color:var(--vp-green)"><span data-zh="${o.zh}" data-en="${o.en}">${scLang === 'en' ? o.en : o.zh}</span></label>`).join('');
+
 
   return `<div class="card"><div class="card-body" style="padding:20px">
   <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
@@ -1534,7 +1534,7 @@ function buildShareClassAdd() {
     ${row(['份额币种','Class Currency',`<select class="form-control" ${IN} id="sc-classCurrency"><option value="">${scLang==='en'?'Select currency':'请选择货币'}</option>${CURRENCIES.map(c => `<option>${c}</option>`).join('')}</select>`], ['首次发行期结束日期','End of IOP Date',`<input type="text" class="form-control" ${IN} id="sc-endOfIopDate" placeholder="YYYY/MM/DD">`], true, false)}
     ${row(['成立日期','Launch Date',`<input type="text" class="form-control" ${IN} id="sc-launchDate" placeholder="YYYY/MM/DD">`], ['截止时间','Cutoff Time',`<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-cutoffTime" value="17:00"><select class="form-control" style="flex:0 0 80px" id="sc-cutoffTz"><option>HKT</option>${TZ_OPTS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], true, true)}
 
-    ${row(['营业日定义','Business Day Definition',`<input type="text" class="form-control" ${IN} id="sc-businessDayDefinition" placeholder="${scLang==='en'?'e.g. Excl. HK Sat, Sun & public holidays':'如：非香港周六、日及公众假期'}">`], ['营业日历','Business Calendar',`<div style="display:flex;flex-wrap:wrap;gap:8px;padding:2px 0">${calLabels}</div>`], true, true)}
+    ${row(['营业日定义','Business Day Definition',`<input type="text" class="form-control" ${IN} id="sc-businessDayDefinition" placeholder="${scLang==='en'?'e.g. Excl. HK Sat, Sun & public holidays':'如：非香港周六、日及公众假期'}">`], ['营业日历','Business Calendar',`<select class="form-control" ${IN} id="sc-businessCalendar"><option value="">${scLang==='en'?'Select':'请选择'}</option>${CAL_OPTS.map(o => `<option value="${o.val}">${scLang==='en'?o.en:o.zh}</option>`).join('')}</select>`], true, true)}
 
     ${row(['分配政策','Distribution Policy',`<select class="form-control" ${IN} id="sc-distributionPolicy"><option value="">${scLang==='en'?'Select':'请选择'}</option>${distOpts.map(o => `<option>${o}</option>`).join('')}</select>`], ['对冲','Hedged',`<select class="form-control" ${IN} id="sc-hedged"><option value="">${scLang==='en'?'Select':'请选择'}</option><option value="true">${scLang==='en'?'Yes':'是'}</option><option value="false">${scLang==='en'?'No':'否'}</option></select>`], true, true)}
     ${row(['对冲货币','Hedging Currency',`<select class="form-control" ${IN} id="sc-hedgingCurrency"><option value="">${scLang==='en'?'Auto (same ccy)':'自动（同类货币）'}</option>${CURRENCIES.map(c => `<option>${c}</option>`).join('')}</select>`], ['单位精度','Unit Precision',`<select class="form-control" ${IN} id="sc-unitPrecision"><option value="">${scLang==='en'?'Select':'请选择'}</option>${PREC_OPTS.map(p => `<option>${p}</option>`).join('')}</select>`], false, true)}
@@ -1547,7 +1547,7 @@ function buildShareClassAdd() {
     ${row(['最新TER比率（%）','Latest TER Rate (%)',`<input type="number" class="form-control" ${IN} id="sc-latestTerRate" placeholder="${scLang==='en'?'e.g. 1.65':'如 1.65'}" step="0.01" min="0">`], ['交易频率','Dealing Frequency',`<select class="form-control" ${IN} id="sc-dealingFrequency"><option value="">${scLang==='en'?'Select':'请选择'}</option>${freqOpts.map(f => `<option>${f}</option>`).join('')}</select>`], false, true)}
     ${row(['估值频率','Valuation Frequency',`<select class="form-control" ${IN} id="sc-valuationFrequency"><option value="">${scLang==='en'?'Select':'请选择'}</option>${freqOpts.map(f => `<option>${f}</option>`).join('')}</select>`], ['交易截止','Dealing Cut-off',`<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-dealingCutOff" value="16:00"><select class="form-control" style="flex:0 0 80px" id="sc-dealingCutOffTz"><option>HKT</option>${TZ_OPTS.filter(t=>t!=='HKT').map(t=>`<option>${t}</option>`).join('')}</select></div>`], true, true)}
     ${row(['估值时点','Valuation Point',`<div style="display:flex;gap:6px;flex:1"><input type="time" class="form-control" style="flex:1" id="sc-valuationPoint" value="09:30"><select class="form-control" style="flex:0 0 80px" id="sc-valuationPointTz"><option>IRL</option>${TZ_OPTS.filter(t=>t!=='IRL').map(t=>`<option>${t}</option>`).join('')}</select></div>`], ['合约单据交付日（T+）','Contract Note Delivery Day (T+)',`<input type="number" class="form-control" ${IN} id="sc-contractNoteDeliveryDay" placeholder="T+" min="0">`], true, false)}
-    ${row(['定价方法','Pricing Methodology',`<div style="display:flex;flex-wrap:wrap;gap:8px;padding:2px 0">${['Amortization','Cost','Mark to Market'].map((k, i) => `<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" value="${pricingOpts[i]}" id="sc-pricing-${k}" style="accent-color:var(--vp-green)"><span data-zh="${pricingOpts[i]}" data-en="${['Amortization','Cost','Mark to Market'][i]}">${pricingOpts[i]}</span></label>`).join('')}</div>`], ['估值发布时间','Valuation Delivery Time',`<input type="number" class="form-control" ${IN} id="sc-valuationDeliveryTime" placeholder="${scLang==='en'?'Positive integer':'正整数'}" min="0">`], true, false)}
+    ${row(['定价方法','Pricing Methodology',`<select class="form-control" ${IN} id="sc-pricingMethodology"><option value="">${scLang==='en'?'Select':'请选择'}</option>${pricingOpts.map(p => `<option>${p}</option>`).join('')}</select>`], ['估值发布时间','Valuation Delivery Time',`<input type="number" class="form-control" ${IN} id="sc-valuationDeliveryTime" placeholder="${scLang==='en'?'Positive integer':'正整数'}" min="0">`], true, false)}
     ${row(['证券借贷','Security Lending',`<select class="form-control" ${IN} id="sc-securityLending"><option value="">${scLang==='en'?'Select':'请选择'}</option><option value="true">${scLang==='en'?'Yes':'是'}</option><option value="false">${scLang==='en'?'No':'否'}</option></select>`], ['','',''], false, false)}
 
     <div style="grid-column:1/-1;padding-top:20px;display:flex;gap:12px;border-top:1px solid var(--vp-border);margin-top:8px">
@@ -1628,6 +1628,8 @@ function scSwitchLang(lang) {
     'sc-securityLending': [isEn ? 'Select' : '请选择', ...yesNo],
     'sc-subscriptionSettlement': [],
     'sc-redemptionSettlement': [],
+    'sc-businessCalendar': [isEn ? 'Select' : '请选择', ...(isEn ? ['Hong Kong','Taiwan','Japan','PRC - Stock Exchange','PRC - Bank','Ireland','UK','Relevant Market as per Prospectus'] : ['香港','台湾','日本','中国大陆 — 交易所','中国大陆 — 银行','爱尔兰','英国','相关市场（章程）'])],
+    'sc-pricingMethodology': [isEn ? 'Select' : '请选择', ...pricingOpts],
   };
   Object.entries(selectOpts).forEach(([id, opts]) => {
     const sel = document.getElementById(id);
@@ -1756,8 +1758,8 @@ function scAddSubmit() {
   const valuationPointTz = document.getElementById('sc-valuationPointTz')?.value.trim();
 
   // Calendar checkboxes
-  const calSelected = [...document.querySelectorAll('#content input[id^="sc-cal-"]:checked')];
-  const pricingSelected = [...document.querySelectorAll('#content input[id^="sc-pricing-"]:checked')];
+  const businessCalendar = document.getElementById('sc-businessCalendar')?.value.trim();
+  const pricingMethodology = document.getElementById('sc-pricingMethodology')?.value.trim();
 
   if (!fundCode) { scMarkErr('sc-fundCode', '请选择基金代码'); ok = false; }
   if (!vpfsClassId) { scMarkErr('sc-vpfsClassId', '请输入 VPFS Class ID'); ok = false; }
@@ -1790,7 +1792,7 @@ function scAddSubmit() {
   if (!unitPrecision) { scMarkErr('sc-unitPrecision', '请选择单位精度'); ok = false; }
   if (!navPrecision) { scMarkErr('sc-navPrecision', '请选择净值精度'); ok = false; }
   if (!businessDayDef) { scMarkErr('sc-businessDayDefinition', '请输入业务日定义'); ok = false; }
-  if (!calSelected.length) { alert('请至少选择一个业务日历'); ok = false; }
+  if (!businessCalendar) { scMarkErr('sc-businessCalendar', scLang === 'en' ? 'Required' : '请选择营业日历'); ok = false; }
   if (!cutoffTime) { scMarkErr('sc-cutoffTime', '请输入截止时间'); ok = false; }
   if (!dealingCutOff) { scMarkErr('sc-dealingCutOff', '请输入交易截止'); ok = false; }
   if (!valuationPoint) { scMarkErr('sc-valuationPoint', '请输入估值时点'); ok = false; }
@@ -1801,7 +1803,7 @@ function scAddSubmit() {
   if (!minInitSub) { scMarkErr('sc-minInitialSub', '请输入最低首次申购金额'); ok = false; }
   if (!minSubSub) { scMarkErr('sc-minSubSub', '请输入最低追加申购金额'); ok = false; }
   if (!minRedemption) { scMarkErr('sc-minRedemption', '请输入最低赎回金额'); ok = false; }
-  if (!pricingSelected.length) { alert('请至少选择一种定价方法'); ok = false; }
+  if (!pricingMethodology) { scMarkErr('sc-pricingMethodology', scLang === 'en' ? 'Required' : '请选择定价方法'); ok = false; }
 
   if (!ok) { alert('请填写所有必填项（*标记）并修正格式错误'); return; }
   alert('提交成功！');
