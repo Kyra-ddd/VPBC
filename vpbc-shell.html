@@ -1886,6 +1886,7 @@ function addAssetRow() {
   const body = document.getElementById('f-assetTableBody');
   const id = Date.now();
   const row = document.createElement('div');
+  row.id = 'asset-row-' + id;
   row.style = 'display:grid;grid-template-columns:auto 1fr auto auto auto;gap:0;padding:6px 12px;border-bottom:1px solid var(--vp-gray-200);align-items:center';
   row.innerHTML = `
     <select class="form-control" style="width:120px;height:30px;font-size:12px" id="asset-type-${id}">
@@ -1896,7 +1897,7 @@ function addAssetRow() {
     <div class="form-label" id="asset-date-${id}" style="width:80px;text-align:right;padding-right:8px;font-size:12px;color:var(--vp-gray-400)"></div>
     <div style="width:80px;text-align:center">
       <button class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:12px;color:var(--vp-green)" onclick="document.getElementById('asset-upload-${id}').click()">上传</button>
-      <button class="btn btn-ghost btn-sm" style="width:28px;height:28px;padding:0;font-size:14px;color:var(--vp-gray-400)" onclick="this.closest('[style*=\'grid-template-columns\']').remove()">×</button>
+      <button class="btn btn-ghost btn-sm" style="width:28px;height:28px;padding:0;font-size:14px;color:var(--vp-gray-400)" onclick="document.getElementById('asset-row-${id}').remove()">×</button>
     </div>
     <input type="file" id="asset-upload-${id}" style="display:none" onchange="assetFileChanged(this, '${id}')">`;
   body.appendChild(row);
