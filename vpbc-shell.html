@@ -2236,9 +2236,9 @@ function buildReportCreate() {
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
     ${fullRow('研报标题', `<input class="form-control" style="width:1400px;box-sizing:border-box" placeholder="如：港股科技行业深度报告">`, true)}
     <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 24px;align-items:center">
-      ${cell('股票代码', `<input id="stockCodeInput" class="form-control" ${IN} placeholder="如：00700.HK" oninput="reportAutoFill(this.value)">`, true)}
-      ${cell('市场', `<select id="reportMarket" class="form-control" ${IN} disabled><option value="">请先输入代码</option><option>港股</option><option>美股</option><option>A股</option><option>日股</option><option>韩股</option></select>`, true)}
-      ${cell('行业', `<select id="reportIndustry" class="form-control" ${IN}><option value="">请先选择市场</option></select>`, true)}
+      ${cell('股票代码', `<input id="stockCodeInput" class="form-control" style="width:320px;box-sizing:border-box" placeholder="如：00700.HK" oninput="reportAutoFill(this.value)">`, true)}
+      ${cell('市场', `<select id="reportMarket" class="form-control" style="width:320px;box-sizing:border-box" disabled><option value="">请先输入代码</option><option>港股</option><option>美股</option><option>A股</option><option>日股</option><option>韩股</option></select>`, true)}
+      ${cell('行业', `<select id="reportIndustry" class="form-control" style="width:320px;box-sizing:border-box"><option value="">请先选择市场</option></select>`, true)}
     </div>
     ${row(['评级', `<select class="form-control" ${IN}><option value="">请选择评级</option><option>AAA+</option><option>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option><option>A+</option><option>A</option></select>`], ['展望', `<select class="form-control" ${IN}><option value="">请选择展望</option><option>买入</option><option>卖出</option><option>维持</option></select>`], true, true)}
     ${fullRow('正文', `<textarea class="form-control" style="flex:1;box-sizing:border-box;width:1400px;height:160px" rows="4" placeholder="请输入研报正文内容..."></textarea>`, true)}
@@ -2265,9 +2265,9 @@ function buildReportEdit() {
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
     ${fullRow('研报标题', `<input class="form-control" style="width:1400px;box-sizing:border-box" value="腾讯控股深度覆盖报告">`, true)}
     <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 24px;align-items:center">
-      ${cell('股票代码', `<input id="stockCodeInput" class="form-control" ${IN} value="00700.HK" oninput="reportAutoFill(this.value)">`, true)}
-      ${cell('市场', `<select id="reportMarket" class="form-control" ${IN} disabled><option selected>港股</option><option>美股</option><option>A股</option><option>日股</option><option>韩股</option></select>`, true)}
-      ${cell('行业', `<select id="reportIndustry" class="form-control" ${IN}><option selected>科技</option><option>金融</option><option>消费</option></select>`, true)}
+      ${cell('股票代码', `<input id="stockCodeInput" class="form-control" style="width:320px;box-sizing:border-box" value="00700.HK" oninput="reportAutoFill(this.value)">`, true)}
+      ${cell('市场', `<select id="reportMarket" class="form-control" style="width:320px;box-sizing:border-box" disabled><option selected>港股</option><option>美股</option><option>A股</option><option>日股</option><option>韩股</option></select>`, true)}
+      ${cell('行业', `<select id="reportIndustry" class="form-control" style="width:320px;box-sizing:border-box"><option selected>科技</option><option>金融</option><option>消费</option></select>`, true)}
     </div>
     ${row(['评级', `<select class="form-control" ${IN}><option>AAA+</option><option selected>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option></select>`], ['展望', `<select class="form-control" ${IN}><option>买入</option><option selected>维持</option><option>卖出</option></select>`], true, true)}
     ${fullRow('正文', `<textarea class="form-control" style="flex:1;box-sizing:border-box;width:1400px;height:160px" rows="4">基于当前市场环境和技术发展趋势，我们对腾讯控股维持 AAA 评级，建议关注...</textarea>`, true)}
