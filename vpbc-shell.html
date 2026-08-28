@@ -2224,41 +2224,83 @@ function buildResearchReport() {
 
 // ========== Report Create / Edit Pages ==========
 function buildReportCreate() {
-  return `<div class="page-header"><div></div></div>
+  const G = 'style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 24px;align-items:center"';
+  const G2 = 'style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;align-items:center"';
+  const L = 'style="display:flex;align-items:center;gap:8px"';
+  const LB = 'style="width:140px;flex-shrink:0;margin:0;font-weight:500;text-align:right"';
+  const IN = 'style="flex:1;min-width:0"';
+  const R = '<span style="color:#dc2626;margin-right:2px">*</span>';
+  const cell = (label, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
+  const fullCell = (label, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${label}</label><div style="flex:1;min-width:0">${field}</div></div>`;
+  const TA = 'style="flex:1;min-width:0;width:100%;box-sizing:border-box"';
+  return `<div class="page-header">
+      <div style="font-size:18px;font-weight:600">新建研报</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary" onclick="openTab('research-report','研报中心')">取消</button>
+        <button class="btn btn-secondary" onclick="alert('原型：保存草稿')">💾 存草稿</button>
+        <button class="btn btn-primary" onclick="alert('原型：发布研报');openTab('research-report','研报中心')">🚀 发布</button>
+      </div>
+    </div>
     <div class="card"><div class="card-body">
-      <div class="form-row"><label class="form-label required">研报标题</label><input class="input" style="width:100%" placeholder="如：港股科技行业深度报告"></div>
-      <div class="form-row"><label class="form-label required">股票代码（含市场后缀）</label><input id="stockCodeInput" class="input" style="width:100%" placeholder="如：00700.HK、NVDA.US、600519.SH" oninput="reportAutoFill(this.value)"></div>
-      <div class="form-row"><label class="form-label required">市场</label><select id="reportMarket" class="select" style="width:100%" disabled><option value="">请先输入股票代码</option><option>港股</option><option>美股</option><option>A股</option><option>日股</option><option>韩股</option></select></div>
-      <div class="form-row"><label class="form-label required">行业</label><select id="reportIndustry" class="select" style="width:100%"><option value="">请先选择市场</option></select></div>
-      <div class="form-row"><label class="form-label required">评级</label><select class="select" style="width:100%"><option value="">请选择评级</option><option>AAA+</option><option>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option><option>A+</option><option>A</option><option>BBB+</option><option>BBB</option><option>BBB-</option></select></div>
-      <div class="form-row"><label class="form-label required">正文</label><textarea class="textarea" style="width:100%;height:200px" placeholder="请输入研报正文内容..."></textarea></div>
-      <div class="form-row"><label class="form-label">附件</label><input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%"></div>
-      <div class="form-row"><label class="form-label">标签</label><input class="input" style="width:100%" placeholder="多个标签用逗号分隔，如：AI、半导体、消费"></div>
-    </div></div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
-      <button class="btn btn-secondary" onclick="openTab('research-report','研报中心')">取消</button>
-      <button class="btn btn-secondary" onclick="alert('原型：保存草稿')">💾 存草稿</button>
-      <button class="btn btn-primary" onclick="alert('原型：发布研报');openTab('research-report','研报中心')">🚀 发布</button>
-    </div>`;
+      <div ${G} style="width:100%;margin-bottom:12px">
+        ${fullCell('研报标题', `<input class="form-control" ${IN} placeholder="如：港股科技行业深度报告">`, true)}
+      </div>
+      <div ${G} style="width:100%;margin-bottom:12px">
+        ${cell('股票代码', `<input id="stockCodeInput" class="form-control" ${IN} placeholder="如：00700.HK" oninput="reportAutoFill(this.value)">`, true)}
+        ${cell('市场', `<select id="reportMarket" class="form-control" ${IN} disabled><option value="">请先输入代码</option><option>港股</option><option>美股</option><option>A股</option><option>日股</option><option>韩股</option></select>`, true)}
+        ${cell('行业', `<select id="reportIndustry" class="form-control" ${IN}><option value="">请先选择市场</option></select>`, true)}
+      </div>
+      <div ${G2} style="width:100%;margin-bottom:12px">
+        ${cell('评级', `<select class="form-control" ${IN}><option value="">请选择评级</option><option>AAA+</option><option>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option><option>A+</option><option>A</option></select>`, true)}
+        ${cell('展望', `<select class="form-control" ${IN}><option value="">请选择展望</option><option>买入</option><option>卖出</option><option>维持</option></select>`, true)}
+      </div>
+      <div ${G} style="width:100%;margin-bottom:12px">
+        ${fullCell('正文', `<textarea class="form-control" style="${TA};height:200px" placeholder="请输入研报正文内容..."></textarea>`, true)}
+      </div>
+      <div ${G} style="width:100%">
+        ${fullCell('上传附件', `<input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%;box-sizing:border-box">`, false)}
+      </div>
+    </div></div>`;
 }
 
 function buildReportEdit() {
-  return `<div class="page-header"><div></div></div>
+  const G = 'style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 24px;align-items:center"';
+  const G2 = 'style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;align-items:center"';
+  const L = 'style="display:flex;align-items:center;gap:8px"';
+  const LB = 'style="width:140px;flex-shrink:0;margin:0;font-weight:500;text-align:right"';
+  const IN = 'style="flex:1;min-width:0"';
+  const R = '<span style="color:#dc2626;margin-right:2px">*</span>';
+  const cell = (label, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
+  const fullCell = (label, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${label}</label><div style="flex:1;min-width:0">${field}</div></div>`;
+  const TA = 'style="flex:1;min-width:0;width:100%;box-sizing:border-box"';
+  return `<div class="page-header">
+      <div style="font-size:18px;font-weight:600">修改研报</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary" onclick="openTab('research-report','研报中心')">取消</button>
+        <button class="btn btn-secondary" onclick="alert('原型：保存草稿')">💾 存草稿</button>
+        <button class="btn btn-primary" onclick="alert('原型：更新研报');openTab('research-report','研报中心')">🚀 更新</button>
+      </div>
+    </div>
     <div class="card"><div class="card-body">
-      <div class="form-row"><label class="form-label required">研报标题</label><input class="input" style="width:100%" value="腾讯控股深度覆盖报告"></div>
-      <div class="form-row"><label class="form-label required">股票代码（含市场后缀）</label><input id="stockCodeInput" class="input" style="width:100%" value="00700.HK" oninput="reportAutoFill(this.value)"></div>
-      <div class="form-row"><label class="form-label required">市场</label><select id="reportMarket" class="select" style="width:100%" disabled><option>港股</option><option>美股</option><option>A股</option><option>日股</option><option>韩股</option></select></div>
-      <div class="form-row"><label class="form-label required">行业</label><select id="reportIndustry" class="select" style="width:100%"><option>科技</option><option>金融</option><option>消费</option></select></div>
-      <div class="form-row"><label class="form-label required">评级</label><select class="select" style="width:100%"><option>AAA+</option><option selected>AAA</option><option>AAA-</option><option>AA+</option></select></div>
-      <div class="form-row"><label class="form-label required">正文</label><textarea class="textarea" style="width:100%;height:200px">基于当前市场环境和技术发展趋势，我们对腾讯控股维持 AAA 评级，建议关注...</textarea></div>
-      <div class="form-row"><label class="form-label">附件</label><input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%"></div>
-      <div class="form-row"><label class="form-label">标签</label><input class="input" style="width:100%" value="AI、半导体、科技"></div>
-    </div></div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
-      <button class="btn btn-secondary" onclick="openTab('research-report','研报中心')">取消</button>
-      <button class="btn btn-secondary" onclick="alert('原型：保存草稿')">💾 存草稿</button>
-      <button class="btn btn-primary" onclick="alert('原型：更新研报');openTab('research-report','研报中心')">🚀 更新</button>
-    </div>`;
+      <div ${G} style="width:100%;margin-bottom:12px">
+        ${fullCell('研报标题', `<input class="form-control" ${IN} value="腾讯控股深度覆盖报告">`, true)}
+      </div>
+      <div ${G} style="width:100%;margin-bottom:12px">
+        ${cell('股票代码', `<input id="stockCodeInput" class="form-control" ${IN} value="00700.HK" oninput="reportAutoFill(this.value)">`, true)}
+        ${cell('市场', `<select id="reportMarket" class="form-control" ${IN} disabled><option selected>港股</option><option>美股</option><option>A股</option><option>日股</option><option>韩股</option></select>`, true)}
+        ${cell('行业', `<select id="reportIndustry" class="form-control" ${IN}><option selected>科技</option><option>金融</option><option>消费</option></select>`, true)}
+      </div>
+      <div ${G2} style="width:100%;margin-bottom:12px">
+        ${cell('评级', `<select class="form-control" ${IN}><option>AAA+</option><option selected>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option></select>`, true)}
+        ${cell('展望', `<select class="form-control" ${IN}><option>买入</option><option selected>维持</option><option>卖出</option></select>`, true)}
+      </div>
+      <div ${G} style="width:100%;margin-bottom:12px">
+        ${fullCell('正文', `<textarea class="form-control" style="${TA};height:200px">基于当前市场环境和技术发展趋势，我们对腾讯控股维持 AAA 评级，建议关注...</textarea>`, true)}
+      </div>
+      <div ${G} style="width:100%">
+        ${fullCell('上传附件', `<input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%;box-sizing:border-box">`, false)}
+      </div>
+    </div></div>`;
 }
 
 // ========== Portfolio Data ==========
