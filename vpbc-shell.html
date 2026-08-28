@@ -2231,7 +2231,7 @@ function buildReportCreate() {
   const row = (a, b, reqA, reqB) => b
     ? `${cell(a[0], a[1], reqA)}${cell(b[0], b[1], reqB)}`
     : `${cell(a[0], a[1], reqA)}${empty}`;
-  const fullRow = (label, field, req) => `<div style="grid-column:1/-1;display:flex;align-items:flex-start;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><div style="flex:1;min-width:0">${field}</div></div>`;
+  const fullRow = (label, field, req) => `<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><div style="flex:1;min-width:0;display:flex;justify-content:center">${field}</div></div>`;
   const grid = `
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
     ${fullRow('研报标题', `<input class="form-control" style="width:1400px;box-sizing:border-box" placeholder="如：港股科技行业深度报告">`, true)}
@@ -2260,7 +2260,7 @@ function buildReportEdit() {
   const row = (a, b, reqA, reqB) => b
     ? `${cell(a[0], a[1], reqA)}${cell(b[0], b[1], reqB)}`
     : `${cell(a[0], a[1], reqA)}${empty}`;
-  const fullRow = (label, field, req) => `<div style="grid-column:1/-1;display:flex;align-items:flex-start;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><div style="flex:1;min-width:0">${field}</div></div>`;
+  const fullRow = (label, field, req) => `<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><div style="flex:1;min-width:0;display:flex;justify-content:center">${field}</div></div>`;
   const grid = `
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
     ${fullRow('研报标题', `<input class="form-control" style="width:1400px;box-sizing:border-box" value="腾讯控股深度覆盖报告">`, true)}
