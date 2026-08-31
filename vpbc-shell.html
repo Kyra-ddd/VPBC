@@ -211,6 +211,9 @@
     .chart-legend { display: flex; gap: 16px; font-size: 12px; color: var(--vp-gray-500); margin-bottom: 6px; }
     .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
     .chart-legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; }
+    .perf-pl { font-size: 12px; font-weight: 600; color: var(--vp-gray-500); margin: 0 0 4px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    .perf-pl .lg { display: inline-flex; align-items: center; gap: 4px; font-weight: 400; }
+    .perf-pl .lg i { display: inline-block; width: 10px; height: 3px; border-radius: 2px; }
     .chart-tip { position: absolute; pointer-events: none; background: #fff; border: 1px solid var(--vp-green-light); border-radius: 8px; box-shadow: 0 4px 14px rgba(21,50,43,.10); padding: 8px 10px; font-size: 12px; min-width: 130px; z-index: 30; }
     .chart-tip .tip-date { color: var(--vp-gray-500); margin-bottom: 4px; font-variant-numeric: tabular-nums; }
     .chart-tip div:not(.tip-date) { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
@@ -224,6 +227,21 @@
     .modal-mask.show { display: flex; }
     .modal-mask .modal-overlay { position: absolute; inset: 0; background: transparent; }
     .modal-mask .modal { position: static; inset: auto; display: flex; flex-direction: column; max-width: 500px; width: 100%; margin: 0 auto; box-shadow: 0 12px 40px rgba(21,50,43,.18); border-radius: 12px; background: #fff; max-height: 86vh; }
+    .ind-add-modal { border: 1px solid #DCEBE2; border-radius: 14px; box-shadow: 0 16px 48px rgba(21,50,43,.14); animation: indPop .22s ease; }
+    @keyframes indPop { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .ms { position: relative; }
+    .ms-field { display: flex; align-items: center; gap: 8px; min-height: 38px; padding: 4px 10px; border: 1px solid var(--vp-border); border-radius: 8px; background: #fff; cursor: pointer; transition: border-color .15s; }
+    .ms-field:hover { border-color: var(--vp-green); }
+    .ms-tags { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; min-width: 0; }
+    .ms-tag { display: inline-flex; align-items: center; gap: 4px; background: var(--vp-mint-50); border: 1px solid var(--vp-border); border-radius: 4px; padding: 2px 6px; font-size: 12px; color: var(--vp-gray-700); }
+    .ms-tag b { cursor: pointer; font-weight: 400; color: var(--vp-gray-500); }
+    .ms-tag b:hover { color: var(--vp-red); }
+    .ms-ph { color: var(--vp-gray-400); font-size: 13px; }
+    .ms-panel { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid var(--vp-border); border-radius: 8px; box-shadow: 0 8px 24px rgba(21,50,43,.12); max-height: 180px; overflow-y: auto; z-index: 20; padding: 4px 0; }
+    .ms-panel.open { display: block; }
+    .ms-opt { display: flex; align-items: center; gap: 8px; padding: 7px 12px; font-size: 13px; color: var(--vp-gray-700); cursor: pointer; }
+    .ms-opt:hover { background: var(--vp-mint-50); }
+    .ms-opt input { accent-color: var(--vp-green); }
     .modal-box { background: #fff; border-radius: 12px; width: 480px; max-width: 92vw; max-height: 86vh; display: flex; flex-direction: column; box-shadow: 0 12px 40px rgba(21,50,43,.18); }
     .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--vp-border); }
     .modal-body { padding: 16px 18px; overflow: auto; flex: 1; }
@@ -312,7 +330,7 @@
         <div class="submenu-item" onclick="openTab('research-report', '研报管理')">研报管理</div>
         <div class="submenu-item" onclick="openTab('stock-pool', '股票池')">股票池</div>
         <div class="submenu-item" onclick="openTab('portfolio', '模拟组合')">模拟组合</div>
-        <div class="submenu-item" onclick="openTab('portfolio-new', '模拟组合(新)')">模拟组合(新)</div>
+        <div class="submenu-item" onclick="openTab('index-sim', '指数模拟')">指数模拟</div>
         <div class="submenu-item" onclick="openTab('config', '配置')">配置</div>
       </div>
     </div>
@@ -329,6 +347,7 @@
       <div class="submenu open" id="submenu-product-center">
         <div class="submenu-item active" onclick="openTab('product-management', '产品管理')">产品管理</div>
         <div class="submenu-item" onclick="openTab('share-class', '份额信息')">份额信息</div>
+        <div class="submenu-item" onclick="openTab('research-share', '研报共享')">研报共享</div>
       </div>
     </div>
   </nav>
@@ -393,7 +412,8 @@ function renderContent(html) {
   if (activeTabKey === 'industry') { indInitFilters(); indRenderUnified(); }
   if (activeTabKey === 'research-report') { reportRender(); }
   if (activeTabKey === 'stock-pool') { poolRenderGrid(); poolRenderDetail(); }
-  if (activeTabKey === 'portfolio') { portRenderPortfolios(); portRenderShared(); portRenderHoldings(); portRenderRebalances(); portRenderIndicatorLib(); portRenderNavChart(); }
+  if (activeTabKey === 'portfolio') { portRenderPortfolios(); portRenderShared(); portRenderHoldings(); portRenderRebalances(); portRenderIndicatorLib(); portRenderPerf(); }
+  if (activeTabKey === 'index-sim') { idxRenderIndexList(); idxRenderPortfolios(); }
   if (activeTabKey === 'config') { cfgSwitchTab('users'); }
   if (activeTabKey === 'share-class') { scRender(); }
   if (activeTabKey === 'share-class-add') { scAddInit(); }
@@ -410,7 +430,7 @@ function toggleSubmenu(id) {
 
 function updateSidebarActive(key) {
   document.querySelectorAll('.submenu-item').forEach(el => el.classList.remove('active'));
-  const map = { 'industry':'industry', 'research-report':'research-report', 'stock-pool':'stock-pool', 'portfolio':'portfolio', 'portfolio-new':'portfolio-new', 'config':'config', 'product-management':'product-management', 'share-class':'share-class' };
+  const map = { 'industry':'industry', 'research-report':'research-report', 'stock-pool':'stock-pool', 'portfolio':'portfolio', 'portfolio-new':'portfolio-new', 'index-sim':'index-sim', 'config':'config', 'product-management':'product-management', 'share-class':'share-class', 'research-share':'research-share' };
   if (key && map[key]) {
     document.querySelectorAll('.submenu-item').forEach(item => {
       if (item.getAttribute('onclick') && item.getAttribute('onclick').startsWith(`openTab('${map[key]}'`)) item.classList.add('active');
@@ -481,52 +501,58 @@ function indSwitchMarket(code) {
   indRenderMarkets(); indInitFilters(); indRenderUnified();
 }
 
+const MS_STATE = {};
+function msInit(id, options, ph) {
+  MS_STATE[id] = { selected: new Set(), ph };
+  document.getElementById(id + 'Panel').innerHTML = options.map(o =>
+    `<label class="ms-opt"><input type="checkbox" value="${o}" onchange="msPick('${id}',this)">${o}</label>`).join('');
+  msRender(id);
+}
+function msToggle(id, e) {
+  if (e) e.stopPropagation();
+  document.querySelectorAll('.ms-panel.open').forEach(p => { if (p.id !== id + 'Panel') p.classList.remove('open'); });
+  document.getElementById(id + 'Panel').classList.toggle('open');
+}
+function msPick(id, cb) {
+  cb.checked ? MS_STATE[id].selected.add(cb.value) : MS_STATE[id].selected.delete(cb.value);
+  msRender(id);
+}
+function msRemove(id, v, e) {
+  e.stopPropagation();
+  MS_STATE[id].selected.delete(v);
+  const cb = document.querySelector(`#${id}Panel input[value="${v}"]`);
+  if (cb) cb.checked = false;
+  msRender(id);
+}
+function msRender(id) {
+  const sel = [...MS_STATE[id].selected];
+  document.getElementById(id + 'Tags').innerHTML = sel.length
+    ? sel.map(v => `<span class="ms-tag">${v}<b onclick="msRemove('${id}','${v}',event)">✕</b></span>`).join('')
+    : `<span class="ms-ph">${MS_STATE[id].ph}</span>`;
+}
+document.addEventListener('click', () => document.querySelectorAll('.ms-panel.open').forEach(p => p.classList.remove('open')));
+
 function indOpenAdd() {
   document.getElementById('indAddModal').classList.add('show');
   document.getElementById('indAddName').value = '';
-  const allMarkets = Object.keys(IND_DATA).map(code => ({ code, name: IND_DATA[code].name })).sort();
-  const mLeft = document.getElementById('indAddMarketLeft');
-  const aLeft = document.getElementById('indAddAnalystLeft');
-  mLeft.innerHTML = allMarkets.map(m => `<option value="${m.code}">${m.name}</option>`).join('');
-  document.getElementById('indAddMarketRight').innerHTML = '';
   const allInds = indGetIndustries();
+  const markets = Object.keys(IND_DATA).map(code => IND_DATA[code].name);
   const analysts = [...new Set(allInds.flatMap(i => (i.analysts || []).filter(a => a.status === "在职").map(a => a.name)))].sort();
-  aLeft.innerHTML = analysts.map(n => `<option value="${n}">${n}</option>`).join('');
-  document.getElementById('indAddAnalystRight').innerHTML = '';
-  indUpdateTags('market');
-  indUpdateTags('analyst');
+  msInit('msMarket', markets, '请选择市场（可多选）');
+  msInit('msAnalyst', analysts, '请选择研究员（可多选）');
 }
 
 function indCloseAdd() { document.getElementById('indAddModal').classList.remove('show'); }
-
-function indAddMove(type, dir) {
-  const left = document.getElementById('indAdd' + (type === 'market' ? 'Market' : 'Analyst') + 'Left');
-  const right = document.getElementById('indAdd' + (type === 'market' ? 'Market' : 'Analyst') + 'Right');
-  if (dir === 'right') {
-    [...left.selectedOptions].forEach(opt => { right.appendChild(opt); });
-  } else {
-    [...right.selectedOptions].forEach(opt => { left.appendChild(opt); });
-  }
-  indUpdateTags(type);
-}
-
-function indUpdateTags(type) {
-  const right = document.getElementById('indAdd' + (type === 'market' ? 'Market' : 'Analyst') + 'Right');
-  const tags = document.getElementById('indAdd' + (type === 'market' ? 'Market' : 'Analyst') + 'Tags');
-  tags.innerHTML = [...right.options].map(o =>
-    `<span style="display:inline-flex;align-items:center;gap:2px;background:var(--vp-mint-50);border:1px solid var(--vp-border);border-radius:4px;padding:2px 6px;font-size:12px">${o.text}</span>`
-  ).join('');
-}
 
 function indSaveAdd() {
   const name = document.getElementById('indAddName').value.trim();
   if (!name) { alert('行业名称为必填项'); return; }
   if (name.length > 50) { alert('行业名称最多50字符'); return; }
-  const marketOpts = [...document.getElementById('indAddMarketRight').options];
-  if (!marketOpts.length) { alert('市场为必填项'); return; }
-  const analystOpts = [...document.getElementById('indAddAnalystRight').options];
-  if (!analystOpts.length) { alert('研究员为必填项'); return; }
-  alert(`新增行业：${name}\n市场：${marketOpts.map(o=>o.text).join('、')}\n研究员：${analystOpts.map(o=>o.text).join('、')}`);
+  const markets = [...MS_STATE.msMarket.selected];
+  if (!markets.length) { alert('市场为必填项'); return; }
+  const analysts = [...MS_STATE.msAnalyst.selected];
+  if (!analysts.length) { alert('研究员为必填项'); return; }
+  alert(`新增行业：${name}\n市场：${markets.join('、')}\n研究员：${analysts.join('、')}`);
   indCloseAdd();
 }
 
@@ -751,6 +777,18 @@ const REPORTS = [
   { id:"R006", title:"腾讯控股跟踪报告：游戏回暖，广告提速", market:"港股", industry:"科技", stock:"00700.HK", company:"腾讯控股", rating:"AA+", ratingCls:"tag-blue", creator:"David", time:"2026-08-03", attachment:{ name:"Tencent-update.pdf", size:"1.1MB", type:"PDF" } },
 ];
 
+// 研报共享中心：跨研究系统的研报集市（含自研 + 外购源）
+const SHARED_REPORTS = [
+  { id:"S001", title:"港股科技行业深度报告：AI 驱动下的新机遇",     type:"深度报告", source:"自研", stock:"00700.HK", issuer:"腾讯控股", market:"港股", industry:"科技", rating:"AAA+", publisher:"Value Partners 投研", publishDate:"2026-08-10", subscribed:true },
+  { id:"S002", title:"全球半导体产业链跟踪：先进制程产能再分配",   type:"追踪报告", source:"Wind",    stock:"TSM.US",  issuer:"台积电",     market:"美股", industry:"半导体", rating:"AAA",  publisher:"Wind 资讯",          publishDate:"2026-08-12", subscribed:false },
+  { id:"S003", title:"美股科技 Q2 财报前瞻：AI 变现加速",          type:"前瞻报告", source:"Bloomberg", stock:"NVDA.US", issuer:"英伟达",   market:"美股", industry:"科技", rating:"AA+",   publisher:"Bloomberg Terminal", publishDate:"2026-08-08", subscribed:true },
+  { id:"S004", title:"A股消费板块复盘：白酒韧性、新兴品类突围",    type:"深度报告", source:"自研",    stock:"600519.SH", issuer:"贵州茅台", market:"A股", industry:"消费", rating:"AAA-", publisher:"Value Partners 投研", publishDate:"2026-08-06", subscribed:false },
+  { id:"S005", title:"MSCI 中国 A50 月度观察：金融权重变化追踪",   type:"追踪报告", source:"MSCI",    stock:"—",       issuer:"—",         market:"A股", industry:"宏观", rating:"—",     publisher:"MSCI Research",      publishDate:"2026-08-04", subscribed:false },
+  { id:"S006", title:"腾讯控股季度跟踪：游戏回暖，广告提速",        type:"追踪报告", source:"自研",    stock:"00700.HK", issuer:"腾讯控股", market:"港股", industry:"科技", rating:"AA+",   publisher:"Value Partners 投研", publishDate:"2026-08-03", subscribed:true },
+  { id:"S007", title:"中资美元债违约预警与定价偏差分析",           type:"专题报告", source:"中诚信",  stock:"—",       issuer:"—",         market:"港股", industry:"金融", rating:"BBB+",  publisher:"中诚信国际",         publishDate:"2026-08-01", subscribed:false },
+  { id:"S008", title:"全球新能源车产业链深度：欧美补贴退坡影响",   type:"深度报告", source:"自研",    stock:"TSLA.US", issuer:"特斯拉",   market:"美股", industry:"汽车", rating:"AA",    publisher:"Value Partners 投研", publishDate:"2026-07-28", subscribed:false },
+];
+
 function reportRender() {
   const body = document.getElementById("reportBody");
   if (!body) return;
@@ -802,6 +840,147 @@ function reportShowAttachment(id) {
   alert(`附件信息\n名称：${r.attachment.name}\n类型：${r.attachment.type}\n大小：${r.attachment.size}`);
 }
 
+// ========== Research Share Center ==========
+function buildResearchShare() {
+  return `<div class="page-header">
+      <div>
+        <div class="page-title">研报共享</div>
+        <div class="page-subtitle">跨研究系统研报集市 · 自研 + 外购统一检索 · 产品研究订阅入口</div>
+      </div>
+      <button class="btn btn-primary" onclick="alert('原型：批量订阅选中研报')">📥 批量订阅</button>
+    </div>
+
+    <div class="kpi-grid mb-4">
+      <div class="kpi"><div class="kpi-icon">📚</div><div><div class="kpi-num">${SHARED_REPORTS.length}</div><div class="kpi-label">共享研报</div></div></div>
+      <div class="kpi"><div class="kpi-icon">✅</div><div><div class="kpi-num" style="color:var(--vp-green)">${SHARED_REPORTS.filter(r=>r.subscribed).length}</div><div class="kpi-label">已订阅</div></div></div>
+      <div class="kpi"><div class="kpi-icon">�️</div><div><div class="kpi-num">${[...new Set(SHARED_REPORTS.map(r=>r.source))].length}</div><div class="kpi-label">数据来源</div></div></div>
+      <div class="kpi"><div class="kpi-icon">🗂️</div><div><div class="kpi-num">${[...new Set(SHARED_REPORTS.map(r=>r.type))].length}</div><div class="kpi-label">报告类型</div></div></div>
+    </div>
+
+    <div class="card mb-4"><div class="card-body" style="padding:12px 16px"><div class="flex items-center gap-3 flex-wrap">
+      <input id="shareSearchStock" class="input" placeholder="股票代码（如 00700.HK）" style="width:160px" oninput="shareRender()">
+      <input id="shareSearchIssuer" class="input" placeholder="发行人 / 公司名" style="width:160px" oninput="shareRender()">
+      <select id="shareFilterType" class="select filter-select" style="min-width:120px" onchange="shareRender()">
+        <option value="">全部报告类型</option>
+        <option>深度报告</option>
+        <option>追踪报告</option>
+        <option>前瞻报告</option>
+        <option>专题报告</option>
+        <option>周报</option>
+        <option>月报</option>
+      </select>
+      <select id="shareFilterSource" class="select filter-select" style="min-width:140px" onchange="shareRender()">
+        <option value="">全部数据来源</option>
+        <option>自研</option>
+        <option>Wind</option>
+        <option>Bloomberg</option>
+        <option>MSCI</option>
+        <option>中诚信</option>
+      </select>
+      <select id="shareFilterMarket" class="select filter-select" style="min-width:100px" onchange="shareRender()">
+        <option value="">全部市场</option>
+        <option>港股</option>
+        <option>美股</option>
+        <option>A股</option>
+      </select>
+      <select id="shareFilterSub" class="select filter-select" style="min-width:100px" onchange="shareRender()">
+        <option value="">全部订阅状态</option>
+        <option>已订阅</option>
+        <option>未订阅</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" onclick="shareReset()">重置</button>
+    </div></div></div>
+
+    <div class="card"><div class="card-body" style="padding:0"><table class="data-table">
+      <thead><tr>
+        <th style="width:40px"><input type="checkbox" id="shareSelAll" onchange="shareToggleAll(this)"></th>
+        <th>报告标题</th>
+        <th>报告类型</th>
+        <th>数据来源</th>
+        <th>股票</th>
+        <th>发行人</th>
+        <th>市场-行业</th>
+        <th>评级</th>
+        <th>发布日期</th>
+        <th>订阅</th>
+        <th class="right">操作</th>
+      </tr></thead>
+      <tbody id="shareBody"></tbody>
+    </table></div></div>
+
+    <div class="notice mt-4"><span class="ico">ⓘ</span>研报共享汇集自研与外购研报；外购研报按订阅权限查看完整内容，订阅信息会同步到产品研究工作台。涨跌色采用<strong>港式惯例</strong>：上涨=#B23A48，下跌=#20A06E。</div>`;
+}
+
+function shareRender() {
+  const body = document.getElementById("shareBody");
+  if (!body) return;
+  const stock = document.getElementById("shareSearchStock")?.value.trim().toLowerCase() || "";
+  const issuer = document.getElementById("shareSearchIssuer")?.value.trim().toLowerCase() || "";
+  const type = document.getElementById("shareFilterType")?.value || "";
+  const source = document.getElementById("shareFilterSource")?.value || "";
+  const market = document.getElementById("shareFilterMarket")?.value || "";
+  const sub = document.getElementById("shareFilterSub")?.value || "";
+  const filtered = SHARED_REPORTS.filter(r => {
+    if (stock && !(r.stock || "—").toLowerCase().includes(stock)) return false;
+    if (issuer && !(r.issuer || "—").toLowerCase().includes(issuer)) return false;
+    if (type && r.type !== type) return false;
+    if (source && r.source !== source) return false;
+    if (market && r.market !== market) return false;
+    if (sub === "已订阅" && !r.subscribed) return false;
+    if (sub === "未订阅" && r.subscribed) return false;
+    return true;
+  });
+  body.innerHTML = filtered.length === 0
+    ? '<tr><td colspan="11" class="muted" style="text-align:center;padding:32px">暂无符合筛选条件的研报</td></tr>'
+    : filtered.map(r => {
+      const sourceTag = r.source === "自研"
+        ? `<span class="tag tag-green">自研</span>`
+        : `<span class="tag tag-blue">${r.source}</span>`;
+      const subBtn = r.subscribed
+        ? `<span class="tag tag-green">✓ 已订阅</span>`
+        : `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();shareSubscribe('${r.id}')">订阅</button>`;
+      return `<tr style="cursor:pointer" onclick="shareShowDetail('${r.id}')">
+        <td><input type="checkbox" class="share-row-cb" data-id="${r.id}" onclick="event.stopPropagation()"></td>
+        <td><div style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${r.title}</div><div class="tiny muted">${r.publisher}</div></td>
+        <td><span class="tag tag-gray">${r.type}</span></td>
+        <td>${sourceTag}</td>
+        <td class="cell-code">${r.stock || '—'}</td>
+        <td>${r.issuer || '—'}</td>
+        <td>${r.market} · ${r.industry}</td>
+        <td>${r.rating === '—' ? '<span class="muted">—</span>' : `<span class="tag tag-gray">${r.rating}</span>`}</td>
+        <td class="cell-muted">${r.publishDate}</td>
+        <td>${subBtn}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：查看「${r.title.replace(/'/g,"\\'")}」研报详情（自研免费 / 外购需订阅）')">查看</button></td>
+      </tr>`;
+    }).join("");
+  const selAll = document.getElementById("shareSelAll");
+  if (selAll) selAll.checked = false;
+}
+
+function shareSubscribe(id) {
+  const r = SHARED_REPORTS.find(x => x.id === id);
+  if (!r) return;
+  r.subscribed = true;
+  alert(`已订阅「${r.title}」\n订阅信息将同步到产品研究工作台`);
+  shareRender();
+}
+
+function shareToggleAll(cb) {
+  document.querySelectorAll(".share-row-cb").forEach(el => el.checked = cb.checked);
+}
+
+function shareReset() {
+  ["shareSearchStock","shareSearchIssuer"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+  ["shareFilterType","shareFilterSource","shareFilterMarket","shareFilterSub"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+  shareRender();
+}
+
+function shareShowDetail(id) {
+  const r = SHARED_REPORTS.find(x => x.id === id);
+  if (!r) return;
+  alert(`研报详情\n标题：${r.title}\n类型：${r.type}\n来源：${r.source}（${r.publisher}）\n股票：${r.stock}（${r.issuer}）\n市场：${r.market}\n行业：${r.industry}\n评级：${r.rating}\n发布日期：${r.publishDate}\n订阅：${r.subscribed ? "已订阅" : "未订阅"}`);
+}
+
 function reportShowEditor() {
   openTab('report-create', '新建研报');
 }
@@ -810,15 +989,11 @@ function reportShowEditor() {
 function reportAutoFill(code) {
   if (!code) return;
   const suffix = code.split('.').pop()?.toUpperCase();
-  const marketMap = { 'HK': '港股', 'US': '美股', 'SH': 'A股', 'SZ': 'A股', 'CN': 'A股', 'JP': '日股', 'KS': '韩股' };
   const marketMapCode = { 'HK': 'HK', 'US': 'US', 'SH': 'CN', 'SZ': 'CN', 'CN': 'CN', 'JP': 'JP', 'KS': 'KR' };
-  const market = marketMap[suffix];
   const marketCode = marketMapCode[suffix];
-  if (!market) return;
+  if (!marketCode) return;
 
-  const marketSel = document.getElementById('reportMarket');
   const industrySel = document.getElementById('reportIndustry');
-  if (marketSel) marketSel.value = market;
   if (industrySel && marketCode && IND_DATA[marketCode]) {
     const opts = IND_DATA[marketCode].industries.map(i => `<option value="${i.name}">${i.name}</option>`).join('');
     industrySel.innerHTML = `<option value="">请选择行业</option>${opts}`;
@@ -1183,6 +1358,7 @@ function cfgSwitchTab(tab) {
 // ========== Build Content ==========
 function buildContent(key) {
   if (key === 'product-management') return buildProductManagement();
+  if (key === 'research-share') return buildResearchShare();
   if (key === 'product-add') return buildProductAdd();
   if (key === 'industry') return buildIndustry();
   if (key === 'research-report') return buildResearchReport();
@@ -1191,6 +1367,7 @@ function buildContent(key) {
   if (key === 'stock-pool') return buildStockPool();
   if (key === 'portfolio') return buildPortfolio();
   if (key === 'portfolio-new') return buildPortfolioNew();
+  if (key === 'index-sim') return buildIndexSim();
   if (key === 'config') return buildConfig();
   if (key === 'share-class') return buildShareClass();
   if (key === 'share-class-add') return buildShareClassAdd();
@@ -2155,41 +2332,43 @@ function buildIndustry() {
 
     <!-- 新增行业弹窗 -->
     <div class="modal-mask" id="indAddModal"><div class="modal-overlay" onclick="indCloseAdd()"></div>
-      <div class="modal" onclick="event.stopPropagation()" style="max-width:480px">
-        <div class="modal-header"><div class="modal-title">新增行业</div><button class="modal-close" onclick="indCloseAdd()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-        <div class="modal-body" style="display:flex;flex-direction:column;gap:16px">
-          <div class="form-group" style="margin:0">
-            <label class="form-label" style="margin:0 0 6px">行业 <span style="color:var(--vp-red)">*</span></label>
-            <input type="text" class="form-control" id="indAddName" maxlength="50" placeholder="请输入行业名称，最多50字符">
+      <div class="modal ind-add-modal" onclick="event.stopPropagation()" style="max-width:440px;width:440px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #EEF5F0">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:4px;height:18px;border-radius:2px;background:var(--vp-green)"></span>
+            <span style="font-family:Poppins,sans-serif;font-size:15px;font-weight:600;color:var(--vp-gray-900)">新增行业</span>
           </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label" style="margin:0 0 6px">市场 <span style="color:var(--vp-red)">*</span></label>
-            <div style="display:flex;gap:8px;align-items:flex-start">
-              <select class="form-control" id="indAddMarketLeft" size="5" multiple style="flex:1;min-width:0"></select>
-              <div style="display:flex;flex-direction:column;gap:4px">
-                <button class="btn btn-ghost btn-sm" onclick="indAddMove('market','right')">添加 →</button>
-                <button class="btn btn-ghost btn-sm" onclick="indAddMove('market','left')">← 移除</button>
-              </div>
-              <select class="form-control" id="indAddMarketRight" size="5" multiple style="flex:1;min-width:0"></select>
-            </div>
-            <div id="indAddMarketTags" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px"></div>
+          <button onclick="indCloseAdd()" title="关闭" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:none;border-radius:6px;background:transparent;color:var(--vp-gray-500);cursor:pointer;transition:background .15s,color .15s" onmouseover="this.style.background='var(--vp-mint-50)';this.style.color='var(--vp-gray-900)'" onmouseout="this.style.background='transparent';this.style.color='var(--vp-gray-500)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">行业 <span style="color:var(--vp-red)">*</span></label>
+            <input type="text" class="form-control" id="indAddName" maxlength="50" placeholder="请输入行业名称，最多50字符" style="width:100%;box-sizing:border-box">
           </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label" style="margin:0 0 6px">研究员 <span style="color:var(--vp-red)">*</span></label>
-            <div style="display:flex;gap:8px;align-items:flex-start">
-              <select class="form-control" id="indAddAnalystLeft" size="5" multiple style="flex:1;min-width:0"></select>
-              <div style="display:flex;flex-direction:column;gap:4px">
-                <button class="btn btn-ghost btn-sm" onclick="indAddMove('analyst','right')">添加 →</button>
-                <button class="btn btn-ghost btn-sm" onclick="indAddMove('analyst','left')">← 移除</button>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">市场 <span style="color:var(--vp-red)">*</span></label>
+            <div class="ms" id="msMarket">
+              <div class="ms-field" onclick="msToggle('msMarket',event)">
+                <div class="ms-tags" id="msMarketTags"></div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--vp-gray-400)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
               </div>
-              <select class="form-control" id="indAddAnalystRight" size="5" multiple style="flex:1;min-width:0"></select>
+              <div class="ms-panel" id="msMarketPanel" onclick="event.stopPropagation()"></div>
             </div>
-            <div id="indAddAnalystTags" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px"></div>
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">研究员 <span style="color:var(--vp-red)">*</span></label>
+            <div class="ms" id="msAnalyst">
+              <div class="ms-field" onclick="msToggle('msAnalyst',event)">
+                <div class="ms-tags" id="msAnalystTags"></div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--vp-gray-400)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="ms-panel" id="msAnalystPanel" onclick="event.stopPropagation()"></div>
+            </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-ghost btn-sm" onclick="indCloseAdd()">取消</button>
-          <button class="btn btn-primary btn-sm" onclick="indSaveAdd()">保存</button>
+        <div style="padding:12px 20px;background:#FAFCFA;border-top:1px solid #EEF5F0;border-radius:0 0 13px 13px;display:flex;justify-content:flex-end;gap:10px">
+          <button onclick="indCloseAdd()" style="padding:8px 18px;border:1px solid var(--vp-border);border-radius:8px;background:#fff;color:var(--vp-gray-700);font-size:13px;font-weight:500;cursor:pointer;transition:border-color .15s">取消</button>
+          <button onclick="indSaveAdd()" style="padding:8px 18px;border:none;border-radius:8px;background:var(--vp-green);color:#fff;font-size:13px;font-weight:500;cursor:pointer;box-shadow:0 2px 8px rgba(32,160,110,.25);transition:background .15s" onmouseover="this.style.background='#1B8A5D'" onmouseout="this.style.background='var(--vp-green)'">确定</button>
         </div>
       </div>
     </div>
@@ -2234,20 +2413,20 @@ function buildReportCreate() {
   const fullRow = (label, field, req) => `<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><div style="flex:1;min-width:0">${field}</div></div>`;
   const grid = `
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
-    ${fullRow('研报标题', `<input class="form-control" style="width:1400px;box-sizing:border-box" placeholder="如：港股科技行业深度报告">`, true)}
-    <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 24px;align-items:center">
-      ${cell('股票代码', `<input id="stockCodeInput" class="form-control" style="width:320px;box-sizing:border-box" placeholder="如：00700.HK" oninput="reportAutoFill(this.value)">`, true)}
-      ${cell('市场', `<select id="reportMarket" class="form-control" style="width:320px;box-sizing:border-box" disabled><option value="">请先输入代码</option><option>港股</option><option>美股</option><option>A股</option><option>日股</option><option>韩股</option></select>`, true)}
-      ${cell('行业', `<select id="reportIndustry" class="form-control" style="width:320px;box-sizing:border-box"><option value="">请先选择市场</option></select>`, true)}
-    </div>
-    ${row(['评级', `<select class="form-control" style="width:320px;box-sizing:border-box"><option value="">请选择评级</option><option>AAA+</option><option>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option><option>A+</option><option>A</option></select>`], ['展望', `<select class="form-control" style="width:320px;box-sizing:border-box"><option value="">请选择展望</option><option>买入</option><option>卖出</option><option>维持</option></select>`], true, true)}
-    ${fullRow('正文', `<textarea class="form-control" style="flex:1;box-sizing:border-box;width:1400px;height:160px" rows="4" placeholder="请输入研报正文内容..."></textarea>`, true)}
-    ${fullRow('上传附件', `<input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%">`, false)}
-    <div style="grid-column:1/-1;padding-top:16px;display:flex;gap:12px">
+    <div style="grid-column:1/-1;display:flex;gap:12px;align-items:center">
       <button class="btn btn-secondary" onclick="alert('原型：保存草稿')">💾 存草稿</button>
       <button class="btn btn-primary" onclick="alert('原型：发布研报');openTab('research-report','研报中心')">🚀 发布</button>
       <button class="btn btn-secondary" onclick="openTab('research-report','研报中心')">取消</button>
     </div>
+    ${fullRow('研报标题', `<input class="form-control" style="width:1400px;box-sizing:border-box" placeholder="如：港股科技行业深度报告">`, true)}
+    <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px 2px;align-items:center;margin-left:148px">
+      ${cell('股票代码', `<input id="stockCodeInput" class="form-control" style="width:100%;box-sizing:border-box" placeholder="如：00700.HK" oninput="reportAutoFill(this.value)">`, true)}
+      ${cell('展望', `<select class="form-control" style="width:100%;box-sizing:border-box"><option value="">请选择展望</option><option>买入</option><option>卖出</option><option>维持</option></select>`, true)}
+      ${cell('评级', `<select class="form-control" style="width:100%;box-sizing:border-box"><option value="">请选择评级</option><option>AAA+</option><option>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option><option>A+</option><option>A</option></select>`, true)}
+      ${cell('行业', `<select id="reportIndustry" class="form-control" style="width:100%;box-sizing:border-box"><option value="">请先输入代码</option></select>`, true)}
+    </div>
+    ${fullRow('正文', `<textarea class="form-control" style="flex:1;box-sizing:border-box;width:1400px;height:160px" rows="4" placeholder="请输入研报正文内容..."></textarea>`, true)}
+    ${fullRow('上传附件', `<input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%">`, false)}
   </div>`;
   return `<div class="card"><div class="card-body" style="padding:20px">${grid}</div></div>`;
 }
@@ -2263,20 +2442,20 @@ function buildReportEdit() {
   const fullRow = (label, field, req) => `<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><div style="flex:1;min-width:0">${field}</div></div>`;
   const grid = `
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
-    ${fullRow('研报标题', `<input class="form-control" style="width:1400px;box-sizing:border-box" value="腾讯控股深度覆盖报告">`, true)}
-    <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 24px;align-items:center">
-      ${cell('股票代码', `<input id="stockCodeInput" class="form-control" style="width:320px;box-sizing:border-box" value="00700.HK" oninput="reportAutoFill(this.value)">`, true)}
-      ${cell('市场', `<select id="reportMarket" class="form-control" style="width:320px;box-sizing:border-box" disabled><option selected>港股</option><option>美股</option><option>A股</option><option>日股</option><option>韩股</option></select>`, true)}
-      ${cell('行业', `<select id="reportIndustry" class="form-control" style="width:320px;box-sizing:border-box"><option selected>科技</option><option>金融</option><option>消费</option></select>`, true)}
-    </div>
-    ${row(['评级', `<select class="form-control" style="width:320px;box-sizing:border-box"><option>AAA+</option><option selected>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option></select>`], ['展望', `<select class="form-control" style="width:320px;box-sizing:border-box"><option>买入</option><option selected>维持</option><option>卖出</option></select>`], true, true)}
-    ${fullRow('正文', `<textarea class="form-control" style="flex:1;box-sizing:border-box;width:1400px;height:160px" rows="4">基于当前市场环境和技术发展趋势，我们对腾讯控股维持 AAA 评级，建议关注...</textarea>`, true)}
-    ${fullRow('上传附件', `<input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%">`, false)}
-    <div style="grid-column:1/-1;padding-top:16px;display:flex;gap:12px">
+    <div style="grid-column:1/-1;display:flex;gap:12px;align-items:center">
       <button class="btn btn-secondary" onclick="alert('原型：保存草稿')">💾 存草稿</button>
       <button class="btn btn-primary" onclick="alert('原型：更新研报');openTab('research-report','研报中心')">🚀 更新</button>
       <button class="btn btn-secondary" onclick="openTab('research-report','研报中心')">取消</button>
     </div>
+    ${fullRow('研报标题', `<input class="form-control" style="width:1400px;box-sizing:border-box" value="腾讯控股深度覆盖报告">`, true)}
+    <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px 2px;align-items:center;margin-left:148px">
+      ${cell('股票代码', `<input id="stockCodeInput" class="form-control" style="width:100%;box-sizing:border-box" value="00700.HK" oninput="reportAutoFill(this.value)">`, true)}
+      ${cell('展望', `<select class="form-control" style="width:100%;box-sizing:border-box"><option>买入</option><option selected>维持</option><option>卖出</option></select>`, true)}
+      ${cell('评级', `<select class="form-control" style="width:100%;box-sizing:border-box"><option>AAA+</option><option selected>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option></select>`, true)}
+      ${cell('行业', `<select id="reportIndustry" class="form-control" style="width:100%;box-sizing:border-box"><option selected>科技</option><option>金融</option><option>消费</option></select>`, true)}
+    </div>
+    ${fullRow('正文', `<textarea class="form-control" style="flex:1;box-sizing:border-box;width:1400px;height:160px" rows="4">基于当前市场环境和技术发展趋势，我们对腾讯控股维持 AAA 评级，建议关注...</textarea>`, true)}
+    ${fullRow('上传附件', `<input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%">`, false)}
   </div>`;
   return `<div class="card"><div class="card-body" style="padding:20px">${grid}</div></div>`;
 }
@@ -2311,6 +2490,7 @@ const NAV_SERIES = {
   "6M":  { dates:["02-16","03-16","04-15","05-15","06-15","07-15","08-15"], nav:[1.000,0.948,0.977,1.021,0.996,1.064,1.128], bm:[1.000,0.962,0.981,1.010,0.988,1.031,1.052] },
   "YTD": { dates:["01-02","02-02","03-02","04-02","05-02","06-02","07-02","08-02","08-15"], nav:[1.000,0.971,0.943,0.982,1.015,0.998,1.046,1.089,1.128], bm:[1.000,0.978,0.955,0.987,1.004,0.991,1.022,1.041,1.052] },
   "1Y":  { dates:["2025-08","2025-10","2025-12","2026-02","2026-04","2026-06","2026-08"], nav:[1.000,0.926,0.981,0.943,1.012,1.061,1.128], bm:[1.000,0.951,0.992,0.958,1.001,1.033,1.052] },
+  "3Y":  { dates:["2023-08","2024-02","2024-08","2025-02","2025-08","2025-11","2026-02","2026-05","2026-08"], nav:[1.000,0.912,1.043,0.897,1.105,1.162,1.268,1.296,1.361], bm:[1.000,0.938,1.002,0.886,1.062,1.085,1.121,1.148,1.178] },
   "MAX": { dates:["2024-08","2025-02","2025-08","2026-02","2026-08"], nav:[1.000,1.082,1.105,1.268,1.361], bm:[1.000,1.041,1.062,1.121,1.178] },
 };
 const IND_CATS = ["收益表现","风险","基准对比","持仓特征"];
@@ -2349,7 +2529,6 @@ const IND_COLORS = ["#3E7CB1","#C7A252","#8A5FB0","#D97B29"];
 let portCurPortfolio = null;
 let portCurRange = "6M";
 let portShowBm = true;
-let portIndRange = "6M";
 let portIndDateFrom = "2026-02-15", portIndDateTo = "2026-08-15";
 let portPickCat = "收益表现";
 
@@ -2399,7 +2578,7 @@ function portShowDetail(name) {
   document.getElementById("portInlineDetail").style.display = "";
   document.getElementById("portDetailTitle").textContent = name;
   portRenderPortfolios(); portRenderShared();
-  portRenderHoldings(); portRenderRebalances(); portRenderIndicatorLib(); portRenderNavChart();
+  portRenderHoldings(); portRenderRebalances(); portRenderIndicatorLib(); portRenderPerf();
 }
 
 function portCloseDetail() {
@@ -2445,19 +2624,21 @@ function portRenderRebalances() {
   }).join("");
 }
 
-function portIndTimeLabels() {
-  if (portIndRange === "1Y") return ["12月前","10月前","8月前","6月前","4月前","2月前","当前"];
-  if (portIndRange === "3Y") return ["36月前","30月前","24月前","18月前","12月前","6月前","当前"];
-  if (portIndRange === "CUS") {
-    const fmt = s => s.slice(2).replace(/^0/,"");
-    return [fmt(portIndDateFrom), "区间中点", fmt(portIndDateTo)];
+function portPerfNavData() {
+  if (portCurRange === "CUS") {
+    const f = new Date(portIndDateFrom), t = new Date(portIndDateTo);
+    const mid = new Date((+f + +t) / 2);
+    const p = d => `${String(d.getFullYear()).slice(2)}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    const full = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    return { dates:[p(f), p(mid), p(t)], fullDates:[full(f), full(mid), full(t)], nav:[1.000,1.064,1.128], bm:[1.000,1.031,1.052] };
   }
-  return ["6月前","5月前","4月前","3月前","2月前","1月前","当前"];
+  return NAV_SERIES[portCurRange];
 }
 
-function portIndSeries(ind) {
-  const n = portIndTimeLabels().length;
-  const anchors = [ind.m6, ind.m3, ind.m1, ind.value];
+function portPerfIndSeries(ind, n) {
+  const anchors = portCurRange === "1M" ? [ind.m1, ind.value]
+    : portCurRange === "3M" ? [ind.m3, ind.m1, ind.value]
+    : [ind.m6, ind.m3, ind.m1, ind.value];
   const out = [];
   for (let i = 0; i < n; i++) {
     const pos = i / (n - 1) * (anchors.length - 1);
@@ -2475,7 +2656,7 @@ function portRenderIndicatorLib() {
   const list = kw ? Object.values(IND_POOL).flat().filter(i => i.name.includes(kw) || i.formula.includes(kw)) : picked;
   const body = document.getElementById("portIndBody");
   if (!body) return;
-  if (!list.length) { body.innerHTML = `<tr><td colspan="8" class="muted" style="text-align:center;padding:32px">${kw?'无匹配':'尚未选择指标'}</td></tr>`; portRenderIndChips(); portRenderIndChart(); return; }
+  if (!list.length) { body.innerHTML = `<tr><td colspan="8" class="muted" style="text-align:center;padding:32px">${kw?'无匹配':'尚未选择指标'}</td></tr>`; portRenderIndChips(); portRenderPerf(); return; }
   body.innerHTML = list.map(ind => {
     const color = ind.picked ? IND_COLORS[picked.indexOf(ind) % IND_COLORS.length] : null;
     return `<tr>
@@ -2489,7 +2670,7 @@ function portRenderIndicatorLib() {
       <td class="right"><button class="btn btn-ghost btn-sm" onclick="portToggleIndicator('${ind.id}')">${ind.picked?'移除':'添加'}</button></td>
     </tr>`;
   }).join("");
-  portRenderIndChips(); portRenderIndChart();
+  portRenderIndChips(); portRenderPerf();
 }
 
 function portRenderIndChips() {
@@ -2502,75 +2683,120 @@ function portRenderIndChips() {
   ).join("") + (picked.length>8?`<span class="tiny muted">+${picked.length-8}个未上图</span>`:"");
 }
 
-function portRenderIndChart() {
-  document.querySelectorAll("#portIndRangeSeg .seg").forEach(b => {
-    b.classList.toggle("active", b.dataset.ir === portIndRange);
-    b.onclick = () => { portIndRange = b.dataset.ir; document.getElementById("portIndCustomRange").style.display = portIndRange==="CUS"?"":"none"; portRenderIndChart(); };
+function portRenderPerf() {
+  document.querySelectorAll("#portRangeSeg .seg").forEach(b => {
+    b.classList.toggle("active", b.dataset.range === portCurRange);
+    b.onclick = () => { portCurRange = b.dataset.range; portRenderPerf(); };
   });
-  const crEl = document.getElementById("portIndCustomRange");
-  if (crEl) crEl.style.display = portIndRange==="CUS"?"":"none";
-  const host = document.getElementById("portIndChart");
-  if (!host) return;
+  const crEl = document.getElementById("portCustomRange");
+  if (crEl) crEl.style.display = portCurRange === "CUS" ? "" : "none";
+  const bmEl = document.getElementById("portBmToggle");
+  if (bmEl) bmEl.onchange = e => { portShowBm = e.target.checked; portRenderPerf(); };
+  const wrap = document.getElementById("portPerfWrap");
+  if (!wrap) return;
+  const navHost = document.getElementById("portNavChart");
+  const indHost = document.getElementById("portIndChart");
+  const tip = document.getElementById("portPerfTip");
+  const data = portPerfNavData();
+  const n = data.dates.length;
+  const C_PORT = "var(--vp-green)", C_BM = "var(--vp-red)";
   const picked = Object.values(IND_POOL).flat().filter(i => i.picked);
-  if (!picked.length) { host.innerHTML = `<div class="muted" style="text-align:center;padding:28px 0">尚未选择指标 — 点右上角「选择指标」</div>`; return; }
-  const labels = portIndTimeLabels();
-  const n = labels.length;
-  const W = 760, H = 150, PL = 46, PR = 20, PT = 10, PB = 22;
-  const iw = W-PL-PR, ih = H-PT-PB;
-  const seriesMap = new Map();
-  picked.slice(0,8).forEach((ind,k) => {
-    const vals = portIndSeries(ind);
+  const indSeries = picked.slice(0,8).map((ind,k) => {
+    const vals = portPerfIndSeries(ind, n);
     let lo = Math.min(...vals), hi = Math.max(...vals);
     const pad = (hi-lo)*0.15||Math.abs(hi)*0.02||0.1;
     lo-=pad; hi+=pad;
-    seriesMap.set(ind.id, { pts: vals.map(v=>(v-lo)/(hi-lo)), raw: vals, color: IND_COLORS[k%IND_COLORS.length], ind, lo, hi });
+    return { ind, raw: vals, pts: vals.map(v=>(v-lo)/(hi-lo)), color: IND_COLORS[k%IND_COLORS.length], lo, hi };
   });
+  const dateLabel = i => portCurRange === "CUS" ? data.fullDates[i]
+    : (portCurRange==="1Y"||portCurRange==="3Y"||portCurRange==="MAX") ? data.dates[i] : "2026-"+data.dates[i];
+
+  // panel 标签 + 图例
+  document.getElementById("portNavPl").innerHTML = `净值（真实刻度）` +
+    `<span class="lg"><i style="background:${C_PORT}"></i>模拟组合</span>` +
+    (portShowBm ? `<span class="lg"><i style="background:${C_BM}"></i>恒生指数</span>` : "");
+  document.getElementById("portIndPl").innerHTML = `指标（相对位置）<span class="lg" style="font-weight:400">已选 ${picked.length} 项 · 勾选即上图</span>` +
+    indSeries.map(s => `<span class="lg"><i style="background:${s.color}"></i>${s.ind.name}</span>`).join("");
+
+  // ---- 上 panel：净值（真实刻度）----
+  const W = 760, HN = 150, PL = 44, PR = 56, PT = 8, PB = 20;
+  const iw = W-PL-PR, ihn = HN-PT-PB;
+  const all = portShowBm ? data.nav.concat(data.bm) : data.nav;
+  let lo = Math.min(...all), hi = Math.max(...all);
+  const pad2 = (hi-lo)*0.08||0.01; lo-=pad2; hi+=pad2;
   const X = i => PL + iw*i/(n-1);
-  const Y = t => PT + ih*(1-t);
-  const single = seriesMap.size===1;
-  const first = [...seriesMap.values()][0];
-  const fmtTick = t => single ? first.ind.fmt(first.lo+(first.hi-first.lo)*t) : Math.round(t*100)+"%";
-  const yTicks = [0,0.25,0.5,0.75,1];
-  const grid = yTicks.map(t =>
-    `<line x1="${PL}" y1="${Y(t)}" x2="${W-PR}" y2="${Y(t)}" stroke="var(--vp-gray-100)" stroke-width="1"/>` +
-    `<text x="${PL-6}" y="${Y(t)+4}" text-anchor="end" class="axis-tick">${fmtTick(t)}</text>`
-  ).join("") + `<line x1="${PL}" y1="${PT}" x2="${PL}" y2="${H-PB}" stroke="var(--vp-gray-300)" stroke-width="1"/>` +
-  `<line x1="${PL}" y1="${H-PB}" x2="${W-PR}" y2="${H-PB}" stroke="var(--vp-gray-300)" stroke-width="1"/>` +
-  labels.map((d,i) => `<text x="${X(i)}" y="${H-6}" text-anchor="${i===0?'start':i===n-1?'end':'middle'}" class="axis-tick">${d}</text>`).join("");
-  const paths = [...seriesMap.values()].map(s =>
-    "<path d=\"" + s.pts.map((t,i) => (i?"L":"M")+X(i).toFixed(1)+","+Y(t).toFixed(1)).join("") + "\" fill=\"none\" stroke=\"" + s.color + "\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>"
-  ).join("");
-  host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" id="portIndSvg">` +
-    grid + paths +
-    `<line id="portIndCross" y1="${PT}" y2="${H-PB}" stroke="var(--vp-gray-300)" stroke-width="1" style="display:none"/>` +
-    [...seriesMap.values()].map(s=>`<circle class="ind-dot" data-id="${s.ind.id}" r="4.5" fill="${s.color}" stroke="#fff" stroke-width="2" style="display:none"/>`).join("") +
-    `<rect id="portIndHit" x="${PL}" y="${PT}" width="${iw}" height="${ih}" fill="transparent" cursor="crosshair"/>` +
-    `</svg><div id="portIndTip" class="chart-tip" style="display:none"></div>` +
-    `<div class="tiny muted" style="margin-top:4px">${single?"纵轴为该指标真实数值":"纵轴为各指标自身区间相对位置（0%=区间最低 · 100%=区间最高）"} · 悬停查看具体数值</div>`;
-  const svg = host.querySelector("#portIndSvg"), hit = host.querySelector("#portIndHit");
-  const cross = host.querySelector("#portIndCross"), tip = host.querySelector("#portIndTip");
-  const dots = [...host.querySelectorAll(".ind-dot")];
-  hit.addEventListener("pointermove", e => {
-    const r = svg.getBoundingClientRect();
-    const xRatio = (e.clientX-r.left)/r.width*W;
+  const YN = v => PT + ihn*(1-(v-lo)/(hi-lo));
+  const line = arr => arr.map((v,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${YN(v).toFixed(1)}`).join("");
+  let gridN = "";
+  for (let t=0;t<=4;t++){ const v=lo+(hi-lo)*t/4;
+    gridN += `<line x1="${PL}" y1="${YN(v)}" x2="${W-PR}" y2="${YN(v)}" stroke="var(--vp-gray-100)" stroke-width="1"/>` +
+      `<text x="${PL-8}" y="${YN(v)+4}" text-anchor="end" class="axis-tick">${v.toFixed(2)}</text>`; }
+  const xLab = data.dates.map((d,i) => `<text x="${X(i)}" y="${HN-6}" text-anchor="${i===0?'start':i===n-1?'end':'middle'}" class="axis-tick">${d}</text>`).join("");
+  const endPt = (arr,c) => { const y=YN(arr[n-1]); return `<circle cx="${X(n-1)}" cy="${y}" r="4" fill="${c}" stroke="#fff" stroke-width="2"/><text x="${W-PR+8}" y="${y+4}" class="end-label">${arr[n-1].toFixed(3)}</text>`; };
+  navHost.innerHTML = `<svg viewBox="0 0 ${W} ${HN}" style="width:100%;height:auto;display:block" id="portNavSvg">` +
+    gridN + xLab +
+    (portShowBm ? `<path d="${line(data.bm)}" fill="none" stroke="${C_BM}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"/>` : "") +
+    `<path d="${line(data.nav)}" fill="none" stroke="${C_PORT}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>` +
+    (portShowBm ? endPt(data.bm, C_BM) : "") + endPt(data.nav, C_PORT) +
+    `<line id="portCrossV" y1="${PT}" y2="${HN-PB}" stroke="var(--vp-gray-300)" stroke-width="1" style="display:none"/>` +
+    `<circle id="portCrossDot" r="4" fill="${C_PORT}" stroke="#fff" stroke-width="2" style="display:none"/>` +
+    (portShowBm ? `<circle id="portCrossBm" r="4" fill="${C_BM}" stroke="#fff" stroke-width="2" style="display:none"/>` : "") +
+    `<rect id="portNavHit" x="${PL}" y="${PT}" width="${iw}" height="${ihn}" fill="transparent"/>` +
+    `</svg>`;
+
+  // ---- 下 panel：指标（归一化相对位置）----
+  const HI = 110, PTi = 8, PBi = 20, ihi = HI-PTi-PBi;
+  const YI = t => PTi + ihi*(1-t);
+  if (!indSeries.length) {
+    indHost.innerHTML = `<div class="muted" style="text-align:center;padding:24px 0;border:1px dashed var(--vp-border);border-radius:8px;margin-top:4px">尚未选择指标 — 点右上角「选择指标」</div>`;
+  } else {
+    const single = indSeries.length===1;
+    const first = indSeries[0];
+    const fmtTick = t => single ? first.ind.fmt(first.lo+(first.hi-first.lo)*t) : Math.round(t*100)+"%";
+    const gridI = [0,0.25,0.5,0.75,1].map(t =>
+      `<line x1="${PL}" y1="${YI(t)}" x2="${W-PR}" y2="${YI(t)}" stroke="var(--vp-gray-100)" stroke-width="1"/>` +
+      `<text x="${PL-8}" y="${YI(t)+4}" text-anchor="end" class="axis-tick">${fmtTick(t)}</text>`
+    ).join("") + data.dates.map((d,i) => `<text x="${X(i)}" y="${HI-6}" text-anchor="${i===0?'start':i===n-1?'end':'middle'}" class="axis-tick">${d}</text>`).join("");
+    const paths = indSeries.map(s =>
+      `<path d="${s.pts.map((t,i)=>(i?'L':'M')+X(i).toFixed(1)+','+YI(t).toFixed(1)).join('')}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`
+    ).join("");
+    const dots = indSeries.map(s=>`<circle class="perf-ind-dot" data-id="${s.ind.id}" r="4.5" fill="${s.color}" stroke="#fff" stroke-width="2" style="display:none"/>`).join("");
+    indHost.innerHTML = `<svg viewBox="0 0 ${W} ${HI}" style="width:100%;height:auto;display:block" id="portIndSvg">` +
+      gridI + paths +
+      `<line id="portIndCross" y1="${PTi}" y2="${HI-PBi}" stroke="var(--vp-gray-300)" stroke-width="1" style="display:none"/>` + dots +
+      `<rect id="portIndHit" x="${PL}" y="${PTi}" width="${iw}" height="${ihi}" fill="transparent" cursor="crosshair"/>` +
+      `</svg>`;
+  }
+
+  // ---- 联动悬停：两 panel 十字线同步 + 合并 tooltip ----
+  const crossV = wrap.querySelector("#portCrossV"), dot = wrap.querySelector("#portCrossDot"), dotBm = wrap.querySelector("#portCrossBm");
+  const crossI = wrap.querySelector("#portIndCross");
+  const iDots = [...wrap.querySelectorAll(".perf-ind-dot")];
+  const onMove = e => {
+    const wrapR = wrap.getBoundingClientRect();
+    const xRatio = (e.clientX-wrapR.left)/wrapR.width*W;
     let idx = Math.round((xRatio-PL)/iw*(n-1));
     idx = Math.max(0,Math.min(n-1,idx));
-    cross.style.display = ""; cross.setAttribute("x1",X(idx)); cross.setAttribute("x2",X(idx));
-    dots.forEach(d => { const s=seriesMap.get(d.dataset.id); d.style.display=""; d.setAttribute("cx",X(idx)); d.setAttribute("cy",Y(s.pts[idx])); });
+    crossV.style.display=""; crossV.setAttribute("x1",X(idx)); crossV.setAttribute("x2",X(idx));
+    if (crossI) { crossI.style.display=""; crossI.setAttribute("x1",X(idx)); crossI.setAttribute("x2",X(idx)); }
+    dot.style.display=""; dot.setAttribute("cx",X(idx)); dot.setAttribute("cy",YN(data.nav[idx]));
+    if (dotBm) { dotBm.style.display=""; dotBm.setAttribute("cx",X(idx)); dotBm.setAttribute("cy",YN(data.bm[idx])); }
+    iDots.forEach(d => { const s=indSeries.find(x=>x.ind.id===d.dataset.id); d.style.display=""; d.setAttribute("cx",X(idx)); d.setAttribute("cy",YI(s.pts[idx])); });
     tip.textContent = "";
-    const de = document.createElement("div"); de.className="tip-date"; de.textContent = labels[idx]==="当前"?"当前（"+portIndDateTo+"）":labels[idx];
-    tip.append(de);
-    [...seriesMap.values()].forEach(s => {
-      const row = document.createElement("div");
-      row.innerHTML = `<i style="background:${s.color}"></i><span>${s.ind.name}</span><b>${s.ind.fmt(s.raw[idx])}</b>`;
-      tip.append(row);
-    });
-    tip.style.display = "";
-    const hostR = host.getBoundingClientRect();
-    tip.style.left = Math.min(e.clientX-hostR.left+14, hostR.width-170)+"px";
-    tip.style.top = Math.max(4, e.clientY-hostR.top-60)+"px";
-  });
-  hit.addEventListener("pointerleave", () => { cross.style.display="none"; tip.style.display="none"; dots.forEach(d=>d.style.display="none"); });
+    const dEl = document.createElement("div"); dEl.className="tip-date"; dEl.textContent = dateLabel(idx);
+    const row = (color,name,valHtml) => { const el=document.createElement("div"); el.innerHTML=`<i style="background:${color}"></i><span>${name}</span><b>${valHtml}</b>`; return el; };
+    const ret = ((data.nav[idx]/data.nav[0])-1)*100;
+    tip.append(dEl, row(C_PORT,"模拟组合", data.nav[idx].toFixed(3)+"（"+(ret>=0?"+":"")+ret.toFixed(1)+"%）"));
+    if (portShowBm) tip.append(row(C_BM,"恒生指数", data.bm[idx].toFixed(3)));
+    indSeries.forEach(s => tip.append(row(s.color, s.ind.name, s.ind.fmt(s.raw[idx]))));
+    tip.style.display="";
+    tip.style.left = Math.min(e.clientX-wrapR.left+14, wrapR.width-180)+"px";
+    tip.style.top = Math.max(4, e.clientY-wrapR.top-40)+"px";
+  };
+  const onLeave = () => { [crossV,dot,dotBm,crossI,tip].forEach(el=>el&&(el.style.display="none")); iDots.forEach(d=>d.style.display="none"); };
+  const hitN = wrap.querySelector("#portNavHit"), hitI = wrap.querySelector("#portIndHit");
+  if (hitN) { hitN.addEventListener("pointermove", onMove); hitN.addEventListener("pointerleave", onLeave); }
+  if (hitI) { hitI.addEventListener("pointermove", onMove); hitI.addEventListener("pointerleave", onLeave); }
 }
 
 function portApplyCustomRange() {
@@ -2578,7 +2804,7 @@ function portApplyCustomRange() {
   const t = document.getElementById("portIndDateTo")?.value;
   if (!f||!t) { alert("请选择起止日期"); return; }
   if (f>=t) { alert("开始日期需早于结束日期"); return; }
-  portIndDateFrom=f; portIndDateTo=t; portRenderIndChart();
+  portIndDateFrom=f; portIndDateTo=t; portRenderPerf();
 }
 
 function portOpenIndicatorPick() { document.getElementById("portIndModal").classList.add("show"); portRenderPickList(); }
@@ -2614,74 +2840,6 @@ function portRenderRbForm() {
     weight: `<div><div class="tiny mb-2">调整后权重</div><input class="input" style="width:100%" placeholder="目标权重 %"></div>`,
   };
   const el = document.getElementById("portRbForm"); if (el) el.innerHTML = `<div class="mb-3"><div class="tiny mb-2">标的</div><select class="select" style="width:100%"><option>00700.HK 腾讯控股</option><option>09988.HK 阿里巴巴</option><option>02382.HK 舜宇光学</option><option>06160.HK 百济神州</option></select></div>` + (fields[t]||"") + `<div class="mt-3"><div class="tiny mb-2">备注</div><input class="input" style="width:100%" placeholder="调仓理由"></div>`;
-}
-
-function portRenderNavChart() {
-  const host = document.getElementById("portNavChart");
-  if (!host) return;
-  const data = NAV_SERIES[portCurRange];
-  const W = 760, H = 120, PL = 44, PR = 56, PT = 8, PB = 20;
-  const iw = W-PL-PR, ih = H-PT-PB;
-  const all = portShowBm ? data.nav.concat(data.bm) : data.nav;
-  let lo = Math.min(...all), hi = Math.max(...all);
-  const pad = (hi-lo)*0.08||0.01; lo-=pad; hi+=pad;
-  const X = i => PL + iw*i/(data.dates.length-1);
-  const Y = v => PT + ih*(1-(v-lo)/(hi-lo));
-  const line = arr => arr.map((v,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
-  const ticks = 4, tickVals = [];
-  for (let t=0;t<=ticks;t++) tickVals.push(lo+(hi-lo)*t/ticks);
-  const grid = tickVals.map(v =>
-    `<line x1="${PL}" y1="${Y(v)}" x2="${W-PR}" y2="${Y(v)}" stroke="var(--vp-gray-100)" stroke-width="1"/>` +
-    `<text x="${PL-8}" y="${Y(v)+4}" text-anchor="end" class="axis-tick">${v.toFixed(2)}</text>`
-  ).join("") + data.dates.map((d,i) =>
-    `<text x="${X(i)}" y="${H-6}" text-anchor="${i===0?'start':i===data.dates.length-1?'end':'middle'}" class="axis-tick">${d}</text>`
-  ).join("");
-  const xLabels = data.dates.map((d,i) =>
-    `<text x="${X(i)}" y="${H-6}" text-anchor="${i===0?'start':i===data.dates.length-1?'end':'middle'}" class="axis-tick">${d}</text>`
-  ).join("");
-  const C_PORT="var(--vp-green)", C_BM="var(--vp-red)";
-  const bm = portShowBm ? `<path d="${line(data.bm)}" fill="none" stroke="${C_BM}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"/>` : "";
-  const port = `<path d="${line(data.nav)}" fill="none" stroke="${C_PORT}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
-  const endY = Y(data.nav[data.nav.length-1]);
-  const endLabel = `<circle cx="${X(data.nav.length-1)}" cy="${endY}" r="4" fill="${C_PORT}" stroke="#fff" stroke-width="2"/>` +
-    `<text x="${W-PR+8}" y="${endY+4}" class="end-label">${data.nav[data.nav.length-1].toFixed(3)}</text>`;
-  let bmEnd = "";
-  if (portShowBm) { const by=Y(data.bm[data.bm.length-1]); bmEnd = `<circle cx="${X(data.bm.length-1)}" cy="${by}" r="4" fill="${C_BM}" stroke="#fff" stroke-width="2"/>` + `<text x="${W-PR+8}" y="${by+4}" class="end-label">${data.bm[data.bm.length-1].toFixed(3)}</text>`; }
-  const legend = portShowBm ? `<div class="chart-legend"><span><i style="background:${C_PORT}"></i>模拟组合</span><span><i style="background:${C_BM}"></i>恒生指数</span></div>` : "";
-  host.innerHTML = legend + `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" id="portNavSvg">` +
-    grid + xLabels + bm + port + endLabel + bmEnd +
-    `<line id="portCrossV" y1="${PT}" y2="${H-PB}" stroke="var(--vp-gray-300)" stroke-width="1" style="display:none"/>` +
-    `<circle id="portCrossDot" r="4" fill="${C_PORT}" stroke="#fff" stroke-width="2" style="display:none"/>` +
-    (portShowBm?`<circle id="portCrossBm" r="4" fill="${C_BM}" stroke="#fff" stroke-width="2" style="display:none"/>`:"") +
-    `<rect id="portNavHit" x="${PL}" y="${PT}" width="${iw}" height="${ih}" fill="transparent"/>` +
-    `</svg><div id="portChartTip" class="chart-tip" style="display:none"></div><div class="tiny muted" style="margin-top:6px">区间起始净值归一为 1.00 · 悬停查看各日期数值</div>`;
-  const svg = host.querySelector("#portNavSvg"), hit = host.querySelector("#portNavHit");
-  const crossV = host.querySelector("#portCrossV"), dot = host.querySelector("#portCrossDot"), dotBm = host.querySelector("#portCrossBm"), tip = host.querySelector("#portChartTip");
-  hit.addEventListener("pointermove", e => {
-    const r = svg.getBoundingClientRect();
-    const xRatio = (e.clientX-r.left)/r.width*W;
-    let idx = Math.round((xRatio-PL)/iw*(data.dates.length-1));
-    idx = Math.max(0,Math.min(data.dates.length-1,idx));
-    crossV.style.display=""; crossV.setAttribute("x1",X(idx)); crossV.setAttribute("x2",X(idx));
-    dot.style.display=""; dot.setAttribute("cx",X(idx)); dot.setAttribute("cy",Y(data.nav[idx]));
-    if (dotBm) { dotBm.style.display=""; dotBm.setAttribute("cx",X(idx)); dotBm.setAttribute("cy",Y(data.bm[idx])); }
-    const ret = ((data.nav[idx]/data.nav[0])-1)*100;
-    tip.textContent = "";
-    const d = document.createElement("div"); d.className="tip-date"; d.textContent = (portCurRange==="1Y"||portCurRange==="MAX"?"":"2026-")+data.dates[idx];
-    const row = (color,name,v) => { const el=document.createElement("div"); el.innerHTML=`<i style="background:${color}"></i><span>${name}</span><b>${name==="模拟组合"?v.toFixed(3)+"（"+(ret>=0?"+":"")+ret.toFixed(1)+"%）":v.toFixed(3)}</b>`; return el; };
-    tip.append(d, row(C_PORT,"模拟组合",data.nav[idx]));
-    if (portShowBm) tip.append(row(C_BM,"恒生指数",data.bm[idx]));
-    tip.style.display="";
-    const hostR = host.getBoundingClientRect();
-    tip.style.left = Math.min(e.clientX-hostR.left+14, hostR.width-160)+"px";
-    tip.style.top = Math.max(4, e.clientY-hostR.top-10)+"px";
-  });
-  hit.addEventListener("pointerleave", () => { [crossV,dot,dotBm,tip].forEach(el=>el&&(el.style.display="none")); });
-  document.querySelectorAll("#portRangeSeg .seg").forEach(b => {
-    b.classList.toggle("active", b.dataset.range === portCurRange);
-    b.onclick = () => { portCurRange = b.dataset.range; portRenderNavChart(); };
-  });
-  const bmEl = document.getElementById("portBmToggle"); if (bmEl) bmEl.onchange = e => { portShowBm = e.target.checked; portRenderNavChart(); };
 }
 
 function buildStockPool() {
@@ -2756,9 +2914,10 @@ function buildPortfolio() {
           <button class="btn btn-ghost btn-sm" onclick="portCloseDetail()">收起 ✕</button>
         </div>
 
-        <div class="kpi-grid mb-4" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi-grid mb-4" style="grid-template-columns:repeat(5,1fr)">
           <div class="kpi"><div class="kpi-icon">💰</div><div><div class="kpi-num" style="color:var(--vp-green)">+12.8%</div><div class="kpi-label">累计收益率</div></div></div>
           <div class="kpi"><div class="kpi-icon">📈</div><div><div class="kpi-num" style="color:var(--vp-green)">+1.25%</div><div class="kpi-label">今日收益率</div></div></div>
+          <div class="kpi"><div class="kpi-icon">📉</div><div><div class="kpi-num" style="color:var(--vp-green)">-5.6%</div><div class="kpi-label">最大回撤</div></div></div>
           <div class="kpi"><div class="kpi-icon">💵</div><div><div class="kpi-num">1,128万</div><div class="kpi-label">当前市值</div></div></div>
           <div class="kpi"><div class="kpi-icon">💳</div><div><div class="kpi-num">1,000万</div><div class="kpi-label">初始资金</div></div></div>
         </div>
@@ -2790,20 +2949,45 @@ function buildPortfolio() {
 
         <div class="card mb-4">
           <div class="card-head">
-            <div class="flex items-center gap-3">
-              <div class="card-title">区间表现</div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <div class="card-title">组合表现</div>
               <div class="segmented" id="portRangeSeg">
                 <button class="seg" data-range="1M">近1月</button>
                 <button class="seg" data-range="3M">近3月</button>
                 <button class="seg active" data-range="6M">近6月</button>
                 <button class="seg" data-range="YTD">今年以来</button>
                 <button class="seg" data-range="1Y">近1年</button>
+                <button class="seg" data-range="3Y">近3年</button>
                 <button class="seg" data-range="MAX">成立以来</button>
+                <button class="seg" data-range="CUS">自定义</button>
+              </div>
+              <div id="portCustomRange" style="display:none" class="flex items-center gap-2">
+                <input class="input" type="date" id="portIndDateFrom" value="2026-02-15" style="width:140px">
+                <span class="tiny">至</span>
+                <input class="input" type="date" id="portIndDateTo" value="2026-08-15" style="width:140px">
+                <button class="btn btn-secondary btn-sm" onclick="portApplyCustomRange()">应用</button>
               </div>
             </div>
-            <label class="flex items-center gap-2 tiny" style="cursor:pointer"><input type="checkbox" id="portBmToggle" checked> 对比基准（恒生指数）</label>
+            <div class="flex items-center gap-3">
+              <label class="flex items-center gap-2 tiny" style="cursor:pointer"><input type="checkbox" id="portBmToggle" checked> 对比基准（恒生指数）</label>
+              <input class="input" placeholder="搜索指标..." style="width:140px" id="portIndSearch" oninput="portRenderIndicatorLib()">
+              <button class="btn btn-primary btn-sm" onclick="portOpenIndicatorPick()">＋ 选择指标</button>
+            </div>
           </div>
-          <div class="card-body"><div id="portNavChart"></div><div class="tiny muted" style="margin-top:6px">区间起始净值归一为 1.00 · 悬停查看各日期数值</div></div>
+          <div class="card-body">
+            <div class="ind-chips" id="portIndChips"></div>
+            <div id="portPerfWrap" style="position:relative">
+              <div class="perf-pl" id="portNavPl"></div>
+              <div id="portNavChart"></div>
+              <div class="perf-pl" style="margin-top:12px" id="portIndPl"></div>
+              <div id="portIndChart"></div>
+              <div class="chart-tip" id="portPerfTip" style="display:none"></div>
+            </div>
+            <div class="tiny muted" style="margin-top:6px">上：区间起始净值归一为 1.00（真实刻度）· 下：各指标按自身区间相对位置（0%=区间最低 · 100%=区间最高）· 悬停任意图表查看各日期真实数值</div>
+          </div>
+          <div class="card-body" style="padding:0;border-top:1px solid var(--vp-border)">
+            <table class="data-table"><thead><tr><th></th><th>指标名称</th><th>口径</th><th class="cell-muted">当前值</th><th class="cell-muted">1月前</th><th class="cell-muted">3月前</th><th class="cell-muted">6月前</th><th class="right">操作</th></tr></thead><tbody id="portIndBody"></tbody></table>
+          </div>
         </div>
 
         <div class="duo-grid mb-4">
@@ -2826,40 +3010,6 @@ function buildPortfolio() {
               </div>
             </div>
             <div class="card-body" style="padding:0"><div class="duo-scroll"><table class="data-table"><thead><tr><th>调仓日期</th><th>类型</th><th>标的</th><th class="cell-muted">变动</th><th class="cell-muted">成交价</th><th class="cell-muted">金额</th><th class="cell-muted">调仓后权重</th><th>操作人</th><th>备注</th></tr></thead><tbody id="portRebalanceBody"></tbody></table></div></div>
-          </div>
-        </div>
-
-        <div class="card mb-4">
-          <div class="card-head">
-            <div class="flex items-center gap-3">
-              <div class="card-title">指标库</div>
-              <span class="tiny" id="portIndPicked"></span>
-            </div>
-            <div class="flex gap-2">
-              <input class="input" placeholder="搜索指标..." style="width:140px" id="portIndSearch" oninput="portRenderIndicatorLib()">
-              <button class="btn btn-primary btn-sm" onclick="portOpenIndicatorPick()">＋ 选择指标</button>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="ind-chips" id="portIndChips"></div>
-            <div class="flex items-center gap-3 flex-wrap mb-3">
-              <div class="segmented" id="portIndRangeSeg">
-                <button class="seg active" data-ir="6M">近6月</button>
-                <button class="seg" data-ir="1Y">近1年</button>
-                <button class="seg" data-ir="3Y">近3年</button>
-                <button class="seg" data-ir="CUS">自定义</button>
-              </div>
-              <div id="portIndCustomRange" style="display:none" class="flex items-center gap-2">
-                <input class="input" type="date" id="portIndDateFrom" value="2026-02-15" style="width:140px">
-                <span class="tiny">至</span>
-                <input class="input" type="date" id="portIndDateTo" value="2026-08-15" style="width:140px">
-                <button class="btn btn-secondary btn-sm" onclick="portApplyCustomRange()">应用</button>
-              </div>
-            </div>
-            <div id="portIndChart"></div>
-          </div>
-          <div class="card-body" style="padding:0;border-top:1px solid var(--vp-border)">
-            <table class="data-table"><thead><tr><th></th><th>指标名称</th><th>口径</th><th class="cell-muted">当前值</th><th class="cell-muted">1月前</th><th class="cell-muted">3月前</th><th class="cell-muted">6月前</th><th class="right">操作</th></tr></thead><tbody id="portIndBody"></tbody></table>
           </div>
         </div>
 
@@ -2912,6 +3062,428 @@ function buildPortfolio() {
         <div style="display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--vp-border)"><button class="btn btn-ghost btn-sm" onclick="portCloseCreate()">取消</button><button class="btn btn-primary btn-sm" onclick="portDoCreate()">创建</button></div>
       </div>
     </div>`;
+}
+
+// ========== Index Simulation (指数模拟) ==========
+const IDX_CATEGORIES = {
+  msci: [
+    { code:"MCHINA50", name:"MSCI China A 50",       fullName:"MSCI China A 50 Index",        count:50,  top10Wt:"45.2%", type:"MSCI" },
+    { code:"MCHINA",   name:"MSCI China",            fullName:"MSCI China Index",            count:702, top10Wt:"38.1%", type:"MSCI" },
+    { code:"MCA100",   name:"MSCI China A 100",      fullName:"MSCI China A 100 Index",       count:100, top10Wt:"42.8%", type:"MSCI" },
+    { code:"MEMG",     name:"MSCI Emerging Markets", fullName:"MSCI EM Index",                count:1365,top10Wt:"28.5%", type:"MSCI" },
+    { code:"MASI",     name:"MSCI Asia ex Japan",    fullName:"MSCI Asia ex Japan Index",     count:830, top10Wt:"32.0%", type:"MSCI" },
+  ],
+  csi: [
+    { code:"000300",  name:"沪深 300",    fullName:"中证 300 指数",      count:300,  top10Wt:"24.6%", type:"CSI" },
+    { code:"000905",  name:"中证 500",    fullName:"中证 500 指数",      count:500,  top10Wt:"7.2%",  type:"CSI" },
+    { code:"000852",  name:"中证 1000",   fullName:"中证 1000 指数",     count:1000, top10Wt:"4.8%",  type:"CSI" },
+  ],
+  hk: [
+    { code:"HSI",     name:"恒生指数",     fullName:"恒生综合指数",        count:80,  top10Wt:"56.3%", type:"HSI" },
+    { code:"HSCEI",   name:"恒生国企指数", fullName:"恒生中国企业指数",    count:50,  top10Wt:"47.1%", type:"HSI" },
+    { code:"HSTECH",  name:"恒生科技指数", fullName:"恒生科技指数",        count:30,  top10Wt:"58.2%", type:"HSI" },
+  ],
+  us: [
+    { code:"NDX100",  name:"纳指 100",    fullName:"NASDAQ-100 Index",    count:100, top10Wt:"54.8%", type:"NASDAQ" },
+    { code:"SPX500",  name:"标普 500",    fullName:"S&P 500 Index",      count:500, top10Wt:"26.3%", type:"SPX" },
+    { code:"DJI30",   name:"道琼斯 30",   fullName:"Dow Jones Industrial Avg", count:30, top10Wt:"38.5%", type:"DJI" },
+  ],
+};
+const IDX_CONSTITUENTS = {
+  "MCHINA50": [
+    { code:"600519", name:"贵州茅台", market:"A股", industry:"消费",   weight:8.52, price:1432.0, chg:+0.82 },
+    { code:"601318", name:"中国平安", market:"A股", industry:"金融",   weight:5.73, price:42.15,  chg:-0.34 },
+    { code:"600036", name:"招商银行", market:"A股", industry:"金融",   weight:4.21, price:33.60,  chg:+0.18 },
+    { code:"002594", name:"比亚迪",   market:"A股", industry:"汽车",   weight:3.85, price:238.50, chg:+1.52 },
+    { code:"300750", name:"宁德时代", market:"A股", industry:"新能源", weight:3.42, price:198.30, chg:-0.65 },
+    { code:"601888", name:"中国中免", market:"A股", industry:"消费",   weight:2.68, price:68.40,  chg:+2.10 },
+    { code:"600030", name:"中信证券", market:"A股", industry:"金融",   weight:2.45, price:22.35,  chg:-0.22 },
+    { code:"601166", name:"兴业银行", market:"A股", industry:"金融",   weight:2.31, price:17.80,  chg:+0.15 },
+    { code:"002415", name:"海康威视", market:"A股", industry:"科技",   weight:2.18, price:34.20,  chg:+0.95 },
+    { code:"300059", name:"东方财富", market:"A股", industry:"金融",   weight:1.96, price:18.45,  chg:+1.28 },
+    { code:"601012", name:"隆基绿能", market:"A股", industry:"新能源", weight:1.85, price:19.30,  chg:-1.42 },
+    { code:"002230", name:"科大讯飞", market:"A股", industry:"科技",   weight:1.72, price:52.80,  chg:+3.25 },
+    { code:"600276", name:"恒瑞医药", market:"A股", industry:"医药",   weight:1.68, price:48.90,  chg:+0.56 },
+    { code:"000858", name:"五粮液",   market:"A股", industry:"消费",   weight:1.55, price:142.60, chg:+0.42 },
+    { code:"601398", name:"工商银行", market:"A股", industry:"金融",   weight:1.48, price:5.23,   chg:-0.19 },
+    { code:"600887", name:"伊利股份", market:"A股", industry:"消费",   weight:1.35, price:25.60,  chg:+0.28 },
+    { code:"601328", name:"交通银行", market:"A股", industry:"金融",   weight:1.18, price:5.87,   chg:+0.17 },
+    { code:"000568", name:"泸州老窖", market:"A股", industry:"消费",   weight:1.12, price:162.40, chg:+0.63 },
+    { code:"600585", name:"海螺水泥", market:"A股", industry:"原材料", weight:1.05, price:23.70,  chg:-0.85 },
+    { code:"002236", name:"大华股份", market:"A股", industry:"科技",   weight:1.02, price:16.30,  chg:+0.74 },
+  ],
+  "000300": [
+    { code:"600519", name:"贵州茅台", market:"A股", industry:"消费",   weight:5.21, price:1432.0, chg:+0.82 },
+    { code:"601318", name:"中国平安", market:"A股", industry:"金融",   weight:3.82, price:42.15,  chg:-0.34 },
+    { code:"600036", name:"招商银行", market:"A股", industry:"金融",   weight:2.95, price:33.60,  chg:+0.18 },
+    { code:"002594", name:"比亚迪",   market:"A股", industry:"汽车",   weight:2.68, price:238.50, chg:+1.52 },
+    { code:"300750", name:"宁德时代", market:"A股", industry:"新能源", weight:2.41, price:198.30, chg:-0.65 },
+    { code:"000001", name:"平安银行", market:"A股", industry:"金融",   weight:1.82, price:11.20,  chg:+0.45 },
+    { code:"600030", name:"中信证券", market:"A股", industry:"金融",   weight:1.65, price:22.35,  chg:-0.22 },
+    { code:"601166", name:"兴业银行", market:"A股", industry:"金融",   weight:1.54, price:17.80,  chg:+0.15 },
+    { code:"002415", name:"海康威视", market:"A股", industry:"科技",   weight:1.42, price:34.20,  chg:+0.95 },
+    { code:"300059", name:"东方财富", market:"A股", industry:"金融",   weight:1.28, price:18.45,  chg:+1.28 },
+  ],
+};
+const IDX_PORTFOLIOS = [
+  { id:"IP01", name:"MSCI China A 50 模拟盘", index:"MSCI China A 50", indexCode:"MCHINA50", holdings:20, weight:"92%", creator:"Kyra",  createDate:"2026-08-10", status:"追踪中", trackError:"-1.2%", nav:[1.000,0.981,0.996,1.024,1.003,1.035,1.048,1.052,1.061], dates:["07-15","07-22","07-29","08-05","08-12","08-19","08-22","08-26","08-28"] },
+  { id:"IP02", name:"沪深300 等权模拟",        index:"沪深 300",        indexCode:"000300",  holdings:15, weight:"78%", creator:"David", createDate:"2026-08-05", status:"追踪中", trackError:"+0.4%",  nav:[1.000,1.012,0.995,1.035,1.028,1.061],                     dates:["07-05","07-12","07-19","07-26","08-02","08-05"] },
+];
+let idxCurIndex = null;
+let idxSortKey = 'weight';
+let idxSelected = new Set();
+let idxBuildMode = 'full';
+
+function buildIndexSim() {
+  return `<div class="toolbar mb-4">
+    <div class="segmented" id="idxMainTab">
+      <button class="seg active" onclick="idxSwitchTab('constituents')">成份浏览</button>
+      <button class="seg" onclick="idxSwitchTab('portfolios')">我的指数组合</button>
+    </div>
+  </div>
+
+  <!-- Pane 1: 成份浏览 -->
+  <div id="idxPaneConst">
+    <div class="card mb-4">
+      <div class="card-head">
+        <div class="card-title">选择指数</div>
+        <select class="select" style="width:140px" id="idxCategory" onchange="idxRenderIndexList()">
+          <option value="msci">MSCI 系列</option><option value="csi">沪深系列</option>
+          <option value="hk">港股系列</option><option value="us">美股系列</option>
+        </select>
+      </div>
+      <div class="card-body">
+        <div class="flex items-center gap-3 mb-4" style="flex-wrap:wrap">
+          <input type="text" class="input" style="flex:1;min-width:240px" id="idxSearch" placeholder="搜索指数名称或代码，如 MSCI China A 50" oninput="idxRenderIndexList()">
+          <div class="flex gap-2" style="flex-wrap:wrap;align-items:center">
+            <span class="tiny">最近：</span>
+            <button class="btn btn-secondary btn-sm" onclick="idxSelectByCode('MCHINA50')">MSCI China A 50</button>
+            <button class="btn btn-secondary btn-sm" onclick="idxSelectByCode('000300')">沪深 300</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px" id="idxIndexGrid"></div>
+      </div>
+    </div>
+
+    <div id="idxConstSection" style="display:none">
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="flex items-center justify-between" style="flex-wrap:wrap;gap:12px">
+            <div class="flex items-center gap-3">
+              <div id="idxBadge" style="width:40px;height:40px;border-radius:6px;background:var(--vp-green-light);color:var(--vp-green);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">--</div>
+              <div>
+                <div class="card-title" id="idxName">--</div>
+                <div class="tiny" id="idxMeta">--</div>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <div style="text-align:center;padding:0 12px;border-left:1px solid var(--vp-border)"><div style="font-size:18px;font-weight:700" id="idxCount">--</div><div class="tiny">成份股</div></div>
+              <div style="text-align:center;padding:0 12px;border-left:1px solid var(--vp-border)"><div style="font-size:18px;font-weight:700" id="idxTop10">--</div><div class="tiny">前10权重</div></div>
+              <div style="text-align:center;padding:0 12px;border-left:1px solid var(--vp-border)"><div style="font-size:18px;font-weight:700" id="idxCodeLbl">--</div><div class="tiny">指数代码</div></div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="idxOpenCreate('full')">基于此指数创建组合</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="flex items-center gap-3" style="flex-wrap:wrap">
+            <div class="card-title">成份明细 <span class="tiny" id="idxConstCount"></span></div>
+            <div class="flex items-center gap-2">
+              <span class="tiny">排序：</span>
+              <div class="segmented">
+                <button class="seg active" id="idxSortW" onclick="idxSetSort('weight')">权重</button>
+                <button class="seg" id="idxSortC" onclick="idxSetSort('code')">代码</button>
+                <button class="seg" id="idxSortN" onclick="idxSetSort('name')">名称</button>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <input type="text" class="input" style="width:160px" id="idxStockSearch" placeholder="搜索代码/名称" oninput="idxRenderConstituents()">
+            <button class="btn btn-ghost btn-sm" onclick="idxToggleSelectAll()">全选</button>
+            <button class="btn btn-primary btn-sm" onclick="idxOpenCreate('custom')">＋ 追加到组合</button>
+          </div>
+        </div>
+        <div style="overflow:auto;max-height:520px">
+          <table class="data-table">
+            <thead><tr>
+              <th style="width:36px"><input type="checkbox" onchange="idxToggleSelectAll()" id="idxSelectAllCk"></th>
+              <th>代码</th><th>名称</th><th>市场</th><th>行业</th>
+              <th class="right">权重(%)</th><th style="width:160px">权重分布</th>
+              <th class="right">最新价</th><th class="right">今日涨跌</th><th class="right">累计权重</th>
+            </tr></thead>
+            <tbody id="idxConstBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="idxEmpty" style="padding:48px;text-align:center;color:var(--vp-gray-500)">
+      <div style="font-size:40px;margin-bottom:12px">🎯</div>
+      从上方选择一个指数，查看成份股与权重，即可创建指数模拟组合
+    </div>
+  </div>
+
+  <!-- Pane 2: 我的指数组合 -->
+  <div id="idxPanePort" style="display:none">
+    <div id="idxPortList"></div>
+  </div>
+
+  <div class="notice">
+    <span class="ico">ⓘ</span>
+    <span>指数模拟组合以指数<strong>成份股及权重</strong>为起点，支持调整后追踪。涨跌色采用<strong>港式惯例</strong>：涨红跌绿。数据来源待接入（Tushare / MSCI）。</span>
+  </div>
+
+  <!-- 创建组合弹层 -->
+  <div class="modal-mask" id="idxCreateModal"><div class="modal-overlay" onclick="if(event.target===this)idxCloseCreate()"></div>
+    <div class="modal" onclick="event.stopPropagation()" style="max-width:560px">
+      <div class="modal-header">
+        <div class="modal-title">基于指数创建模拟组合</div>
+        <button class="btn btn-ghost btn-sm" onclick="idxCloseCreate()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <label class="form-label">组合名称</label>
+          <input type="text" class="input" id="idxPortName" placeholder="如：MSCI China A 50 模拟盘" style="width:100%">
+        </div>
+        <div class="form-row flex gap-3">
+          <div style="flex:1"><label class="form-label">追踪指数</label><input type="text" class="input" id="idxTrackIndex" readonly style="width:100%;background:var(--vp-gray-100)"></div>
+          <div style="flex:1"><label class="form-label">初始资金</label><input type="text" class="input" value="1000万" readonly style="width:100%;background:var(--vp-gray-100)"></div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">建仓方式</label>
+          <div class="segmented" id="idxBuildSeg">
+            <button class="seg active" onclick="idxSetBuild('full')">按指数权重</button>
+            <button class="seg" onclick="idxSetBuild('top20')">仅前20大</button>
+            <button class="seg" onclick="idxSetBuild('custom')">自定义选择</button>
+          </div>
+        </div>
+        <div id="idxBuildSummary" class="form-row"></div>
+        <div class="form-row">
+          <label class="form-label">备注（可选）</label>
+          <input type="text" class="input" id="idxPortNote" placeholder="如：MSCI 季度调仓后再平衡" style="width:100%">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="idxCloseCreate()">取消</button>
+        <button class="btn btn-primary btn-sm" onclick="idxConfirmCreate()">确认创建组合</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function idxSwitchTab(tab) {
+  document.querySelectorAll("#idxMainTab .seg").forEach(b => b.classList.remove("active"));
+  document.querySelector(`#idxMainTab .seg[onclick="idxSwitchTab('${tab}')"]`).classList.add("active");
+  document.getElementById("idxPaneConst").style.display = tab === "constituents" ? "" : "none";
+  document.getElementById("idxPanePort").style.display = tab === "portfolios" ? "" : "none";
+  if (tab === "portfolios") idxRenderPortfolios();
+}
+
+function idxFindIndex(code) {
+  for (const cat of Object.values(IDX_CATEGORIES)) {
+    const hit = cat.find(i => i.code === code);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+function idxRenderIndexList() {
+  const cat = document.getElementById("idxCategory")?.value || "msci";
+  const kw = (document.getElementById("idxSearch")?.value || "").trim().toLowerCase();
+  const list = (IDX_CATEGORIES[cat] || []).filter(i => !kw || i.name.toLowerCase().includes(kw) || i.code.toLowerCase().includes(kw));
+  const grid = document.getElementById("idxIndexGrid");
+  if (!grid) return;
+  grid.innerHTML = list.map(idx => {
+    const sel = idxCurIndex === idx.code;
+    const typeCls = idx.type === "MSCI" ? "tag-blue" : idx.type === "CSI" ? "tag-green" : "tag-gray";
+    return `<div onclick="idxSelectByCode('${idx.code}')" style="background:${sel?'var(--vp-green-light)':'var(--vp-mint-50)'};border:1.5px solid ${sel?'var(--vp-green)':'var(--vp-border)'};border-radius:6px;padding:12px 14px;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='var(--vp-green)'" onmouseout="this.style.borderColor='${sel?'var(--vp-green)':'var(--vp-border)'}'">
+      <div class="flex items-center justify-between" style="margin-bottom:6px">
+        <span class="tiny">${idx.code}</span>
+        <span class="tag ${typeCls}" style="font-size:10px">${idx.type}</span>
+      </div>
+      <div style="font-size:14px;font-weight:700">${idx.name}</div>
+      <div class="tiny" style="margin-top:6px">成份 ${idx.count} 只 · 前10权重 ${idx.top10Wt}</div>
+    </div>`;
+  }).join("");
+}
+
+function idxSelectByCode(code) {
+  idxCurIndex = code;
+  const idx = idxFindIndex(code);
+  if (!idx) return;
+  document.getElementById("idxEmpty").style.display = "none";
+  document.getElementById("idxConstSection").style.display = "";
+  document.getElementById("idxBadge").textContent = idx.type;
+  document.getElementById("idxName").textContent = idx.fullName;
+  document.getElementById("idxMeta").textContent = "最新调样日期 2026-08-01 · " + (idx.count > 300 ? "宽基" : "核心成份");
+  document.getElementById("idxCount").textContent = idx.count;
+  document.getElementById("idxTop10").textContent = idx.top10Wt;
+  document.getElementById("idxCodeLbl").textContent = idx.code;
+  idxSelected.clear();
+  idxRenderIndexList();
+  idxRenderConstituents();
+}
+
+function idxRenderConstituents() {
+  const body = document.getElementById("idxConstBody");
+  if (!body) return;
+  const data = IDX_CONSTITUENTS[idxCurIndex] || [];
+  const kw = (document.getElementById("idxStockSearch")?.value || "").trim().toLowerCase();
+  const filtered = data.filter(s => !kw || s.code.includes(kw) || s.name.toLowerCase().includes(kw));
+  const sorted = [...filtered].sort((a, b) => {
+    if (idxSortKey === 'weight') return b.weight - a.weight;
+    if (idxSortKey === 'code') return a.code.localeCompare(b.code);
+    return a.name.localeCompare(b.name, 'zh');
+  });
+  const maxWt = Math.max(...data.map(x => x.weight), 0.01);
+  let cum = 0;
+  body.innerHTML = sorted.length === 0
+    ? '<tr><td colspan="10" class="muted" style="text-align:center;padding:32px">该指数暂无演示数据</td></tr>'
+    : sorted.map(s => {
+      cum += s.weight;
+      const up = s.chg >= 0;
+      const pct = (s.weight / maxWt * 100).toFixed(1);
+      return `<tr>
+        <td><input type="checkbox" ${idxSelected.has(s.code) ? 'checked' : ''} onchange="idxToggleSelect('${s.code}')"></td>
+        <td class="cell-code">${s.code}</td>
+        <td class="cell-name">${s.name}</td>
+        <td><span class="tag tag-gray">${s.market}</span></td>
+        <td class="cell-muted">${s.industry}</td>
+        <td class="right bold" style="font-variant-numeric:tabular-nums">${s.weight.toFixed(2)}%</td>
+        <td><div style="height:8px;background:var(--vp-gray-100);border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--vp-green);border-radius:4px"></div></div></td>
+        <td class="right" style="font-variant-numeric:tabular-nums">${s.price.toLocaleString()}</td>
+        <td class="right ${up?'tag-up':'tag-down'}">${up?'+':''}${s.chg.toFixed(2)}%</td>
+        <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${cum.toFixed(2)}%</td>
+      </tr>`;
+    }).join("");
+  const total = data.reduce((s, x) => s + x.weight, 0);
+  const ck = document.getElementById("idxSelectAllCk");
+  if (ck) ck.checked = data.length > 0 && data.every(s => idxSelected.has(s.code));
+  const cnt = document.getElementById("idxConstCount");
+  if (cnt) cnt.textContent = `（${data.length} 只 · 合计 ${total.toFixed(2)}%）`;
+}
+
+function idxSetSort(key) {
+  idxSortKey = key;
+  ["W:weight", "C:code", "N:name"].forEach(p => {
+    const [id, k] = p.split(":");
+    const el = document.getElementById("idxSort" + id);
+    if (el) el.classList.toggle("active", k === key);
+  });
+  idxRenderConstituents();
+}
+
+function idxToggleSelect(code) {
+  if (idxSelected.has(code)) idxSelected.delete(code); else idxSelected.add(code);
+  idxRenderConstituents();
+}
+
+function idxToggleSelectAll() {
+  const data = IDX_CONSTITUENTS[idxCurIndex] || [];
+  if (data.length && data.every(s => idxSelected.has(s.code))) idxSelected.clear();
+  else data.forEach(s => idxSelected.add(s.code));
+  idxRenderConstituents();
+}
+
+function idxRenderPortfolios() {
+  const host = document.getElementById("idxPortList");
+  if (!host) return;
+  host.innerHTML = IDX_PORTFOLIOS.map(p => {
+    const nav = p.nav;
+    const W = 400, H = 60, PL = 8, PR = 46, PT = 6, PB = 14;
+    const iw = W - PL - PR, ih = H - PT - PB;
+    const lo = Math.min(...nav) * 0.995, hi = Math.max(...nav) * 1.005;
+    const X = i => PL + iw * i / (nav.length - 1);
+    const Y = v => PT + ih * (1 - (v - lo) / (hi - lo));
+    const line = nav.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+    const end = nav[nav.length - 1];
+    const up = end >= 1;
+    const color = up ? "var(--vp-red)" : "var(--vp-green)"; // 港式：涨红跌绿
+    return `<div class="card mb-4" style="cursor:pointer" onclick="alert('原型：进入指数组合详情（复用模拟组合页的持仓+净值+调仓逻辑）')">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-3" style="flex-wrap:wrap;gap:8px">
+          <div class="flex items-center gap-3">
+            <div class="card-title">${p.name}</div>
+            <span class="tag tag-green">${p.status}</span>
+            <span class="tag tag-gray">追踪误差 ${p.trackError}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div style="font-family:'Poppins',sans-serif;font-size:24px;font-weight:600;color:${color}">${up?'+':''}${(end*100-100).toFixed(2)}%</div>
+            <span class="tiny">vs 指数</span>
+            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：调整权重')">⚙️ 调仓</button>
+            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：查看详情')">查看</button>
+          </div>
+        </div>
+        <div class="flex gap-4" style="flex-wrap:wrap;font-size:13px;color:var(--vp-gray-500);margin-bottom:8px">
+          <span>指数：<span class="bold" style="color:var(--vp-gray-900)">${p.index}</span></span>
+          <span>持仓：<span class="bold" style="color:var(--vp-gray-900)">${p.holdings}只</span></span>
+          <span>总权重：<span class="bold" style="color:var(--vp-gray-900)">${p.weight}</span></span>
+          <span>创建人：<span class="bold" style="color:var(--vp-gray-900)">${p.creator}</span></span>
+          <span>建仓日：<span class="bold" style="color:var(--vp-gray-900)">${p.createDate}</span></span>
+        </div>
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
+          <path d="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="${X(nav.length-1)}" cy="${Y(end)}" r="4" fill="${color}" stroke="#fff" stroke-width="2"/>
+          <text x="${X(nav.length-1)+8}" y="${Y(end)+4}" class="end-label">${end.toFixed(3)}</text>
+          <text x="${PL}" y="${H-2}" class="axis-tick">${p.dates[0]}</text>
+          <text x="${X(nav.length-1)}" y="${H-2}" text-anchor="end" class="axis-tick">${p.dates[p.dates.length-1]}</text>
+        </svg>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function idxOpenCreate(mode) {
+  if (!idxCurIndex) { alert("请先选择一个指数"); return; }
+  if (mode === 'custom' && idxSelected.size === 0) { alert("请先勾选要追加的成份股"); return; }
+  idxBuildMode = mode || 'full';
+  idxSyncBuildSeg();
+  const idx = idxFindIndex(idxCurIndex);
+  document.getElementById("idxTrackIndex").value = idx ? idx.name + (mode === 'custom' ? `（已选 ${idxSelected.size} 只）` : "") : idxCurIndex;
+  document.getElementById("idxPortName").value = (idx ? idx.name : "") + " 模拟盘";
+  document.getElementById("idxPortNote").value = "";
+  idxRenderBuildSummary();
+  document.getElementById("idxCreateModal").classList.add("show");
+}
+
+function idxCloseCreate() { document.getElementById("idxCreateModal").classList.remove("show"); }
+
+function idxSyncBuildSeg() {
+  document.querySelectorAll("#idxBuildSeg .seg").forEach(b => b.classList.remove("active"));
+  const map = { full: 0, top20: 1, custom: 2 };
+  const segs = document.querySelectorAll("#idxBuildSeg .seg");
+  if (segs[map[idxBuildMode]]) segs[map[idxBuildMode]].classList.add("active");
+}
+
+function idxSetBuild(mode) { idxBuildMode = mode; idxSyncBuildSeg(); idxRenderBuildSummary(); }
+
+function idxRenderBuildSummary() {
+  const data = IDX_CONSTITUENTS[idxCurIndex] || [];
+  let stocks;
+  if (idxBuildMode === 'top20') stocks = [...data].sort((a, b) => b.weight - a.weight).slice(0, 20);
+  else if (idxBuildMode === 'custom') stocks = data.filter(s => idxSelected.has(s.code));
+  else stocks = data;
+  const totalWt = stocks.reduce((s, x) => s + x.weight, 0);
+  document.getElementById("idxBuildSummary").innerHTML = `
+    <div class="flex gap-4" style="flex-wrap:wrap;font-size:13px;color:var(--vp-gray-500)">
+      <span>成份股 <span class="bold" style="color:var(--vp-gray-900)">${stocks.length}</span> 只</span>
+      <span>合计权重 <span class="bold" style="color:var(--vp-gray-900)">${totalWt.toFixed(1)}%</span></span>
+      <span>初始资金 <span class="bold" style="color:var(--vp-gray-900)">1000万</span></span>
+      <span>预留现金 <span class="bold" style="color:var(--vp-gray-900)">${Math.max(0, 1000 - totalWt * 10).toFixed(0)}万</span></span>
+    </div>
+    <div class="flex gap-2" style="flex-wrap:wrap;margin-top:8px">
+      ${stocks.slice(0, 8).map(s => `<span class="tag tag-gray">${s.code} ${s.weight.toFixed(1)}%</span>`).join("")}
+      ${stocks.length > 8 ? `<span class="tiny">+${stocks.length - 8} 只…</span>` : ""}
+    </div>`;
+}
+
+function idxConfirmCreate() {
+  const name = document.getElementById("idxPortName").value.trim();
+  if (!name) { alert("请输入组合名称"); return; }
+  idxCloseCreate();
+  idxSwitchTab("portfolios");
+  alert("原型：组合「" + name + "」已创建，切换到「我的指数组合」查看");
 }
 
 function buildPortfolioNew() {
@@ -3301,10 +3873,12 @@ function openTabByHash(key) {
     'product-detail': '产品详情',
     'share-class': '份额信息',
     'share-class-add': '新增份额',
+    'research-share': '研报共享',
     'industry': '行业配置',
     'research-report': '研究报告',
     'stock-pool': '股票池',
     'portfolio': '模拟组合',
+    'index-sim': '指数模拟',
     'config': '系统配置',
     'fee': '费率结构',
   };
