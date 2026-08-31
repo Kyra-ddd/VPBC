@@ -871,8 +871,8 @@ function reportShowAttachment(id) {
 
 // ========== Research Share Center ==========
 function buildResearchShare() {
-  return `<div class="page-header">
-      <button class="btn btn-primary" onclick="alert('原型：批量订阅选中研报')">📥 批量订阅</button>
+  const html = `<div class="page-header">
+      <button class="btn btn-primary" onclick="alert('原型：批量订阅选中研报')">� 批量订阅</button>
     </div>
 
     <div class="card mb-4"><div class="card-body" style="padding:12px 16px"><div class="flex items-center gap-3 flex-wrap">
@@ -929,6 +929,8 @@ function buildResearchShare() {
     </table></div></div>
 
     <div class="notice mt-4"><span class="ico">ⓘ</span>研报共享汇集自研与外购研报；外购研报按订阅权限查看完整内容，订阅信息会同步到产品研究工作台。涨跌色采用<strong>港式惯例</strong>：上涨=#B23A48，下跌=#20A06E。</div>`;
+  setTimeout(shareRender, 0);
+  return html;
 }
 
 function shareRender() {
