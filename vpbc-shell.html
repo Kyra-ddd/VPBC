@@ -779,14 +779,43 @@ const REPORTS = [
 
 // 研报共享中心：跨研究系统的研报集市（含自研 + 外购源）
 const SHARED_REPORTS = [
+  // ===== 港股科技 =====
   { id:"S001", title:"港股科技行业深度报告：AI 驱动下的新机遇",     type:"深度报告", source:"自研", stock:"00700.HK", issuer:"腾讯控股", market:"港股", industry:"科技", rating:"AAA+", publisher:"Value Partners 投研", publishDate:"2026-08-10", subscribed:true },
-  { id:"S002", title:"全球半导体产业链跟踪：先进制程产能再分配",   type:"追踪报告", source:"Wind",    stock:"TSM.US",  issuer:"台积电",     market:"美股", industry:"半导体", rating:"AAA",  publisher:"Wind 资讯",          publishDate:"2026-08-12", subscribed:false },
-  { id:"S003", title:"美股科技 Q2 财报前瞻：AI 变现加速",          type:"前瞻报告", source:"Bloomberg", stock:"NVDA.US", issuer:"英伟达",   market:"美股", industry:"科技", rating:"AA+",   publisher:"Bloomberg Terminal", publishDate:"2026-08-08", subscribed:true },
-  { id:"S004", title:"A股消费板块复盘：白酒韧性、新兴品类突围",    type:"深度报告", source:"自研",    stock:"600519.SH", issuer:"贵州茅台", market:"A股", industry:"消费", rating:"AAA-", publisher:"Value Partners 投研", publishDate:"2026-08-06", subscribed:false },
-  { id:"S005", title:"MSCI 中国 A50 月度观察：金融权重变化追踪",   type:"追踪报告", source:"MSCI",    stock:"—",       issuer:"—",         market:"A股", industry:"宏观", rating:"—",     publisher:"MSCI Research",      publishDate:"2026-08-04", subscribed:false },
-  { id:"S006", title:"腾讯控股季度跟踪：游戏回暖，广告提速",        type:"追踪报告", source:"自研",    stock:"00700.HK", issuer:"腾讯控股", market:"港股", industry:"科技", rating:"AA+",   publisher:"Value Partners 投研", publishDate:"2026-08-03", subscribed:true },
-  { id:"S007", title:"中资美元债违约预警与定价偏差分析",           type:"专题报告", source:"中诚信",  stock:"—",       issuer:"—",         market:"港股", industry:"金融", rating:"BBB+",  publisher:"中诚信国际",         publishDate:"2026-08-01", subscribed:false },
-  { id:"S008", title:"全球新能源车产业链深度：欧美补贴退坡影响",   type:"深度报告", source:"自研",    stock:"TSLA.US", issuer:"特斯拉",   market:"美股", industry:"汽车", rating:"AA",    publisher:"Value Partners 投研", publishDate:"2026-07-28", subscribed:false },
+  { id:"S002", title:"腾讯控股季度跟踪：游戏回暖，广告提速",        type:"追踪报告", source:"自研", stock:"00700.HK", issuer:"腾讯控股", market:"港股", industry:"科技", rating:"AA+",   publisher:"Value Partners 投研", publishDate:"2026-08-03", subscribed:true },
+  { id:"S003", title:"阿里巴巴首次覆盖：电商+云双轮驱动",           type:"深度报告", source:"自研", stock:"09988.HK", issuer:"阿里巴巴", market:"港股", industry:"零售", rating:"AAA",   publisher:"Value Partners 投研", publishDate:"2026-08-09", subscribed:true },
+  { id:"S004", title:"美团本地生活竞争格局再观察",                  type:"周报",     source:"Wind",   stock:"03690.HK", issuer:"美团",     market:"港股", industry:"科技", rating:"AA",    publisher:"Wind 资讯",          publishDate:"2026-08-13", subscribed:false },
+  { id:"S005", title:"小米汽车交付节奏与产业链联动",                type:"前瞻报告", source:"自研",   stock:"01810.HK", issuer:"小米",     market:"港股", industry:"科技", rating:"AAA-",  publisher:"Value Partners 投研", publishDate:"2026-08-11", subscribed:false },
+  { id:"S006", title:"舜宇光学车载镜头出货量跟踪",                  type:"追踪报告", source:"自研",   stock:"02382.HK", issuer:"舜宇光学", market:"港股", industry:"科技", rating:"AA",    publisher:"Value Partners 投研", publishDate:"2026-08-07", subscribed:true },
+  { id:"S007", title:"港股互联网周观察：流量增速与变现率",          type:"周报",     source:"Bloomberg", stock:"—",      issuer:"—",      market:"港股", industry:"科技", rating:"—",     publisher:"Bloomberg Terminal", publishDate:"2026-08-14", subscribed:false },
+  { id:"S008", title:"百济神州 BD 进展与海外临床读出前瞻",         type:"专题报告", source:"自研",   stock:"06160.HK", issuer:"百济神州", market:"港股", industry:"医药", rating:"A+",    publisher:"Value Partners 投研", publishDate:"2026-08-02", subscribed:false },
+
+  // ===== 港股金融 / 地产 / 其他 =====
+  { id:"S009", title:"港股金融板块周报：降息预期升温",              type:"周报",     source:"Wind",     stock:"0939.HK",  issuer:"建设银行", market:"港股", industry:"金融", rating:"AAA-",  publisher:"Wind 资讯",          publishDate:"2026-08-07", subscribed:false },
+  { id:"S010", title:"中资美元债违约预警与定价偏差分析",            type:"专题报告", source:"中诚信",   stock:"—",        issuer:"—",        market:"港股", industry:"金融", rating:"BBB+",  publisher:"中诚信国际",         publishDate:"2026-08-01", subscribed:false },
+  { id:"S011", title:"友邦保险新业务价值月报",                      type:"月报",     source:"自研",     stock:"01299.HK", issuer:"友邦保险", market:"港股", industry:"金融", rating:"AA",    publisher:"Value Partners 投研", publishDate:"2026-08-05", subscribed:true },
+  { id:"S012", title:"港股地产销售月度数据追踪",                    type:"月报",     source:"Wind",     stock:"—",        issuer:"—",        market:"港股", industry:"地产", rating:"—",     publisher:"Wind 资讯",          publishDate:"2026-08-04", subscribed:false },
+  { id:"S013", title:"MSCI 中国 A50 月度观察：金融权重变化追踪",   type:"月报",     source:"MSCI",     stock:"—",        issuer:"—",        market:"港股", industry:"宏观", rating:"—",     publisher:"MSCI Research",      publishDate:"2026-08-04", subscribed:false },
+
+  // ===== 美股 =====
+  { id:"S014", title:"全球半导体产业链跟踪：先进制程产能再分配",   type:"追踪报告", source:"Wind",     stock:"TSM.US",  issuer:"台积电",    market:"美股", industry:"半导体", rating:"AAA",   publisher:"Wind 资讯",          publishDate:"2026-08-12", subscribed:true },
+  { id:"S015", title:"美股科技 Q2 财报前瞻：AI 变现加速",          type:"前瞻报告", source:"Bloomberg", stock:"NVDA.US", issuer:"英伟达",    market:"美股", industry:"科技", rating:"AA+",   publisher:"Bloomberg Terminal", publishDate:"2026-08-08", subscribed:true },
+  { id:"S016", title:"全球新能源车产业链深度：欧美补贴退坡影响",   type:"深度报告", source:"自研",     stock:"TSLA.US", issuer:"特斯拉",    market:"美股", industry:"汽车", rating:"AA",    publisher:"Value Partners 投研", publishDate:"2026-07-28", subscribed:false },
+  { id:"S017", title:"Apple 服务业务 ARPU 提升路径",              type:"深度报告", source:"自研",     stock:"AAPL.US", issuer:"苹果",      market:"美股", industry:"科技", rating:"AAA",   publisher:"Value Partners 投研", publishDate:"2026-08-06", subscribed:false },
+  { id:"S018", title:"Tesla 机器人量产时间表再评估",               type:"前瞻报告", source:"Bloomberg", stock:"TSLA.US", issuer:"特斯拉",    market:"美股", industry:"汽车", rating:"AA-",   publisher:"Bloomberg Terminal", publishDate:"2026-08-09", subscribed:false },
+  { id:"S019", title:"美股半导体 SOX 指数周观察",                  type:"周报",     source:"Bloomberg", stock:"—",       issuer:"—",         market:"美股", industry:"半导体", rating:"—",    publisher:"Bloomberg Terminal", publishDate:"2026-08-13", subscribed:false },
+  { id:"S020", title:"Microsoft Copilot 商业化进展",               type:"专题报告", source:"自研",     stock:"MSFT.US", issuer:"微软",      market:"美股", industry:"科技", rating:"AAA",   publisher:"Value Partners 投研", publishDate:"2026-07-30", subscribed:true },
+
+  // ===== A 股 =====
+  { id:"S021", title:"A股消费板块复盘：白酒韧性、新兴品类突围",   type:"深度报告", source:"自研",     stock:"600519.SH", issuer:"贵州茅台", market:"A股", industry:"消费", rating:"AAA-",  publisher:"Value Partners 投研", publishDate:"2026-08-06", subscribed:false },
+  { id:"S022", title:"宁德时代海外产能与欧洲份额追踪",             type:"追踪报告", source:"Wind",     stock:"300750.SZ", issuer:"宁德时代", market:"A股", industry:"新能源", rating:"AA+", publisher:"Wind 资讯",          publishDate:"2026-08-08", subscribed:true },
+  { id:"S023", title:"A股半导体设备国产化率月报",                   type:"月报",     source:"自研",     stock:"—",         issuer:"—",         market:"A股", industry:"半导体", rating:"—",   publisher:"Value Partners 投研", publishDate:"2026-08-03", subscribed:false },
+  { id:"S024", title:"中国平安寿险新单与代理人产能",               type:"专题报告", source:"Wind",     stock:"601318.SH", issuer:"中国平安", market:"A股", industry:"金融", rating:"AA",    publisher:"Wind 资讯",          publishDate:"2026-08-01", subscribed:false },
+  { id:"S025", title:"光伏组件价格周观察",                         type:"周报",     source:"Wind",     stock:"—",         issuer:"—",         market:"A股", industry:"新能源", rating:"—",  publisher:"Wind 资讯",          publishDate:"2026-08-12", subscribed:false },
+  { id:"S026", title:"A股宏观流动性月报：社融与 M2 剪刀差",       type:"月报",     source:"自研",     stock:"—",         issuer:"—",         market:"A股", industry:"宏观", rating:"—",     publisher:"Value Partners 投研", publishDate:"2026-08-05", subscribed:false },
+
+  // ===== 日韩（少量扩展多市场）=====
+  { id:"S027", title:"三星电子 HBM 出货与先进存储周期",             type:"深度报告", source:"Bloomberg", stock:"005930.KS", issuer:"三星电子", market:"韩股", industry:"半导体", rating:"AAA-", publisher:"Bloomberg Terminal", publishDate:"2026-08-04", subscribed:false },
+  { id:"S028", title:"丰田汽车北美 EV 战略转向",                    type:"专题报告", source:"自研",     stock:"7203.T",   issuer:"丰田汽车", market:"日股", industry:"汽车", rating:"AA",    publisher:"Value Partners 投研", publishDate:"2026-07-29", subscribed:false },
 ];
 
 function reportRender() {
@@ -846,13 +875,6 @@ function buildResearchShare() {
       <button class="btn btn-primary" onclick="alert('原型：批量订阅选中研报')">📥 批量订阅</button>
     </div>
 
-    <div class="kpi-grid mb-4">
-      <div class="kpi"><div class="kpi-icon">📚</div><div><div class="kpi-num">${SHARED_REPORTS.length}</div><div class="kpi-label">共享研报</div></div></div>
-      <div class="kpi"><div class="kpi-icon">✅</div><div><div class="kpi-num" style="color:var(--vp-green)">${SHARED_REPORTS.filter(r=>r.subscribed).length}</div><div class="kpi-label">已订阅</div></div></div>
-      <div class="kpi"><div class="kpi-icon">�️</div><div><div class="kpi-num">${[...new Set(SHARED_REPORTS.map(r=>r.source))].length}</div><div class="kpi-label">数据来源</div></div></div>
-      <div class="kpi"><div class="kpi-icon">🗂️</div><div><div class="kpi-num">${[...new Set(SHARED_REPORTS.map(r=>r.type))].length}</div><div class="kpi-label">报告类型</div></div></div>
-    </div>
-
     <div class="card mb-4"><div class="card-body" style="padding:12px 16px"><div class="flex items-center gap-3 flex-wrap">
       <input id="shareSearchStock" class="input" placeholder="股票代码（如 00700.HK）" style="width:160px" oninput="shareRender()">
       <input id="shareSearchIssuer" class="input" placeholder="发行人 / 公司名" style="width:160px" oninput="shareRender()">
@@ -878,6 +900,8 @@ function buildResearchShare() {
         <option>港股</option>
         <option>美股</option>
         <option>A股</option>
+        <option>韩股</option>
+        <option>日股</option>
       </select>
       <select id="shareFilterSub" class="select filter-select" style="min-width:100px" onchange="shareRender()">
         <option value="">全部订阅状态</option>
