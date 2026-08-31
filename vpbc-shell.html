@@ -870,9 +870,33 @@ function reportShowAttachment(id) {
 }
 
 // ========== Research Share Center ==========
+// 订阅维度：按 publisher（发行人/出版方）。一份订阅 = 该 publisher 的全部研报自动推送。
+const SHARE_SUBSCRIBED_PUBLISHERS = new Set([
+  "Value Partners 投研",
+  "Bloomberg Terminal",
+]);
+
+function shareAllPublishers() {
+  return [...new Set(SHARED_REPORTS.map(r => r.publisher))].sort();
+}
+
+function shareIsPublisherSubscribed(p) {
+  return SHARE_SUBSCRIBED_PUBLISHERS.has(p);
+}
+
 function buildResearchShare() {
   const html = `<div class="page-header">
-      <button class="btn btn-primary" onclick="alert('原型：批量订阅选中研报')">� 批量订阅</button>
+      <div class="flex items-center gap-2">
+        <button class="btn btn-primary" onclick="shareOpenSubModal()">＋ 订阅发行人</button>
+        <button class="btn btn-ghost" onclick="shareOpenUnsubModal()">取消订阅</button>
+      </div>
+    </div>
+
+    <div class="card mb-4" id="shareSubBar">
+      <div class="card-body" style="padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="tiny" style="color:var(--vp-gray-500)">已订阅发行人：</span>
+        <span id="shareSubChips"></span>
+      </div>
     </div>
 
     <div class="card mb-4"><div class="card-body" style="padding:12px 16px"><div class="flex items-center gap-3 flex-wrap">
@@ -903,17 +927,19 @@ function buildResearchShare() {
         <option>韩股</option>
         <option>日股</option>
       </select>
-      <select id="shareFilterSub" class="select filter-select" style="min-width:100px" onchange="shareRender()">
+      <select id="shareFilterPub" class="select filter-select" style="min-width:160px" onchange="shareRender()">
+        <option value="">全部发行人</option>
+      </select>
+      <select id="shareFilterSub" class="select filter-select" style="min-width:110px" onchange="shareRender()">
         <option value="">全部订阅状态</option>
-        <option>已订阅</option>
-        <option>未订阅</option>
+        <option>仅已订阅</option>
+        <option>仅未订阅</option>
       </select>
       <button class="btn btn-ghost btn-sm" onclick="shareReset()">重置</button>
     </div></div></div>
 
     <div class="card"><div class="card-body" style="padding:0"><table class="data-table">
       <thead><tr>
-        <th style="width:40px"><input type="checkbox" id="shareSelAll" onchange="shareToggleAll(this)"></th>
         <th>报告标题</th>
         <th>报告类型</th>
         <th>数据来源</th>
@@ -928,9 +954,28 @@ function buildResearchShare() {
       <tbody id="shareBody"></tbody>
     </table></div></div>
 
-    <div class="notice mt-4"><span class="ico">ⓘ</span>研报共享汇集自研与外购研报；外购研报按订阅权限查看完整内容，订阅信息会同步到产品研究工作台。涨跌色采用<strong>港式惯例</strong>：上涨=#B23A48，下跌=#20A06E。</div>`;
-  setTimeout(shareRender, 0);
+    <div class="notice mt-4"><span class="ico">ⓘ</span>订阅维度为<strong>发行人（出版方）</strong>：订阅某个发行人后，其发布的所有研报自动推送到产品研究工作台。自研研报对内部用户默认可见；外购研报需订阅对应发行人后方可查看全文。</div>`;
+  setTimeout(() => { shareInitFilters(); shareRender(); }, 0);
   return html;
+}
+
+function shareInitFilters() {
+  const pubSel = document.getElementById("shareFilterPub");
+  if (pubSel && pubSel.options.length <= 1) {
+    shareAllPublishers().forEach(p => {
+      const opt = document.createElement("option"); opt.value = p; opt.textContent = p; pubSel.appendChild(opt);
+    });
+  }
+  shareRenderSubChips();
+}
+
+function shareRenderSubChips() {
+  const host = document.getElementById("shareSubChips");
+  if (!host) return;
+  const subs = [...SHARE_SUBSCRIBED_PUBLISHERS];
+  host.innerHTML = subs.length
+    ? subs.map(p => `<span style="display:inline-flex;align-items:center;gap:6px;background:var(--vp-mint-50);border:1px solid var(--vp-border);border-radius:14px;padding:3px 10px;font-size:12px;color:var(--vp-gray-700)">${p}<b style="cursor:pointer;color:var(--vp-gray-500);font-weight:500" onclick="shareUnsubscribe('${p}')">✕</b></span>`).join("")
+    : `<span class="tiny muted">尚未订阅任何发行人，点右上角「＋ 订阅发行人」开始</span>`;
 }
 
 function shareRender() {
@@ -941,6 +986,7 @@ function shareRender() {
   const type = document.getElementById("shareFilterType")?.value || "";
   const source = document.getElementById("shareFilterSource")?.value || "";
   const market = document.getElementById("shareFilterMarket")?.value || "";
+  const pub = document.getElementById("shareFilterPub")?.value || "";
   const sub = document.getElementById("shareFilterSub")?.value || "";
   const filtered = SHARED_REPORTS.filter(r => {
     if (stock && !(r.stock || "—").toLowerCase().includes(stock)) return false;
@@ -948,21 +994,22 @@ function shareRender() {
     if (type && r.type !== type) return false;
     if (source && r.source !== source) return false;
     if (market && r.market !== market) return false;
-    if (sub === "已订阅" && !r.subscribed) return false;
-    if (sub === "未订阅" && r.subscribed) return false;
+    if (pub && r.publisher !== pub) return false;
+    const isSub = shareIsPublisherSubscribed(r.publisher);
+    if (sub === "仅已订阅" && !isSub) return false;
+    if (sub === "仅未订阅" && isSub) return false;
     return true;
   });
   body.innerHTML = filtered.length === 0
-    ? '<tr><td colspan="11" class="muted" style="text-align:center;padding:32px">暂无符合筛选条件的研报</td></tr>'
+    ? '<tr><td colspan="10" class="muted" style="text-align:center;padding:32px">暂无符合筛选条件的研报</td></tr>'
     : filtered.map(r => {
       const sourceTag = r.source === "自研"
         ? `<span class="tag tag-green">自研</span>`
         : `<span class="tag tag-blue">${r.source}</span>`;
-      const subBtn = r.subscribed
+      const subTag = shareIsPublisherSubscribed(r.publisher)
         ? `<span class="tag tag-green">✓ 已订阅</span>`
-        : `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();shareSubscribe('${r.id}')">订阅</button>`;
+        : `<span class="tag tag-gray">未订阅</span>`;
       return `<tr style="cursor:pointer" onclick="shareShowDetail('${r.id}')">
-        <td><input type="checkbox" class="share-row-cb" data-id="${r.id}" onclick="event.stopPropagation()"></td>
         <td><div style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${r.title}</div><div class="tiny muted">${r.publisher}</div></td>
         <td><span class="tag tag-gray">${r.type}</span></td>
         <td>${sourceTag}</td>
@@ -971,30 +1018,67 @@ function shareRender() {
         <td>${r.market} · ${r.industry}</td>
         <td>${r.rating === '—' ? '<span class="muted">—</span>' : `<span class="tag tag-gray">${r.rating}</span>`}</td>
         <td class="cell-muted">${r.publishDate}</td>
-        <td>${subBtn}</td>
-        <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：查看「${r.title.replace(/'/g,"\\'")}」研报详情（自研免费 / 外购需订阅）')">查看</button></td>
+        <td>${subTag}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();shareShowDetail('${r.id}')">查看</button></td>
       </tr>`;
     }).join("");
-  const selAll = document.getElementById("shareSelAll");
-  if (selAll) selAll.checked = false;
-}
-
-function shareSubscribe(id) {
-  const r = SHARED_REPORTS.find(x => x.id === id);
-  if (!r) return;
-  r.subscribed = true;
-  alert(`已订阅「${r.title}」\n订阅信息将同步到产品研究工作台`);
-  shareRender();
-}
-
-function shareToggleAll(cb) {
-  document.querySelectorAll(".share-row-cb").forEach(el => el.checked = cb.checked);
 }
 
 function shareReset() {
   ["shareSearchStock","shareSearchIssuer"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
-  ["shareFilterType","shareFilterSource","shareFilterMarket","shareFilterSub"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+  ["shareFilterType","shareFilterSource","shareFilterMarket","shareFilterPub","shareFilterSub"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
   shareRender();
+}
+
+// ====== 订阅弹窗 ======
+function shareOpenSubModal() {
+  const all = shareAllPublishers();
+  const unsub = all.filter(p => !shareIsPublisherSubscribed(p));
+  if (!unsub.length) { alert("当前所有发行人均已订阅"); return; }
+  const list = document.getElementById("shareSubPickList");
+  if (list) list.innerHTML = unsub.map(p => `<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--vp-border);border-radius:8px;margin-bottom:8px;cursor:pointer"><input type="checkbox" value="${p}"><div><div style="font-weight:600">${p}</div><div class="tiny muted">共 ${SHARED_REPORTS.filter(r=>r.publisher===p).length} 份研报</div></div></label>`).join("");
+  document.getElementById("shareSubModal").classList.add("show");
+}
+function shareCloseSubModal() { document.getElementById("shareSubModal").classList.remove("show"); }
+function shareConfirmSub() {
+  const checked = [...document.querySelectorAll("#shareSubPickList input:checked")].map(c => c.value);
+  if (!checked.length) { alert("请勾选至少一个发行人"); return; }
+  checked.forEach(p => SHARE_SUBSCRIBED_PUBLISHERS.add(p));
+  shareCloseSubModal();
+  shareRenderSubChips();
+  shareRender();
+  alert(`已订阅 ${checked.length} 个发行人：\n${checked.join("、")}\n新研报将自动同步到产品研究工作台`);
+}
+
+function shareOpenUnsubModal() {
+  const subs = [...SHARE_SUBSCRIBED_PUBLISHERS];
+  if (!subs.length) { alert("尚未订阅任何发行人"); return; }
+  const list = document.getElementById("shareUnsubPickList");
+  if (list) list.innerHTML = subs.map(p => `<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--vp-border);border-radius:8px;margin-bottom:8px;cursor:pointer"><input type="checkbox" value="${p}"><div><div style="font-weight:600">${p}</div><div class="tiny muted">取消后该发行人新研报将不再推送</div></div></label>`).join("");
+  document.getElementById("shareUnsubModal").classList.add("show");
+}
+function shareCloseUnsubModal() { document.getElementById("shareUnsubModal").classList.remove("show"); }
+function shareConfirmUnsub() {
+  const checked = [...document.querySelectorAll("#shareUnsubPickList input:checked")].map(c => c.value);
+  if (!checked.length) { alert("请勾选要取消订阅的发行人"); return; }
+  checked.forEach(p => SHARE_SUBSCRIBED_PUBLISHERS.delete(p));
+  shareCloseUnsubModal();
+  shareRenderSubChips();
+  shareRender();
+}
+function shareUnsubscribe(p) {
+  if (!confirm(`确定取消订阅「${p}」吗？\n该发行人新研报将不再推送到工作台。`)) return;
+  SHARE_SUBSCRIBED_PUBLISHERS.delete(p);
+  shareRenderSubChips();
+  shareRender();
+}
+
+function shareShowDetail(id) {
+  const r = SHARED_REPORTS.find(x => x.id === id);
+  if (!r) return;
+  const isSub = shareIsPublisherSubscribed(r.publisher);
+  const access = isSub || r.source === "自研" ? "可查看全文" : "未订阅，仅看摘要";
+  alert(`研报详情\n标题：${r.title}\n类型：${r.type}\n来源：${r.source}（${r.publisher}）\n股票：${r.stock}（${r.issuer}）\n市场：${r.market}\n行业：${r.industry}\n评级：${r.rating}\n发布日期：${r.publishDate}\n订阅状态：${isSub ? "已订阅（" + r.publisher + "）" : "未订阅"}\n访问权限：${access}`);
 }
 
 function shareShowDetail(id) {
@@ -1021,6 +1105,41 @@ function reportAutoFill(code) {
     industrySel.innerHTML = `<option value="">请选择行业</option>${opts}`;
   }
 }
+
+// ====== 研报共享 · 订阅弹窗 ======
+<div class="modal-mask" id="shareSubModal"><div class="modal-overlay" onclick="shareCloseSubModal()"></div>
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:520px">
+    <div class="modal-head">
+      <div class="card-title">订阅发行人</div>
+      <button class="btn btn-ghost btn-sm" onclick="shareCloseSubModal()">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:60vh;overflow-y:auto">
+      <div class="tiny muted mb-3">订阅后，该发行人发布的所有研报将自动推送到产品研究工作台。</div>
+      <div id="shareSubPickList"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="shareCloseSubModal()">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="shareConfirmSub()">确认订阅</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="shareUnsubModal"><div class="modal-overlay" onclick="shareCloseUnsubModal()"></div>
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:520px">
+    <div class="modal-head">
+      <div class="card-title">取消订阅</div>
+      <button class="btn btn-ghost btn-sm" onclick="shareCloseUnsubModal()">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:60vh;overflow-y:auto">
+      <div class="tiny muted mb-3">勾选要取消订阅的发行人，取消后该发行人的新研报将不再推送。</div>
+      <div id="shareUnsubPickList"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="shareCloseUnsubModal()">返回</button>
+      <button class="btn btn-primary btn-sm" onclick="shareConfirmUnsub()">确认取消</button>
+    </div>
+  </div>
+</div>
 
 // ========== Stock Pool Data ==========
 const POOLS = [
