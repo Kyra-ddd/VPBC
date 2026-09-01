@@ -927,9 +927,6 @@ function buildResearchShare() {
         <option>韩股</option>
         <option>日股</option>
       </select>
-      <select id="shareFilterPub" class="select filter-select" style="min-width:160px" onchange="shareRender()">
-        <option value="">全部发行人</option>
-      </select>
       <select id="shareFilterSub" class="select filter-select" style="min-width:110px" onchange="shareRender()">
         <option value="">全部订阅状态</option>
         <option>仅已订阅</option>
@@ -960,12 +957,6 @@ function buildResearchShare() {
 }
 
 function shareInitFilters() {
-  const pubSel = document.getElementById("shareFilterPub");
-  if (pubSel && pubSel.options.length <= 1) {
-    shareAllPublishers().forEach(p => {
-      const opt = document.createElement("option"); opt.value = p; opt.textContent = p; pubSel.appendChild(opt);
-    });
-  }
   shareRenderSubChips();
 }
 
@@ -986,7 +977,6 @@ function shareRender() {
   const type = document.getElementById("shareFilterType")?.value || "";
   const source = document.getElementById("shareFilterSource")?.value || "";
   const market = document.getElementById("shareFilterMarket")?.value || "";
-  const pub = document.getElementById("shareFilterPub")?.value || "";
   const sub = document.getElementById("shareFilterSub")?.value || "";
   const filtered = SHARED_REPORTS.filter(r => {
     if (stock && !(r.stock || "—").toLowerCase().includes(stock)) return false;
@@ -994,7 +984,6 @@ function shareRender() {
     if (type && r.type !== type) return false;
     if (source && r.source !== source) return false;
     if (market && r.market !== market) return false;
-    if (pub && r.publisher !== pub) return false;
     const isSub = shareIsPublisherSubscribed(r.publisher);
     if (sub === "仅已订阅" && !isSub) return false;
     if (sub === "仅未订阅" && isSub) return false;
@@ -1026,7 +1015,7 @@ function shareRender() {
 
 function shareReset() {
   ["shareSearchStock","shareSearchIssuer"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
-  ["shareFilterType","shareFilterSource","shareFilterMarket","shareFilterPub","shareFilterSub"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+  ["shareFilterType","shareFilterSource","shareFilterMarket","shareFilterSub"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
   shareRender();
 }
 
