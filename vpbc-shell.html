@@ -1106,41 +1106,6 @@ function reportAutoFill(code) {
   }
 }
 
-// ====== 研报共享 · 订阅弹窗 ======
-<div class="modal-mask" id="shareSubModal"><div class="modal-overlay" onclick="shareCloseSubModal()"></div>
-  <div class="modal" onclick="event.stopPropagation()" style="max-width:520px">
-    <div class="modal-head">
-      <div class="card-title">订阅发行人</div>
-      <button class="btn btn-ghost btn-sm" onclick="shareCloseSubModal()">✕</button>
-    </div>
-    <div class="modal-body" style="max-height:60vh;overflow-y:auto">
-      <div class="tiny muted mb-3">订阅后，该发行人发布的所有研报将自动推送到产品研究工作台。</div>
-      <div id="shareSubPickList"></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost btn-sm" onclick="shareCloseSubModal()">取消</button>
-      <button class="btn btn-primary btn-sm" onclick="shareConfirmSub()">确认订阅</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-mask" id="shareUnsubModal"><div class="modal-overlay" onclick="shareCloseUnsubModal()"></div>
-  <div class="modal" onclick="event.stopPropagation()" style="max-width:520px">
-    <div class="modal-head">
-      <div class="card-title">取消订阅</div>
-      <button class="btn btn-ghost btn-sm" onclick="shareCloseUnsubModal()">✕</button>
-    </div>
-    <div class="modal-body" style="max-height:60vh;overflow-y:auto">
-      <div class="tiny muted mb-3">勾选要取消订阅的发行人，取消后该发行人的新研报将不再推送。</div>
-      <div id="shareUnsubPickList"></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost btn-sm" onclick="shareCloseUnsubModal()">返回</button>
-      <button class="btn btn-primary btn-sm" onclick="shareConfirmUnsub()">确认取消</button>
-    </div>
-  </div>
-</div>
-
 // ========== Stock Pool Data ==========
 const POOLS = [
   { id:"P01", name:"核心池",     market:"全局", inMode:"人工", outMode:"人工", count:12 },
@@ -3184,6 +3149,30 @@ function buildPortfolio() {
           <div class="tiny" style="margin-top:10px;color:var(--vp-gray-500)">勾选后指标进入上方「指标库」表格，按当前区间口径计算。</div>
         </div>
         <div class="modal-foot"><button class="btn btn-ghost btn-sm" onclick="portCloseIndicatorPick()">取消</button><button class="btn btn-primary btn-sm" onclick="portApplyIndicatorPick()">应用（<span id="portPickCount">0</span> 项）</button></div>
+      </div>
+    </div>
+
+    <!-- 研报共享 · 订阅发行人弹窗 -->
+    <div class="modal-mask" id="shareSubModal">
+      <div class="modal-box" style="max-width:520px">
+        <div class="modal-head"><div class="card-title">订阅发行人</div><button class="btn btn-ghost btn-sm" onclick="shareCloseSubModal()">✕</button></div>
+        <div class="modal-body" style="max-height:60vh;overflow-y:auto">
+          <div class="tiny muted mb-3">订阅后，该发行人发布的所有研报将自动推送到产品研究工作台。</div>
+          <div id="shareSubPickList"></div>
+        </div>
+        <div class="modal-foot"><button class="btn btn-ghost btn-sm" onclick="shareCloseSubModal()">取消</button><button class="btn btn-primary btn-sm" onclick="shareConfirmSub()">确认订阅</button></div>
+      </div>
+    </div>
+
+    <!-- 研报共享 · 取消订阅弹窗 -->
+    <div class="modal-mask" id="shareUnsubModal">
+      <div class="modal-box" style="max-width:520px">
+        <div class="modal-head"><div class="card-title">取消订阅</div><button class="btn btn-ghost btn-sm" onclick="shareCloseUnsubModal()">✕</button></div>
+        <div class="modal-body" style="max-height:60vh;overflow-y:auto">
+          <div class="tiny muted mb-3">勾选要取消订阅的发行人，取消后该发行人的新研报将不再推送。</div>
+          <div id="shareUnsubPickList"></div>
+        </div>
+        <div class="modal-foot"><button class="btn btn-ghost btn-sm" onclick="shareCloseUnsubModal()">返回</button><button class="btn btn-primary btn-sm" onclick="shareConfirmUnsub()">确认取消</button></div>
       </div>
     </div>
 
