@@ -1140,7 +1140,7 @@ function poolSelect(id) { poolCurPool = id; poolRenderGrid(); poolRenderDetail()
 function poolRenderGrid() {
   const grid = document.getElementById("poolGrid");
   if (!grid) return;
-  grid.innerHTML = POOLS.map(p => {
+  grid.innerHTML = POOLS.filter(p => p.id !== "P04").map(p => {
     const sel = p.id === poolCurPool;
     const mkCls = p.market === "全局" ? "tag-blue" : "tag-gray";
     const bdr = sel ? "border-color:var(--vp-green)" : "";
@@ -1159,6 +1159,7 @@ function poolRenderGrid() {
       </div>
     </div>`;
   }).join("");
+  if (poolCurPool === "P04" && POOLS.some(p => p.id !== "P04")) poolCurPool = POOLS.find(p => p.id !== "P04").id;
 }
 
 function poolRenderDetail() {
