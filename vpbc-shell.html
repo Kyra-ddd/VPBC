@@ -3189,6 +3189,7 @@ const IDX_CATEGORIES = {
   msci: [
     { code:"MCHINA50", name:"MSCI China A 50",       fullName:"MSCI China A 50 Index",        count:50,  top10Wt:"45.2%", type:"MSCI" },
     { code:"MCHINA",   name:"MSCI China",            fullName:"MSCI China Index",            count:702, top10Wt:"38.1%", type:"MSCI" },
+    { code:"MCAS",     name:"MSCI China All Shares", fullName:"MSCI China All Shares Index（中国全股票，覆盖 A股+港股+中概 ADR）", count:721, top10Wt:"39.2%", type:"MSCI" },
     { code:"MCA100",   name:"MSCI China A 100",      fullName:"MSCI China A 100 Index",       count:100, top10Wt:"42.8%", type:"MSCI" },
     { code:"MEMG",     name:"MSCI Emerging Markets", fullName:"MSCI EM Index",                count:1365,top10Wt:"28.5%", type:"MSCI" },
     { code:"MASI",     name:"MSCI Asia ex Japan",    fullName:"MSCI Asia ex Japan Index",     count:830, top10Wt:"32.0%", type:"MSCI" },
@@ -3232,6 +3233,28 @@ const IDX_CONSTITUENTS = {
     { code:"600585", name:"海螺水泥", market:"A股", industry:"原材料", weight:1.05, price:23.70,  chg:-0.85 },
     { code:"002236", name:"大华股份", market:"A股", industry:"科技",   weight:1.02, price:16.30,  chg:+0.74 },
   ],
+  "MCAS": [
+    { code:"0700.HK",  name:"腾讯控股",   market:"港股",     industry:"互联网", weight:12.85, price:612.00, chg:+1.15 },
+    { code:"BABA.US",  name:"阿里巴巴",   market:"美股中概", industry:"互联网", weight:8.42,  price:148.60, chg:+2.32 },
+    { code:"600519",   name:"贵州茅台",   market:"A股",      industry:"消费",   weight:3.26,  price:1432.0, chg:+0.82 },
+    { code:"3690.HK",  name:"美团-W",     market:"港股",     industry:"互联网", weight:2.85,  price:168.40, chg:-0.86 },
+    { code:"PDD.US",   name:"拼多多",     market:"美股中概", industry:"互联网", weight:2.64,  price:156.20, chg:+3.18 },
+    { code:"0941.HK",  name:"中国移动",   market:"港股",     industry:"通信",   weight:2.12,  price:118.60, chg:+0.35 },
+    { code:"1810.HK",  name:"小米集团-W", market:"港股",     industry:"科技",   weight:1.95,  price:52.80,  chg:+2.05 },
+    { code:"002594",   name:"比亚迪",     market:"A股",      industry:"汽车",   weight:1.78,  price:238.50, chg:+1.52 },
+    { code:"300750",   name:"宁德时代",   market:"A股",      industry:"新能源", weight:1.72,  price:198.30, chg:-0.65 },
+    { code:"601398",   name:"工商银行",   market:"A股",      industry:"金融",   weight:1.58,  price:5.23,   chg:-0.19 },
+    { code:"JD.US",    name:"京东",       market:"美股中概", industry:"互联网", weight:1.35,  price:102.40, chg:+1.86 },
+    { code:"601939",   name:"建设银行",   market:"A股",      industry:"金融",   weight:1.31,  price:9.86,   chg:+0.24 },
+    { code:"NTES.US",  name:"网易",       market:"美股中概", industry:"互联网", weight:1.28,  price:118.90, chg:-0.52 },
+    { code:"0883.HK",  name:"中国海洋石油", market:"港股",   industry:"能源",   weight:1.24,  price:21.35,  chg:+0.94 },
+    { code:"000858",   name:"五粮液",     market:"A股",      industry:"消费",   weight:1.18,  price:142.60, chg:+0.42 },
+    { code:"601318",   name:"中国平安",   market:"A股",      industry:"金融",   weight:1.10,  price:42.15,  chg:-0.34 },
+    { code:"TCOM.US",  name:"携程集团",   market:"美股中概", industry:"消费",   weight:0.95,  price:78.50,  chg:+1.42 },
+    { code:"000333",   name:"美的集团",   market:"A股",      industry:"消费",   weight:0.92,  price:76.80,  chg:+0.68 },
+    { code:"1024.HK",  name:"快手-W",     market:"港股",     industry:"互联网", weight:0.88,  price:62.40,  chg:-1.12 },
+    { code:"2020.HK",  name:"安踏体育",   market:"港股",     industry:"消费",   weight:0.85,  price:88.60,  chg:+0.57 },
+  ],
   "000300": [
     { code:"600519", name:"贵州茅台", market:"A股", industry:"消费",   weight:5.21, price:1432.0, chg:+0.82 },
     { code:"601318", name:"中国平安", market:"A股", industry:"金融",   weight:3.82, price:42.15,  chg:-0.34 },
@@ -3251,6 +3274,7 @@ const IDX_CONSTITUENTS = {
 const IDX_NAV_DATES = ["05-04","05-11","05-18","05-25","06-01","06-08","06-15","06-22","06-29","07-06","07-13","07-20","07-27","08-03","08-10","08-17","08-24","08-31"];
 const IDX_NAV_BM = {
   "MCHINA50": [1.000,0.988,1.005,1.012,0.998,1.015,1.028,1.022,1.038,1.045,1.033,1.052,1.061,1.054,1.070,1.079,1.071,1.074],
+  "MCAS":     [1.000,0.995,1.012,1.020,1.006,1.024,1.041,1.033,1.052,1.066,1.051,1.072,1.086,1.078,1.094,1.105,1.094,1.089],
   "000300":   [1.000,0.982,0.998,1.008,0.994,1.006,1.018,1.010,1.026,1.033,1.020,1.038,1.046,1.038,1.050,1.058,1.049,1.042],
 };
 const IDX_SERIES_COLORS = ["#2a78d6", "#eb6834", "#1baf7a"]; // 研究员序列色（蓝/橙/青，CVD 安全序）；基准=灰虚线
