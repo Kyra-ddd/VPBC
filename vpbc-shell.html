@@ -413,7 +413,7 @@ function renderContent(html) {
   if (activeTabKey === 'research-report') { reportRender(); }
   if (activeTabKey === 'stock-pool') { poolRenderGrid(); poolRenderDetail(); }
   if (activeTabKey === 'portfolio') { portRenderPortfolios(); portRenderShared(); portRenderHoldings(); portRenderRebalances(); portRenderIndicatorLib(); portRenderPerf(); }
-  if (activeTabKey === 'index-sim') { idxRenderIndexList(); idxRenderPortfolios(); }
+  if (activeTabKey === 'index-sim') { idxRenderIndexList(); idxRenderDash(); idxOpsRenderAll(); }
   if (activeTabKey === 'config') { cfgSwitchTab('users'); }
   if (activeTabKey === 'share-class') { scRender(); }
   if (activeTabKey === 'share-class-add') { scAddInit(); }
@@ -3245,20 +3245,70 @@ const IDX_CONSTITUENTS = {
     { code:"300059", name:"东方财富", market:"A股", industry:"金融",   weight:1.28, price:18.45,  chg:+1.28 },
   ],
 };
-const IDX_PORTFOLIOS = [
-  { id:"IP01", name:"MSCI China A 50 模拟盘", index:"MSCI China A 50", indexCode:"MCHINA50", holdings:20, weight:"92%", creator:"Kyra",  createDate:"2026-08-10", status:"追踪中", trackError:"-1.2%", nav:[1.000,0.981,0.996,1.024,1.003,1.035,1.048,1.052,1.061], dates:["07-15","07-22","07-29","08-05","08-12","08-19","08-22","08-26","08-28"] },
-  { id:"IP02", name:"沪深300 等权模拟",        index:"沪深 300",        indexCode:"000300",  holdings:15, weight:"78%", creator:"David", createDate:"2026-08-05", status:"追踪中", trackError:"+0.4%",  nav:[1.000,1.012,0.995,1.035,1.028,1.061],                     dates:["07-05","07-12","07-19","07-26","08-02","08-05"] },
+// ── 指数模拟：任务数据模型 ─────────────────────────────────────────
+// 一个「任务」= 经理基于某指数创建、指派给某位研究员的独立模拟组合。
+// 研究员可在操作台自行调整持仓权重并调仓；经理在「我的指数组合」横向比对。
+const IDX_NAV_DATES = ["05-04","05-11","05-18","05-25","06-01","06-08","06-15","06-22","06-29","07-06","07-13","07-20","07-27","08-03","08-10","08-17","08-24","08-31"];
+const IDX_NAV_BM = {
+  "MCHINA50": [1.000,0.988,1.005,1.012,0.998,1.015,1.028,1.022,1.038,1.045,1.033,1.052,1.061,1.054,1.070,1.079,1.071,1.074],
+  "000300":   [1.000,0.982,0.998,1.008,0.994,1.006,1.018,1.010,1.026,1.033,1.020,1.038,1.046,1.038,1.050,1.058,1.049,1.042],
+};
+const IDX_SERIES_COLORS = ["#2a78d6", "#eb6834", "#1baf7a"]; // 研究员序列色（蓝/橙/青，CVD 安全序）；基准=灰虚线
+let IDX_TASKS = [
+  { id:"T01", indexCode:"MCHINA50", analyst:"Kyra",  name:"MSCI China A 50 · Kyra",  createDate:"2026-04-30", buildMode:"custom", status:"追踪中", off:0,
+    nav:[1.000,1.012,1.035,1.048,1.031,1.056,1.078,1.069,1.094,1.112,1.094,1.118,1.136,1.124,1.148,1.163,1.151,1.168],
+    holdings:[{code:"002594",name:"比亚迪",wt:10.5},{code:"300750",name:"宁德时代",wt:9.5},{code:"002230",name:"科大讯飞",wt:8.5},{code:"600519",name:"贵州茅台",wt:7.0},{code:"002415",name:"海康威视",wt:7.5},{code:"300059",name:"东方财富",wt:7.0},{code:"601888",name:"中国中免",wt:6.0},{code:"600036",name:"招商银行",wt:5.0},{code:"601318",name:"中国平安",wt:4.5},{code:"600276",name:"恒瑞医药",wt:7.0},{code:"000858",name:"五粮液",wt:7.0}],
+    rebalances:[
+      { date:"2026-06-15", note:"减持白酒、加仓新能源", changes:[{code:"600519",name:"贵州茅台",from:8.0,to:7.0},{code:"000858",name:"五粮液",from:8.0,to:7.0},{code:"300750",name:"宁德时代",from:8.5,to:9.5}] },
+      { date:"2026-08-10", note:"清仓隆基、加仓 AI 算力", changes:[{code:"601012",name:"隆基绿能",from:6.5,to:0},{code:"002230",name:"科大讯飞",from:7.5,to:8.5}] },
+    ] },
+  { id:"T02", indexCode:"MCHINA50", analyst:"Kevin", name:"MSCI China A 50 · Kevin", createDate:"2026-04-30", buildMode:"full",   status:"追踪中", off:0,
+    nav:[1.000,0.990,1.008,1.014,1.001,1.018,1.031,1.024,1.041,1.048,1.035,1.055,1.063,1.056,1.072,1.081,1.072,1.069],
+    holdings:[], // 初始化时按指数权重填充（见 idxSeedTaskHoldings）
+    rebalances:[] },
+  { id:"T03", indexCode:"MCHINA50", analyst:"Grace", name:"MSCI China A 50 · Grace", createDate:"2026-04-30", buildMode:"custom", status:"追踪中", off:0,
+    nav:[1.000,0.996,1.010,1.018,1.012,1.022,1.030,1.026,1.037,1.042,1.036,1.048,1.054,1.049,1.058,1.060,1.052,1.039],
+    holdings:[{code:"601318",name:"中国平安",wt:8.5},{code:"600519",name:"贵州茅台",wt:8.0},{code:"600036",name:"招商银行",wt:7.5},{code:"601398",name:"工商银行",wt:6.0},{code:"601166",name:"兴业银行",wt:5.5},{code:"601328",name:"交通银行",wt:4.5},{code:"000858",name:"五粮液",wt:5.0},{code:"600887",name:"伊利股份",wt:4.5},{code:"600585",name:"海螺水泥",wt:4.0},{code:"000568",name:"泸州老窖",wt:4.0},{code:"601888",name:"中国中免",wt:3.5}],
+    rebalances:[
+      { date:"2026-07-27", note:"加仓银行防御", changes:[{code:"601318",name:"中国平安",from:7.5,to:8.5},{code:"601398",name:"工商银行",from:5.0,to:6.0}] },
+    ] },
+  { id:"T04", indexCode:"000300", analyst:"Emma",  name:"沪深 300 · Emma",  createDate:"2026-05-06", buildMode:"custom", status:"追踪中", off:0,
+    nav:[1.000,0.992,1.012,1.024,1.008,1.024,1.042,1.032,1.052,1.062,1.046,1.068,1.080,1.070,1.084,1.094,1.083,1.071],
+    holdings:[{code:"600519",name:"贵州茅台",wt:5.5},{code:"002594",name:"比亚迪",wt:5.5},{code:"300750",name:"宁德时代",wt:5.0},{code:"601318",name:"中国平安",wt:4.0},{code:"600036",name:"招商银行",wt:3.2},{code:"000001",name:"平安银行",wt:2.5},{code:"002415",name:"海康威视",wt:2.5},{code:"300059",name:"东方财富",wt:2.5},{code:"600030",name:"中信证券",wt:2.0},{code:"601166",name:"兴业银行",wt:1.8}],
+    rebalances:[
+      { date:"2026-08-03", note:"新能源获利了结", changes:[{code:"300750",name:"宁德时代",from:6.0,to:5.0},{code:"002594",name:"比亚迪",from:6.5,to:5.5}] },
+    ] },
+  { id:"T05", indexCode:"000300", analyst:"David", name:"沪深 300 · David", createDate:"2026-05-06", buildMode:"full",   status:"追踪中", off:0,
+    nav:[1.000,0.988,1.002,1.010,0.998,1.008,1.018,1.011,1.024,1.030,1.018,1.032,1.039,1.031,1.041,1.047,1.038,1.026],
+    holdings:[], // 初始化时按等权填充
+    rebalances:[
+      { date:"2026-06-29", note:"等权再平衡", changes:[{code:"000001",name:"平安银行",from:3.5,to:3.0},{code:"600030",name:"中信证券",from:2.5,to:3.0}] },
+      { date:"2026-08-17", note:"剔除平安银行、补足招商", changes:[{code:"000001",name:"平安银行",from:3.0,to:0},{code:"600036",name:"招商银行",from:2.5,to:3.0}] },
+    ] },
 ];
+(function idxSeedTaskHoldings() {
+  // T02 = 按指数权重（全部成份股）
+  IDX_TASKS[1].holdings = (IDX_CONSTITUENTS["MCHINA50"] || []).map(s => ({ code:s.code, name:s.name, wt:s.weight }));
+  // T05 = 剔除平安银行后的等权组合
+  IDX_TASKS[4].holdings = (IDX_CONSTITUENTS["000300"] || []).filter(s => s.code !== "000001").map(s => ({ code:s.code, name:s.name, wt:3.0 }));
+})();
 let idxCurIndex = null;
 let idxSortKey = 'weight';
 let idxSelected = new Set();
 let idxBuildMode = 'full';
+let idxDashIndex = null;   // 看板当前比对的任务组（按指数）
+let idxDashRange = 'all';  // 1m / 3m / all
+let idxOpsAnalyst = null;  // 操作台当前研究员
+let idxOpsTaskId = null;   // 操作台当前任务
+let idxOpsEdit = null;     // 权重编辑缓冲 {code: wt}
+let idxOpsEditTaskId = null;
 
 function buildIndexSim() {
   return `<div class="toolbar mb-4">
     <div class="segmented" id="idxMainTab">
       <button class="seg active" onclick="idxSwitchTab('constituents')">成份浏览</button>
-      <button class="seg" onclick="idxSwitchTab('portfolios')">我的指数组合</button>
+      <button class="seg" onclick="idxSwitchTab('portfolios')">我的指数组合（经理）</button>
+      <button class="seg" onclick="idxSwitchTab('ops')">研究员操作台</button>
     </div>
   </div>
 
@@ -3344,14 +3394,19 @@ function buildIndexSim() {
     </div>
   </div>
 
-  <!-- Pane 2: 我的指数组合 -->
+  <!-- Pane 2: 我的指数组合（经理比对看板） -->
   <div id="idxPanePort" style="display:none">
-    <div id="idxPortList"></div>
+    <div id="idxDashHost"></div>
+  </div>
+
+  <!-- Pane 3: 研究员操作台 -->
+  <div id="idxPaneOps" style="display:none">
+    <div id="idxOpsHost"></div>
   </div>
 
   <div class="notice">
     <span class="ico">ⓘ</span>
-    <span>指数模拟组合以指数<strong>成份股及权重</strong>为起点，支持调整后追踪。涨跌色采用<strong>港式惯例</strong>：涨红跌绿。数据来源待接入（Tushare / MSCI）。</span>
+    <span>业务闭环：经理选定指数 → 创建任务并<strong>指派研究员</strong> → 研究员在操作台<strong>自选成份股与权重</strong>（可偏离指数）并调仓 → 经理在「我的指数组合」<strong>横向比对</strong>各组合与指数基准。涨跌色采用<strong>港式惯例</strong>：涨红跌绿。数据来源待接入（Tushare / MSCI）。</span>
   </div>
 
   <!-- 创建组合弹层 -->
@@ -3363,11 +3418,11 @@ function buildIndexSim() {
       </div>
       <div class="modal-body">
         <div class="form-row">
-          <label class="form-label">组合名称</label>
-          <input type="text" class="input" id="idxPortName" placeholder="如：MSCI China A 50 模拟盘" style="width:100%">
+          <label class="form-label">组合名称前缀 <span class="tiny" style="font-weight:400;color:var(--vp-gray-400)">留空则默认「指数名称 · 研究员」</span></label>
+          <input type="text" class="input" id="idxPortName" placeholder="默认：指数名称 · 研究员名称，可输入自定义前缀" style="width:100%">
         </div>
         <div class="form-row">
-          <label class="form-label">研究员</label>
+          <label class="form-label">指派研究员（多选，每人独立建仓操盘）</label>
           <div class="ms" id="msIdxAnalyst">
             <div class="ms-field" onclick="msToggle('msIdxAnalyst',event)">
               <div class="ms-tags" id="msIdxAnalystTags"></div>
@@ -3396,8 +3451,19 @@ function buildIndexSim() {
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary btn-sm" onclick="idxCloseCreate()">取消</button>
-        <button class="btn btn-primary btn-sm" onclick="idxConfirmCreate()">确认创建组合</button>
+        <button class="btn btn-primary btn-sm" onclick="idxConfirmCreate()">确认创建并指派</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 组合详情弹层（经理下钻） -->
+  <div class="modal-mask" id="idxDetailModal"><div class="modal-overlay" onclick="if(event.target===this)idxCloseDetail()"></div>
+    <div class="modal" onclick="event.stopPropagation()" style="max-width:860px">
+      <div class="modal-header">
+        <div class="modal-title" id="idxDetTitle">组合详情</div>
+        <button class="btn btn-ghost btn-sm" onclick="idxCloseDetail()">✕</button>
+      </div>
+      <div class="modal-body" id="idxDetBody" style="max-height:74vh;overflow:auto"></div>
     </div>
   </div>`;
 }
@@ -3407,7 +3473,9 @@ function idxSwitchTab(tab) {
   document.querySelector(`#idxMainTab .seg[onclick="idxSwitchTab('${tab}')"]`).classList.add("active");
   document.getElementById("idxPaneConst").style.display = tab === "constituents" ? "" : "none";
   document.getElementById("idxPanePort").style.display = tab === "portfolios" ? "" : "none";
-  if (tab === "portfolios") idxRenderPortfolios();
+  document.getElementById("idxPaneOps").style.display = tab === "ops" ? "" : "none";
+  if (tab === "portfolios") idxRenderDash();
+  if (tab === "ops") idxOpsRenderAll();
 }
 
 function idxFindIndex(code) {
@@ -3516,52 +3584,513 @@ function idxToggleSelectAll() {
   idxRenderConstituents();
 }
 
-function idxRenderPortfolios() {
-  const host = document.getElementById("idxPortList");
+// ── 经理看板：我的指数组合（横向比对 + 基准对比） ─────────────────
+function idxStockMeta(code) {
+  for (const arr of Object.values(IDX_CONSTITUENTS)) {
+    const hit = arr.find(s => s.code === code);
+    if (hit) return hit;
+  }
+  return null;
+}
+function idxDashGroups() { return [...new Set(IDX_TASKS.map(t => t.indexCode))]; }
+function idxRangeStart() {
+  const n = IDX_NAV_DATES.length;
+  return idxDashRange === "1m" ? Math.max(0, n - 4) : idxDashRange === "3m" ? Math.max(0, n - 13) : 0;
+}
+// 任务净值对齐到全局日期轴：off 为任务起点在日期轴上的偏移
+function idxTaskVals(t, s) {
+  const out = []; const from = Math.max(s, t.off);
+  for (let i = from; i < IDX_NAV_DATES.length; i++) {
+    const p = i - t.off;
+    if (p >= 0 && p < t.nav.length) out.push(t.nav[p]);
+  }
+  return { start: from, vals: out };
+}
+// 区间绩效：收益/波动/夏普/最大回撤；序列不足两点时返回 null
+function idxPerf(vals) {
+  if (!vals || vals.length < 2) return null;
+  const ret = vals[vals.length - 1] / vals[0] - 1;
+  const rets = vals.slice(1).map((v, i) => v / vals[i] - 1);
+  const mean = rets.reduce((a, b) => a + b, 0) / rets.length;
+  const vol = Math.sqrt(rets.reduce((a, b) => a + (b - mean) ** 2, 0) / Math.max(1, rets.length - 1)) * Math.sqrt(52);
+  const ann = Math.pow(1 + ret, 52 / rets.length) - 1;
+  let peak = -1e9, mdd = 0;
+  vals.forEach(v => { peak = Math.max(peak, v); mdd = Math.min(mdd, v / peak - 1); });
+  return { ret, vol, sharpe: vol > 0 ? ann / vol : null, mdd };
+}
+function fmtRet(v) { return v == null ? "—" : `${v >= 0 ? "+" : ""}${(v * 100).toFixed(1)}%`; }
+function retCls(v) { return v == null ? "cell-muted" : v >= 0 ? "tag-up" : "tag-down"; }
+
+function idxRenderDash() {
+  const host = document.getElementById("idxDashHost");
   if (!host) return;
-  host.innerHTML = IDX_PORTFOLIOS.map(p => {
-    const nav = p.nav;
-    const W = 400, H = 60, PL = 8, PR = 46, PT = 6, PB = 14;
-    const iw = W - PL - PR, ih = H - PT - PB;
-    const lo = Math.min(...nav) * 0.995, hi = Math.max(...nav) * 1.005;
-    const X = i => PL + iw * i / (nav.length - 1);
-    const Y = v => PT + ih * (1 - (v - lo) / (hi - lo));
-    const line = nav.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
-    const end = nav[nav.length - 1];
-    const up = end >= 1;
-    const color = up ? "var(--vp-red)" : "var(--vp-green)"; // 港式：涨红跌绿
-    return `<div class="card mb-4" style="cursor:pointer" onclick="alert('原型：进入指数组合详情（复用模拟组合页的持仓+净值+调仓逻辑）')">
-      <div class="card-body">
-        <div class="flex items-center justify-between mb-3" style="flex-wrap:wrap;gap:8px">
-          <div class="flex items-center gap-3">
-            <div class="card-title">${p.name}</div>
-            <span class="tag tag-green">${p.status}</span>
-            <span class="tag tag-gray">追踪误差 ${p.trackError}</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <div style="font-family:'Poppins',sans-serif;font-size:24px;font-weight:600;color:${color}">${up?'+':''}${(end*100-100).toFixed(2)}%</div>
-            <span class="tiny">vs 指数</span>
-            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：调整权重')">⚙️ 调仓</button>
-            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：查看详情')">查看</button>
-          </div>
-        </div>
-        <div class="flex gap-4" style="flex-wrap:wrap;font-size:13px;color:var(--vp-gray-500);margin-bottom:8px">
-          <span>指数：<span class="bold" style="color:var(--vp-gray-900)">${p.index}</span></span>
-          <span>持仓：<span class="bold" style="color:var(--vp-gray-900)">${p.holdings}只</span></span>
-          <span>总权重：<span class="bold" style="color:var(--vp-gray-900)">${p.weight}</span></span>
-          <span>创建人：<span class="bold" style="color:var(--vp-gray-900)">${p.creator}</span></span>
-          <span>建仓日：<span class="bold" style="color:var(--vp-gray-900)">${p.createDate}</span></span>
-        </div>
-        <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
-          <path d="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-          <circle cx="${X(nav.length-1)}" cy="${Y(end)}" r="4" fill="${color}" stroke="#fff" stroke-width="2"/>
-          <text x="${X(nav.length-1)+8}" y="${Y(end)+4}" class="end-label">${end.toFixed(3)}</text>
-          <text x="${PL}" y="${H-2}" class="axis-tick">${p.dates[0]}</text>
-          <text x="${X(nav.length-1)}" y="${H-2}" text-anchor="end" class="axis-tick">${p.dates[p.dates.length-1]}</text>
-        </svg>
-      </div>
+  if (!idxDashIndex) { const g = idxDashGroups(); idxDashIndex = g[0] || null; }
+  if (!idxDashIndex) {
+    host.innerHTML = `<div class="card" style="padding:48px;text-align:center;color:var(--vp-gray-500)">
+      <div style="font-size:40px;margin-bottom:12px">🗂️</div>
+      暂无指数模拟任务 — 到「成份浏览」选择指数并创建，指派研究员后即可在此比对
     </div>`;
-  }).join("");
+    return;
+  }
+  const idx = idxFindIndex(idxDashIndex);
+  const tasks = IDX_TASKS.filter(t => t.indexCode === idxDashIndex);
+  const groups = idxDashGroups();
+  const earliest = tasks.reduce((m, t) => t.createDate < m ? t.createDate : m, "9999");
+  host.innerHTML = `
+    <div class="card mb-4"><div class="card-body">
+      <div class="flex items-center justify-between" style="flex-wrap:wrap;gap:12px">
+        <div class="flex items-center gap-3">
+          <div class="card-title">指数任务</div>
+          <select class="select" style="width:300px" onchange="idxDashPick(this.value)">
+            ${groups.map(c => { const i2 = idxFindIndex(c); const n2 = IDX_TASKS.filter(t => t.indexCode === c).length;
+              return `<option value="${c}" ${c === idxDashIndex ? "selected" : ""}>${i2 ? i2.name : c}（${n2} 位研究员）</option>`; }).join("")}
+          </select>
+        </div>
+        <div class="flex items-center gap-3" style="font-size:12px;color:var(--vp-gray-500);flex-wrap:wrap">
+          <span>创建 <b style="color:var(--vp-gray-900)">${earliest}</b></span>
+          <span>初始资金 <b style="color:var(--vp-gray-900)">1000万/人</b></span>
+          <span>数据截至 <b style="color:var(--vp-gray-900)">2026-08-31</b></span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="idxSwitchTab('constituents')">＋ 新建任务（去成份浏览）</button>
+      </div>
+    </div></div>
+
+    <div class="card mb-4">
+      <div class="card-head">
+        <div class="card-title">组合表现对比 <span class="tiny">区间起点归一化 · 基准为虚线</span></div>
+        <div class="segmented" id="idxDashRangeSeg">
+          <button class="seg" data-r="1m" onclick="idxDashSetRange('1m')">近1月</button>
+          <button class="seg" data-r="3m" onclick="idxDashSetRange('3m')">近3月</button>
+          <button class="seg" data-r="all" onclick="idxDashSetRange('all')">全部</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="flex gap-4 mb-2" id="idxDashLegend" style="flex-wrap:wrap;font-size:12px;color:var(--vp-gray-700)"></div>
+        <svg id="idxDashChart" viewBox="0 0 760 300" style="width:100%;height:auto;display:block"></svg>
+        <div class="tiny" style="margin-top:6px">悬停查看各日期净值与区间涨跌 · 基准 = 原指数（同区间归一化）</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">横向比对 <span class="tiny">按区间收益排序 · 基准行置顶</span></div></div>
+      <div style="overflow:auto"><table class="data-table" id="idxDashTable"></table></div>
+    </div>
+
+    <div id="idxDashTip" style="position:fixed;display:none;background:#fff;border:1px solid var(--vp-border);border-radius:8px;box-shadow:0 6px 20px rgba(21,50,43,.12);padding:8px 10px;font-size:12px;pointer-events:none;z-index:1500;min-width:190px"></div>`;
+  document.querySelectorAll("#idxDashRangeSeg .seg").forEach(b => b.classList.toggle("active", b.dataset.r === idxDashRange));
+  idxRenderDashChart(tasks);
+  idxRenderDashTable(tasks, idx);
+}
+function idxDashSetRange(r) { idxDashRange = r; idxRenderDash(); }
+function idxDashPick(code) { idxDashIndex = code; idxDashRange = "all"; idxRenderDash(); }
+
+function idxRenderDashChart(tasks) {
+  const svg = document.getElementById("idxDashChart");
+  if (!svg) return;
+  const n = IDX_NAV_DATES.length, s = idxRangeStart();
+  const W = 760, H = 300, PL = 52, PR = 118, PT = 14, PB = 24, iw = W - PL - PR, ih = H - PT - PB;
+  const X = i => PL + iw * (i - s) / Math.max(1, n - 1 - s);
+  const code = idxDashIndex;
+  const bmArr = IDX_NAV_BM[code];
+  const S = [];
+  if (bmArr) S.push({ name: "指数基准", color: "#6B7A73", dash: "6 4", w: 2, isBm: true,
+    pts: bmArr.slice(s).map((v, k) => ({ i: s + k, r: (v / bmArr[s] - 1) * 100 })),
+    rawAt: i => IDX_NAV_BM[code][i] });
+  tasks.forEach((t, k) => {
+    const { start, vals } = idxTaskVals(t, s);
+    if (!vals.length) return;
+    const base = vals[0];
+    S.push({ name: t.analyst, color: IDX_SERIES_COLORS[k % IDX_SERIES_COLORS.length], dash: null, w: 2.2,
+      pts: vals.map((v, k2) => ({ i: start + k2, r: (v / base - 1) * 100 })),
+      rawAt: i => { const p = i - t.off; return p >= 0 && p < t.nav.length ? t.nav[p] : null; } });
+  });
+  let lo = 0, hi = 0;
+  S.forEach(sr => sr.pts.forEach(p => { lo = Math.min(lo, p.r); hi = Math.max(hi, p.r); }));
+  const pad = (hi - lo) * 0.12 || 1;
+  lo -= pad; hi += pad;
+  if (lo > -0.5) lo = -0.5;
+  if (hi < 0.5) hi = 0.5;
+  const Y = r => PT + ih * (1 - (r - lo) / (hi - lo));
+  let g = "";
+  for (let k = 0; k < 5; k++) {
+    const r = lo + (hi - lo) * k / 4;
+    g += `<line x1="${PL}" y1="${Y(r)}" x2="${W - PR}" y2="${Y(r)}" stroke="var(--vp-gray-100)"/>` +
+      `<text x="${PL - 6}" y="${Y(r) + 3}" text-anchor="end" class="axis-tick">${r >= 0 ? "+" : ""}${r.toFixed(1)}%</text>`;
+  }
+  if (lo < 0 && hi > 0) g += `<line x1="${PL}" y1="${Y(0)}" x2="${W - PR}" y2="${Y(0)}" stroke="var(--vp-gray-300)" stroke-dasharray="2 3"/>`;
+  for (let i = s; i < n; i++) if ((i - s) % 3 === 0 || i === n - 1)
+    g += `<text x="${X(i)}" y="${H - 6}" text-anchor="middle" class="axis-tick">${IDX_NAV_DATES[i]}</text>`;
+  const paths = S.map(sr => sr.pts.length < 2 ? "" :
+    `<path d="${sr.pts.map((p, k) => (k ? "L" : "M") + X(p.i).toFixed(1) + "," + Y(p.r).toFixed(1)).join("")}" fill="none" stroke="${sr.color}" stroke-width="${sr.w}" stroke-linecap="round" stroke-linejoin="round" ${sr.dash ? `stroke-dasharray="${sr.dash}"` : ""} opacity=".92"/>`).join("");
+  const dots = S.filter(sr => sr.pts.length === 1).map(sr => `<circle cx="${X(sr.pts[0].i)}" cy="${Y(sr.pts[0].r)}" r="3.5" fill="${sr.color}"/>`).join("");
+  // 线尾直接标注：色条承色、文字用灰墨，防 13px 内碰撞
+  const ends = S.filter(sr => sr.pts.length).map(sr => ({ ...sr, er: sr.pts[sr.pts.length - 1].r, ey: Y(sr.pts[sr.pts.length - 1].r) })).sort((a, b) => a.ey - b.ey);
+  for (let k = 1; k < ends.length; k++) if (ends[k].ey - ends[k - 1].ey < 13) ends[k].ey = ends[k - 1].ey + 13;
+  const labels = ends.map(x => `<line x1="${W - PR + 6}" y1="${x.ey - 3.5}" x2="${W - PR + 20}" y2="${x.ey - 3.5}" stroke="${x.color}" stroke-width="3" stroke-linecap="round" ${x.dash ? 'stroke-dasharray="3 2.5"' : ""}/>` +
+    `<text x="${W - PR + 25}" y="${x.ey}" font-size="11" fill="#3D4A42" style="font-variant-numeric:tabular-nums">${x.name} ${x.er >= 0 ? "+" : ""}${x.er.toFixed(1)}%</text>`).join("");
+  const hdots = S.map((sr, k) => `<circle class="idxhdot" data-k="${k}" r="4" fill="${sr.color}" stroke="#fff" stroke-width="1.5" style="display:none"/>`).join("");
+  svg.innerHTML = g + paths + dots + labels + hdots + `<line id="idxDashCv" y1="${PT}" y2="${H - PB}" stroke="var(--vp-gray-300)" style="display:none"/>`;
+  const legend = document.getElementById("idxDashLegend");
+  if (legend) legend.innerHTML = S.map(sr =>
+    `<span style="display:inline-flex;align-items:center;gap:5px"><i style="width:14px;height:3px;border-radius:2px;display:inline-block;${sr.dash ? `background:repeating-linear-gradient(90deg,${sr.color} 0 4px,transparent 4px 7px)` : `background:${sr.color}`}"></i>${sr.name}</span>`).join("");
+  const tip = document.getElementById("idxDashTip");
+  svg.onpointermove = e => {
+    const rect = svg.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width * W;
+    let i = Math.round((x - PL) / iw * (n - 1 - s) + s);
+    i = Math.max(s, Math.min(n - 1, i));
+    const cv = svg.querySelector("#idxDashCv");
+    cv.style.display = ""; cv.setAttribute("x1", X(i)); cv.setAttribute("x2", X(i));
+    svg.querySelectorAll(".idxhdot").forEach(d => {
+      const sr = S[+d.dataset.k];
+      const p = sr.pts.find(q => q.i === i);
+      if (p) { d.style.display = ""; d.setAttribute("cx", X(i)); d.setAttribute("cy", Y(p.r)); }
+      else d.style.display = "none";
+    });
+    tip.innerHTML = `<div style="font-weight:600;color:var(--vp-gray-900);margin-bottom:4px">2026-${IDX_NAV_DATES[i]}</div>` +
+      S.map(sr => {
+        const p = sr.pts.find(q => q.i === i);
+        if (!p) return "";
+        const raw = sr.rawAt(i);
+        return `<div style="display:flex;align-items:center;gap:6px;padding:1px 0">
+          <i style="width:8px;height:8px;border-radius:2px;background:${sr.color};display:inline-block;flex-shrink:0"></i>
+          <span style="color:var(--vp-gray-500)">${sr.name}</span>
+          <b style="margin-left:auto;color:var(--vp-gray-900);font-variant-numeric:tabular-nums">${raw != null ? raw.toFixed(3) : "—"} <span style="color:${p.r >= 0 ? "var(--vp-red)" : "var(--vp-green)"}">(${p.r >= 0 ? "+" : ""}${p.r.toFixed(1)}%)</span></b>
+        </div>`;
+      }).join("");
+    tip.style.display = "block";
+    tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 230) + "px";
+    tip.style.top = (e.clientY - 12) + "px";
+  };
+  svg.onpointerleave = () => {
+    tip.style.display = "none";
+    svg.querySelectorAll("#idxDashCv,.idxhdot").forEach(el => el.style.display = "none");
+  };
+}
+
+function idxRenderDashTable(tasks, idx) {
+  const host = document.getElementById("idxDashTable");
+  if (!host) return;
+  const s = idxRangeStart();
+  const bmArr = IDX_NAV_BM[idxDashIndex];
+  const bmPerf = bmArr ? idxPerf(bmArr.slice(s)) : null;
+  const bmRet = bmPerf?.ret ?? null;
+  const rows = tasks.map(t => ({ t, perf: idxPerf(idxTaskVals(t, s).vals) }))
+    .sort((a, b) => ((b.perf?.ret ?? -9) - (a.perf?.ret ?? -9)));
+  host.innerHTML = `<thead><tr>
+      <th>研究员</th><th>组合</th><th>建仓日期</th><th class="right">最新净值</th><th class="right">区间收益</th><th class="right">超额（vs基准）</th><th class="right">年化波动率</th><th class="right">夏普比率</th><th class="right">最大回撤</th><th class="right">调仓次数</th><th style="width:170px">操作</th>
+    </tr></thead><tbody>
+    ${bmArr ? `<tr style="background:var(--vp-mint-50)">
+      <td class="cell-muted">基准</td>
+      <td class="cell-muted">${idx ? idx.name : idxDashIndex}（指数）</td>
+      <td class="cell-muted">—</td>
+      <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${bmArr[bmArr.length - 1].toFixed(3)}</td>
+      <td class="right ${retCls(bmRet)}">${fmtRet(bmRet)}</td>
+      <td class="right cell-muted">—</td>
+      <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${(bmPerf.vol * 100).toFixed(1)}%</td>
+      <td class="right cell-muted">—</td>
+      <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${(bmPerf.mdd * 100).toFixed(1)}%</td>
+      <td class="right cell-muted">—</td>
+      <td></td>
+    </tr>` : ""}
+    ${rows.map(({ t, perf }) => {
+      const excess = perf && bmRet != null ? perf.ret - bmRet : null;
+      const nav = t.nav[t.nav.length - 1];
+      return `<tr>
+        <td class="bold">${t.analyst}</td>
+        <td class="cell-name">${t.name}</td>
+        <td class="cell-muted" style="font-variant-numeric:tabular-nums">${t.createDate}</td>
+        <td class="right bold" style="font-variant-numeric:tabular-nums">${nav.toFixed(3)}</td>
+        <td class="right ${retCls(perf?.ret)}">${fmtRet(perf?.ret)}</td>
+        <td class="right ${retCls(excess)}">${fmtRet(excess)}</td>
+        <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${perf ? (perf.vol * 100).toFixed(1) + "%" : "—"}</td>
+        <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${perf?.sharpe != null ? perf.sharpe.toFixed(2) : "—"}</td>
+        <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${perf ? (perf.mdd * 100).toFixed(1) + "%" : "—"}</td>
+        <td class="right cell-muted">${t.rebalances.length}</td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick="idxOpenDetail('${t.id}')">详情</button>
+          <button class="btn btn-secondary btn-sm" onclick="idxGoOps('${t.id}')">操作台</button>
+        </td>
+      </tr>`;
+    }).join("")}
+    ${rows.length === 0 && !bmArr ? `<tr><td colspan="11" class="cell-muted" style="text-align:center;padding:32px">该指数暂无研究员组合</td></tr>` : ""}
+  </tbody>`;
+}
+
+// ── 组合详情（经理下钻） ─────────────────────────────────────────
+function idxRebList(t) {
+  if (!t.rebalances.length) return `<div class="tiny" style="color:var(--vp-gray-400);padding:12px 0">暂无调仓记录</div>`;
+  return t.rebalances.slice().reverse().map(rb => `
+    <div style="padding:10px 0;border-bottom:1px dashed var(--vp-border)">
+      <div class="flex items-center justify-between" style="margin-bottom:4px">
+        <b style="font-size:13px">${rb.date}</b><span class="tiny" style="color:var(--vp-gray-500)">${rb.note}</span>
+      </div>
+      ${rb.changes.map(c => `<div class="tiny" style="display:flex;gap:10px;padding:2px 0;color:var(--vp-gray-500)">
+        <span class="cell-code">${c.code}</span><span>${c.name}</span>
+        <span style="margin-left:auto;font-variant-numeric:tabular-nums">${c.from.toFixed(1)}% → ${c.to.toFixed(1)}%${c.to === 0 ? "（清仓）" : c.from === 0 ? "（新建仓）" : ""}</span>
+      </div>`).join("")}
+    </div>`).join("");
+}
+function idxKpiCard(label, value, cls) {
+  return `<div style="background:var(--vp-mint-50);border-radius:10px;padding:14px 16px">
+    <div class="tiny" style="color:var(--vp-gray-500)">${label}</div>
+    <div class="${cls || ""}" style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums">${value}</div>
+  </div>`;
+}
+function idxOpenDetail(taskId) {
+  const t = IDX_TASKS.find(x => x.id === taskId);
+  if (!t) return;
+  const idx = idxFindIndex(t.indexCode);
+  const perf = idxPerf(t.nav);
+  const bmArr = IDX_NAV_BM[t.indexCode];
+  const bmPerf = bmArr ? idxPerf(bmArr) : null;
+  const excess = perf && bmPerf ? perf.ret - bmPerf.ret : null;
+  const metas = IDX_CONSTITUENTS[t.indexCode] || [];
+  const wOf = c => { const m = metas.find(x => x.code === c); return m ? m.weight : null; };
+  const indOf = c => idxStockMeta(c)?.industry || "—";
+  document.getElementById("idxDetTitle").textContent = t.name;
+  document.getElementById("idxDetBody").innerHTML = `
+    <div class="flex gap-3 mb-4" style="flex-wrap:wrap;align-items:center;font-size:12px;color:var(--vp-gray-500)">
+      <span class="tag tag-green">${t.status}</span>
+      <span>研究员 <b style="color:var(--vp-gray-900)">${t.analyst}</b></span>
+      <span>建仓 <b style="color:var(--vp-gray-900)">${t.createDate}</b></span>
+      <span>持仓 <b style="color:var(--vp-gray-900)">${t.holdings.length} 只</b></span>
+      <span>仓位合计 <b style="color:var(--vp-gray-900)">${t.holdings.reduce((a, h) => a + h.wt, 0).toFixed(1)}%</b></span>
+      <span>调仓 <b style="color:var(--vp-gray-900)">${t.rebalances.length} 次</b></span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+      ${idxKpiCard("区间收益（成立以来）", fmtRet(perf?.ret), retCls(perf?.ret))}
+      ${idxKpiCard("超额 vs 基准", fmtRet(excess), retCls(excess))}
+      ${idxKpiCard("最大回撤", perf ? (perf.mdd * 100).toFixed(1) + "%" : "—", "")}
+      ${idxKpiCard("最新净值", t.nav[t.nav.length - 1].toFixed(3), "")}
+    </div>
+    <div class="card-title mb-2" style="font-size:14px">净值走势（真实刻度，虚线为指数基准）</div>
+    <svg id="idxDetChart" viewBox="0 0 760 190" style="width:100%;height:auto;display:block;margin-bottom:16px"></svg>
+    <div class="card-title mb-2" style="font-size:14px">持仓 vs 指数权重</div>
+    <div style="overflow:auto;max-height:300px;margin-bottom:16px"><table class="data-table">
+      <thead><tr><th>代码</th><th>名称</th><th>行业</th><th class="right">我的权重</th><th class="right">指数权重</th><th class="right">偏离</th></tr></thead>
+      <tbody>${t.holdings.map(h => {
+        const iw = wOf(h.code);
+        const dev = iw != null ? h.wt - iw : null;
+        return `<tr><td class="cell-code">${h.code}</td><td class="cell-name">${h.name}</td><td class="cell-muted">${indOf(h.code)}</td>
+          <td class="right bold" style="font-variant-numeric:tabular-nums">${h.wt.toFixed(1)}%</td>
+          <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${iw != null ? iw.toFixed(2) + "%" : "—"}</td>
+          <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${dev != null ? (dev >= 0 ? "+" : "") + dev.toFixed(1) + "pp" : "—"}</td></tr>`;
+      }).join("")}</tbody></table></div>
+    <div class="card-title mb-2" style="font-size:14px">调仓记录</div>
+    ${idxRebList(t)}`;
+  idxRenderDetailChart(t, bmArr);
+  document.getElementById("idxDetailModal").classList.add("show");
+}
+function idxCloseDetail() { document.getElementById("idxDetailModal").classList.remove("show"); }
+function idxRenderDetailChart(t, bmArr) {
+  const svg = document.getElementById("idxDetChart");
+  if (!svg) return;
+  const n = IDX_NAV_DATES.length;
+  const W = 760, H = 190, PL = 48, PR = 96, PT = 12, PB = 20, iw = W - PL - PR, ih = H - PT - PB;
+  const X = i => PL + iw * i / (n - 1);
+  const all = [...t.nav, ...(bmArr || [])];
+  let lo = Math.min(...all), hi = Math.max(...all);
+  const p = (hi - lo) * 0.08 || 0.01;
+  lo -= p; hi += p;
+  const Y = v => PT + ih * (1 - (v - lo) / (hi - lo));
+  let g = "";
+  for (let k = 0; k < 4; k++) {
+    const v = lo + (hi - lo) * k / 3;
+    g += `<line x1="${PL}" y1="${Y(v)}" x2="${W - PR}" y2="${Y(v)}" stroke="var(--vp-gray-100)"/><text x="${PL - 6}" y="${Y(v) + 3}" text-anchor="end" class="axis-tick">${v.toFixed(2)}</text>`;
+  }
+  [0, n - 1].forEach(i => g += `<text x="${X(i)}" y="${H - 4}" text-anchor="${i ? "end" : "start"}" class="axis-tick">${IDX_NAV_DATES[i]}</text>`);
+  const bmPath = bmArr ? `<path d="${bmArr.map((v, i) => (i ? "L" : "M") + X(i).toFixed(1) + "," + Y(v).toFixed(1)).join("")}" fill="none" stroke="#6B7A73" stroke-width="2" stroke-dasharray="6 4" opacity=".9"/>` : "";
+  const myPath = t.nav.length < 2 ? "" : `<path d="${t.nav.map((v, i) => (i ? "L" : "M") + X(t.off + i).toFixed(1) + "," + Y(v).toFixed(1)).join("")}" fill="none" stroke="#2a78d6" stroke-width="2.2" stroke-linecap="round"/>`;
+  const myEnd = t.nav[t.nav.length - 1];
+  const endDot = `<circle cx="${X(t.off + t.nav.length - 1)}" cy="${Y(myEnd)}" r="3.5" fill="#2a78d6" stroke="#fff" stroke-width="1.5"/>`;
+  const labels = [];
+  if (bmArr) labels.push({ v: bmArr[bmArr.length - 1], c: "#6B7A73", n: "基准", dash: true });
+  labels.push({ v: myEnd, c: "#2a78d6", n: t.analyst, dash: false });
+  labels.sort((a, b) => a.v - b.v);
+  const ly = labels.map(l => Y(l.v));
+  for (let k = 1; k < ly.length; k++) if (ly[k] - ly[k - 1] < 12) ly[k] = ly[k - 1] + 12;
+  const lbl = labels.map((l, k) => `<line x1="${X(n - 1) + 6}" y1="${ly[k] - 3.5}" x2="${X(n - 1) + 18}" y2="${ly[k] - 3.5}" stroke="${l.c}" stroke-width="3" stroke-linecap="round" ${l.dash ? 'stroke-dasharray="3 2.5"' : ""}/>` +
+    `<text x="${X(n - 1) + 23}" y="${ly[k]}" font-size="11" fill="#3D4A42" style="font-variant-numeric:tabular-nums">${l.n} ${l.v.toFixed(3)}</text>`).join("");
+  svg.innerHTML = g + bmPath + myPath + endDot + lbl;
+}
+function idxToast(msg) {
+  let t = document.getElementById("idxToast");
+  if (!t) {
+    t = document.createElement("div");
+    t.id = "idxToast";
+    t.style.cssText = "position:fixed;left:50%;bottom:32px;transform:translateX(-50%);background:#1F2A25;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:2000;box-shadow:0 8px 24px rgba(21,50,43,.3);opacity:0;transition:opacity .25s;pointer-events:none";
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = 1;
+  clearTimeout(idxToast._t);
+  idxToast._t = setTimeout(() => { t.style.opacity = 0; }, 2600);
+}
+
+// ── 研究员操作台：自选成份股/权重 + 调仓 ──────────────────────────
+function idxGoOps(taskId) {
+  const t = IDX_TASKS.find(x => x.id === taskId);
+  if (!t) return;
+  idxOpsAnalyst = t.analyst;
+  idxOpsTaskId = t.id;
+  idxOpsEditTaskId = null;
+  idxSwitchTab("ops");
+}
+function idxOpsRenderAll() {
+  const host = document.getElementById("idxOpsHost");
+  if (!host) return;
+  const analysts = [...new Set(IDX_TASKS.map(t => t.analyst))].sort();
+  if (!idxOpsAnalyst || !analysts.includes(idxOpsAnalyst)) idxOpsAnalyst = analysts[0] || null;
+  const myTasks = idxOpsAnalyst ? IDX_TASKS.filter(t => t.analyst === idxOpsAnalyst) : [];
+  if (!idxOpsTaskId || !myTasks.some(t => t.id === idxOpsTaskId)) { idxOpsTaskId = myTasks[0]?.id || null; idxOpsEditTaskId = null; }
+  const task = IDX_TASKS.find(t => t.id === idxOpsTaskId);
+  if (!task) {
+    host.innerHTML = `<div class="card" style="padding:48px;text-align:center;color:var(--vp-gray-500)">
+      <div style="font-size:40px;margin-bottom:12px">👨‍💻</div>
+      暂无指派给你的指数模拟任务 — 等待经理创建并指派
+    </div>`;
+    return;
+  }
+  if (idxOpsEditTaskId !== task.id) {
+    idxOpsEdit = {};
+    task.holdings.forEach(h => idxOpsEdit[h.code] = h.wt);
+    idxOpsEditTaskId = task.id;
+  }
+  const idx = idxFindIndex(task.indexCode);
+  const metas = IDX_CONSTITUENTS[task.indexCode] || [];
+  const total = Object.values(idxOpsEdit).reduce((a, b) => a + (b || 0), 0);
+  const entries = Object.entries(idxOpsEdit).filter(([, w]) => w > 0).sort((a, b) => b[1] - a[1]);
+  const addable = metas.filter(m => !(m.code in idxOpsEdit));
+  host.innerHTML = `
+    <div class="card mb-4"><div class="card-body">
+      <div class="flex items-center justify-between" style="flex-wrap:wrap;gap:12px">
+        <div class="flex items-center gap-3" style="flex-wrap:wrap">
+          <div class="card-title">研究员操作台</div>
+          <span class="tag tag-blue">身份：研究员（原型按所选身份演示）</span>
+          <select class="select" style="width:150px" onchange="idxOpsPickAnalyst(this.value)">
+            ${analysts.map(a => `<option value="${a}" ${a === idxOpsAnalyst ? "selected" : ""}>${a}</option>`).join("")}
+          </select>
+          <select class="select" style="width:300px" onchange="idxOpsPickTask(this.value)">
+            ${myTasks.map(t => `<option value="${t.id}" ${t.id === idxOpsTaskId ? "selected" : ""}>${t.name}</option>`).join("")}
+          </select>
+        </div>
+        <div class="flex items-center gap-3" style="font-size:12px;color:var(--vp-gray-500);flex-wrap:wrap">
+          <span>追踪指数 <b style="color:var(--vp-gray-900)">${idx ? idx.name : task.indexCode}</b></span>
+          <span>建仓 <b style="color:var(--vp-gray-900)">${task.createDate}</b></span>
+          <span>初始资金 <b style="color:var(--vp-gray-900)">1000万</b></span>
+          <span>最新净值 <b style="color:var(--vp-gray-900)">${task.nav[task.nav.length - 1].toFixed(3)}</b></span>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="card mb-4">
+      <div class="card-head">
+        <div class="card-title">持仓管理 <span class="tiny">权重可偏离指数 · 研究员自主决策</span></div>
+        <div class="flex items-center gap-2">
+          <span class="tiny">仓位合计</span>
+          <b id="idxOpsTotal" style="font-variant-numeric:tabular-nums;color:${total > 100 ? "var(--vp-red)" : "var(--vp-gray-900)"}">${total.toFixed(1)}%</b>
+          <span class="tiny">预留现金</span>
+          <b id="idxOpsCash" style="font-variant-numeric:tabular-nums">${(100 - total).toFixed(1)}%</b>
+        </div>
+      </div>
+      <div style="overflow:auto;max-height:420px">
+        <table class="data-table">
+          <thead><tr><th>代码</th><th>名称</th><th>行业</th><th class="right">指数权重</th><th style="width:130px">我的权重(%)</th><th class="right">偏离(pp)</th><th class="right">参考市值(万)</th><th style="width:60px"></th></tr></thead>
+          <tbody>
+            ${entries.length ? entries.map(([code, wt]) => {
+              const m = metas.find(x => x.code === code);
+              const iw = m ? m.weight : null;
+              const dev = iw != null ? wt - iw : null;
+              return `<tr>
+                <td class="cell-code">${code}</td>
+                <td class="cell-name">${m ? m.name : (idxStockMeta(code)?.name || code)}</td>
+                <td class="cell-muted">${m ? m.industry : "—"}</td>
+                <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${iw != null ? iw.toFixed(2) + "%" : "—"}</td>
+                <td><input type="number" class="input" style="width:110px;text-align:right" step="0.1" min="0" max="100" value="${wt}" oninput="idxOpsWt('${code}',this.value)"></td>
+                <td class="right" id="idxDev_${code}" style="font-variant-numeric:tabular-nums;color:var(--vp-gray-700)">${dev != null ? (dev >= 0 ? "+" : "") + dev.toFixed(1) : "—"}</td>
+                <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${(wt * 10).toFixed(0)}</td>
+                <td><button class="btn btn-ghost btn-sm" onclick="idxOpsRemove('${code}')">✕</button></td>
+              </tr>`;
+            }).join("") : `<tr><td colspan="8" class="cell-muted" style="text-align:center;padding:28px">暂无持仓，从下方添加成份股</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+      <div class="card-body" style="border-top:1px solid var(--vp-border)">
+        <div class="flex items-center gap-2" style="flex-wrap:wrap">
+          <span class="tiny">＋ 添加成份股</span>
+          <select class="select" id="idxOpsAddSel" style="width:260px">
+            ${addable.length ? addable.map(m => `<option value="${m.code}">${m.code} ${m.name}（指数 ${m.weight.toFixed(2)}%）</option>`).join("") : `<option value="">（该指数成份股已全部持有）</option>`}
+          </select>
+          <input type="number" class="input" id="idxOpsAddWt" style="width:100px;text-align:right" step="0.1" min="0" max="100" value="1.0" placeholder="权重%">
+          <button class="btn btn-secondary btn-sm" onclick="idxOpsAdd()">添加</button>
+          <span class="tiny" style="margin-left:auto">${total > 100 ? '<b style="color:var(--vp-red)">⚠ 权重合计已超 100%，请先调整</b>' : "调整权重后点击「确认调仓」生成调仓记录"}</span>
+          <button class="btn btn-primary btn-sm" ${total > 100 || entries.length === 0 ? "disabled" : ""} onclick="idxOpsCommit()">✔ 确认调仓</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">调仓记录 <span class="tiny">原型：调仓不重算历史净值</span></div></div>
+      <div class="card-body">${idxRebList(task)}</div>
+    </div>`;
+}
+function idxOpsPickAnalyst(a) { idxOpsAnalyst = a; idxOpsTaskId = null; idxOpsEditTaskId = null; idxOpsRenderAll(); }
+function idxOpsPickTask(id) { idxOpsTaskId = id; idxOpsEditTaskId = null; idxOpsRenderAll(); }
+// 权重输入：只更新偏离/合计单元格，避免整卡重渲染导致输入失焦
+function idxOpsWt(code, val) {
+  if (!idxOpsEdit) return;
+  const v = parseFloat(val);
+  idxOpsEdit[code] = isNaN(v) || v < 0 ? 0 : v;
+  const total = Object.values(idxOpsEdit).reduce((a, b) => a + (b || 0), 0);
+  const t = IDX_TASKS.find(x => x.id === idxOpsTaskId);
+  const m = t ? (IDX_CONSTITUENTS[t.indexCode] || []).find(x => x.code === code) : null;
+  const devEl = document.getElementById("idxDev_" + code);
+  if (devEl && m) {
+    const dev = idxOpsEdit[code] - m.weight;
+    devEl.textContent = (dev >= 0 ? "+" : "") + dev.toFixed(1);
+  }
+  const totalEl = document.getElementById("idxOpsTotal");
+  if (totalEl) { totalEl.textContent = total.toFixed(1) + "%"; totalEl.style.color = total > 100 ? "var(--vp-red)" : "var(--vp-gray-900)"; }
+  const cashEl = document.getElementById("idxOpsCash");
+  if (cashEl) cashEl.textContent = (100 - total).toFixed(1) + "%";
+}
+function idxOpsAdd() {
+  const code = document.getElementById("idxOpsAddSel")?.value;
+  const wt = parseFloat(document.getElementById("idxOpsAddWt")?.value) || 0;
+  if (!code) { alert("该指数成份股已全部持有"); return; }
+  idxOpsEdit[code] = wt;
+  idxOpsRenderAll();
+}
+function idxOpsRemove(code) {
+  delete idxOpsEdit[code];
+  idxOpsRenderAll();
+}
+function idxOpsCommit() {
+  const task = IDX_TASKS.find(x => x.id === idxOpsTaskId);
+  if (!task || !idxOpsEdit) return;
+  const total = Object.values(idxOpsEdit).reduce((a, b) => a + (b || 0), 0);
+  if (total > 100) { alert("权重合计超过 100%，请先调整"); return; }
+  const oldMap = Object.fromEntries(task.holdings.map(h => [h.code, h.wt]));
+  const changes = [];
+  for (const code of new Set([...Object.keys(oldMap), ...Object.keys(idxOpsEdit)])) {
+    const from = oldMap[code] ?? 0, to = idxOpsEdit[code] ?? 0;
+    if (Math.abs(to - from) >= 0.05) {
+      const m = idxStockMeta(code);
+      changes.push({ code, name: m ? m.name : code, from, to });
+    }
+  }
+  if (!changes.length) { alert("未调整任何权重"); return; }
+  const added = changes.filter(c => c.from === 0).length;
+  const removed = changes.filter(c => c.to === 0).length;
+  const adjusted = changes.length - added - removed;
+  task.rebalances.push({ date: "2026-09-03", note: `${adjusted} 笔调整${added ? `、${added} 笔新建仓` : ""}${removed ? `、${removed} 笔清仓` : ""}`, changes });
+  task.holdings = Object.entries(idxOpsEdit).filter(([, w]) => w > 0)
+    .map(([code, wt]) => { const m = idxStockMeta(code); return { code, name: m ? m.name : code, wt }; })
+    .sort((a, b) => b.wt - a.wt);
+  idxOpsEditTaskId = null; // 从最新持仓重新初始化编辑缓冲
+  idxOpsRenderAll();
+  idxToast(`调仓已提交：${changes.length} 笔变更已记录（原型不重算净值）`);
 }
 
 function idxOpenCreate(mode) {
@@ -3571,7 +4100,7 @@ function idxOpenCreate(mode) {
   idxSyncBuildSeg();
   const idx = idxFindIndex(idxCurIndex);
   document.getElementById("idxTrackIndex").value = idx ? idx.name + (mode === 'custom' ? `（已选 ${idxSelected.size} 只）` : "") : idxCurIndex;
-  document.getElementById("idxPortName").value = (idx ? idx.name : "") + " 模拟盘";
+  document.getElementById("idxPortName").value = "";
   document.getElementById("idxPortNote").value = "";
   const idxAnalysts = [...new Set(indGetIndustries().flatMap(i => (i.analysts || []).filter(a => a.status === "在职").map(a => a.name)))].sort();
   msInit('msIdxAnalyst', idxAnalysts, '请选择研究员（可多选）');
@@ -3611,13 +4140,36 @@ function idxRenderBuildSummary() {
 }
 
 function idxConfirmCreate() {
-  const name = document.getElementById("idxPortName").value.trim();
-  if (!name) { alert("请输入组合名称"); return; }
+  const prefix = document.getElementById("idxPortName").value.trim();
   const analysts = MS_STATE['msIdxAnalyst'] ? [...MS_STATE['msIdxAnalyst'].selected] : [];
   if (analysts.length === 0) { alert("请选择研究员"); return; }
+  const idx = idxFindIndex(idxCurIndex);
+  const indexName = idx ? idx.name : idxCurIndex;
+  const data = IDX_CONSTITUENTS[idxCurIndex] || [];
+  const stocks = idxBuildMode === 'top20' ? [...data].sort((a, b) => b.weight - a.weight).slice(0, 20)
+    : idxBuildMode === 'custom' ? data.filter(s => idxSelected.has(s.code))
+    : data;
+  if (!stocks.length) { alert("当前建仓方式下没有成份股，请调整后重试"); return; }
+  const base = IDX_TASKS.length;
+  analysts.forEach((a, i) => {
+    IDX_TASKS.push({
+      id: "T" + String(base + 1 + i).padStart(2, "0"),
+      indexCode: idxCurIndex,
+      analyst: a,
+      name: (prefix || indexName) + " · " + a,
+      createDate: "2026-09-03",
+      buildMode: idxBuildMode,
+      status: "追踪中",
+      off: IDX_NAV_DATES.length - 1,
+      nav: [1.000],
+      holdings: stocks.map(s => ({ code: s.code, name: s.name, wt: s.weight })),
+      rebalances: [],
+    });
+  });
   idxCloseCreate();
+  idxDashIndex = idxCurIndex;
   idxSwitchTab("portfolios");
-  alert("原型：组合「" + name + "」已创建（研究员：" + analysts.join("、") + "），切换到「我的指数组合」查看");
+  idxToast(`已创建 ${analysts.length} 个模拟组合并指派给：${analysts.join("、")}`);
 }
 
 function buildPortfolioNew() {
