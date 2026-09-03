@@ -3356,7 +3356,7 @@ function buildIndexSim() {
 
   <!-- 创建组合弹层 -->
   <div class="modal-mask" id="idxCreateModal"><div class="modal-overlay" onclick="if(event.target===this)idxCloseCreate()"></div>
-    <div class="modal" onclick="event.stopPropagation()" style="max-width:560px">
+    <div class="modal" onclick="event.stopPropagation()" style="max-width:720px">
       <div class="modal-header">
         <div class="modal-title">基于指数创建模拟组合</div>
         <button class="btn btn-ghost btn-sm" onclick="idxCloseCreate()">✕</button>
@@ -3365,6 +3365,16 @@ function buildIndexSim() {
         <div class="form-row">
           <label class="form-label">组合名称</label>
           <input type="text" class="input" id="idxPortName" placeholder="如：MSCI China A 50 模拟盘" style="width:100%">
+        </div>
+        <div class="form-row">
+          <label class="form-label">研究员</label>
+          <div class="ms" id="msIdxAnalyst">
+            <div class="ms-field" onclick="msToggle('msIdxAnalyst',event)">
+              <div class="ms-tags" id="msIdxAnalystTags"></div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--vp-gray-400)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="ms-panel" id="msIdxAnalystPanel" onclick="event.stopPropagation()"></div>
+          </div>
         </div>
         <div class="form-row flex gap-3">
           <div style="flex:1"><label class="form-label">追踪指数</label><input type="text" class="input" id="idxTrackIndex" readonly style="width:100%;background:var(--vp-gray-100)"></div>
@@ -3563,6 +3573,8 @@ function idxOpenCreate(mode) {
   document.getElementById("idxTrackIndex").value = idx ? idx.name + (mode === 'custom' ? `（已选 ${idxSelected.size} 只）` : "") : idxCurIndex;
   document.getElementById("idxPortName").value = (idx ? idx.name : "") + " 模拟盘";
   document.getElementById("idxPortNote").value = "";
+  const idxAnalysts = [...new Set(indGetIndustries().flatMap(i => (i.analysts || []).filter(a => a.status === "在职").map(a => a.name)))].sort();
+  msInit('msIdxAnalyst', idxAnalysts, '请选择研究员（可多选）');
   idxRenderBuildSummary();
   document.getElementById("idxCreateModal").classList.add("show");
 }
@@ -3601,9 +3613,11 @@ function idxRenderBuildSummary() {
 function idxConfirmCreate() {
   const name = document.getElementById("idxPortName").value.trim();
   if (!name) { alert("请输入组合名称"); return; }
+  const analysts = MS_STATE['msIdxAnalyst'] ? [...MS_STATE['msIdxAnalyst'].selected] : [];
+  if (analysts.length === 0) { alert("请选择研究员"); return; }
   idxCloseCreate();
   idxSwitchTab("portfolios");
-  alert("原型：组合「" + name + "」已创建，切换到「我的指数组合」查看");
+  alert("原型：组合「" + name + "」已创建（研究员：" + analysts.join("、") + "），切换到「我的指数组合」查看");
 }
 
 function buildPortfolioNew() {
