@@ -3268,6 +3268,44 @@ const IDX_CONSTITUENTS = {
     { code:"300059.SZ", ticker:"300059", sedol:"BVC1P82", name:"东方财富", market:"A股", industry:"金融",   weight:1.28, price:18.45,  chg:+1.28 },
   ],
 };
+// 成份股英文注册名（中文 + 英文并列展示用；同一证券跨指数共用）
+const IDX_STOCK_EN = {
+  "600519.SH":"Kweichow Moutai Co., Ltd.",
+  "601318.SH":"Ping An Insurance (Group) Co. of China, Ltd.",
+  "600036.SH":"China Merchants Bank Co., Ltd.",
+  "002594.SZ":"BYD Co., Ltd.",
+  "300750.SZ":"Contemporary Amperex Technology Co., Ltd.",
+  "601888.SH":"China Tourism Group Duty Free Co., Ltd.",
+  "600030.SH":"CITIC Securities Co., Ltd.",
+  "601166.SH":"Industrial Bank Co., Ltd.",
+  "002415.SZ":"Hangzhou Hikvision Digital Technology Co., Ltd.",
+  "300059.SZ":"East Money Information Co., Ltd.",
+  "601012.SH":"LONGi Green Energy Technology Co., Ltd.",
+  "002230.SZ":"iFLYTEK Co., Ltd.",
+  "600276.SH":"Jiangsu Hengrui Pharmaceuticals Co., Ltd.",
+  "000858.SZ":"Wuliangye Yibin Co., Ltd.",
+  "601398.SH":"Industrial and Commercial Bank of China Ltd.",
+  "600887.SH":"Inner Mongolia Yili Industrial Group Co., Ltd.",
+  "601328.SH":"Bank of Communications Co., Ltd.",
+  "000568.SZ":"Luzhou Laojiao Co., Ltd.",
+  "600585.SH":"Anhui Conch Cement Co., Ltd.",
+  "002236.SZ":"Zhejiang Dahua Technology Co., Ltd.",
+  "601939.SH":"China Construction Bank Corp.",
+  "000333.SZ":"Midea Group Co., Ltd.",
+  "000001.SZ":"Ping An Bank Co., Ltd.",
+  "0700.HK":"Tencent Holdings Ltd.",
+  "BABA.US":"Alibaba Group Holding Ltd.",
+  "3690.HK":"Meituan",
+  "PDD.US":"PDD Holdings Inc.",
+  "0941.HK":"China Mobile Ltd.",
+  "1810.HK":"Xiaomi Corp.",
+  "JD.US":"JD.com Inc.",
+  "NTES.US":"NetEase Inc.",
+  "0883.HK":"CNOOC Ltd.",
+  "TCOM.US":"Trip.com Group Ltd.",
+  "1024.HK":"Kuaishou Technology",
+  "2020.HK":"ANTA Sports Products Ltd.",
+};
 // ── 指数模拟：任务数据模型 ─────────────────────────────────────────
 // 一个「任务」= 经理基于某指数创建、指派给某位研究员的独立模拟组合。
 // 研究员可在操作台自行调整持仓权重并调仓；经理在「我的指数组合」横向比对。
@@ -3651,6 +3689,42 @@ function idxPerf(vals) {
 function fmtRet(v) { return v == null ? "—" : `${v >= 0 ? "+" : ""}${(v * 100).toFixed(1)}%`; }
 function retCls(v) { return v == null ? "cell-muted" : v >= 0 ? "tag-up" : "tag-down"; }
 
+// 权重偏差明细：研究员当前持仓 vs 指数成份权重（偏差 = 指数权重 − 研究员权重，正 = 低配 / 负 = 超配）
+// 每位研究员独立一列组（权重 + 偏差），不做跨研究员合并统计
+function idxDevTableHTML(tasks) {
+  const cons = [...(IDX_CONSTITUENTS[idxDashIndex] || [])].sort((a, b) => b.weight - a.weight);
+  const cols = tasks.length * 2 + 5;
+  const head = tasks.map(t => `<th class="right">${t.analyst} 权重(%)</th><th class="right">${t.analyst} 偏差(pp)</th>`).join("");
+  const rows = cons.map(s => {
+    const en = IDX_STOCK_EN[s.code];
+    const cells = tasks.map(t => {
+      const h = t.holdings.find(x => x.code === s.code);
+      const rw = h ? h.wt : 0;
+      const dev = s.weight - rw;
+      const cls = Math.abs(dev) < 0.005 ? "cell-muted" : dev > 0 ? "tag-up" : "tag-down";
+      return `<td class="right" style="font-variant-numeric:tabular-nums">${h ? rw.toFixed(2) + "%" : '<span class="cell-muted">—</span>'}</td>` +
+        `<td class="right ${cls}" style="font-variant-numeric:tabular-nums">${dev >= 0 ? "+" : ""}${dev.toFixed(2)}</td>`;
+    }).join("");
+    return `<tr>
+      <td class="cell-code">${s.sedol || "—"}</td>
+      <td class="cell-code">${s.ticker || "—"}</td>
+      <td class="cell-code">${s.code}</td>
+      <td><div>${s.name}</div>${en ? `<div class="tiny" style="color:var(--vp-gray-500)">${en}</div>` : ""}</td>
+      <td class="right bold" style="font-variant-numeric:tabular-nums">${s.weight.toFixed(2)}%</td>
+      ${cells}
+    </tr>`;
+  }).join("");
+  return `<div class="card mb-4">
+    <div class="card-head"><div class="card-title">权重偏差明细 <span class="tiny">研究员持仓 vs 指数成份 · 偏差 = 指数权重 − 研究员权重（正 = 低配 / 负 = 超配）</span></div></div>
+    <div style="overflow:auto;max-height:420px">
+      <table class="data-table">
+        <thead><tr><th>SEDOL</th><th>Ticker</th><th>股票代码</th><th>股票名称</th><th class="right">指数权重(%)</th>${head}</tr></thead>
+        <tbody>${rows || `<tr><td colspan="${cols}" class="muted" style="text-align:center;padding:32px">该指数暂无成份股演示数据</td></tr>`}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
 function idxRenderDash() {
   const host = document.getElementById("idxDashHost");
   if (!host) return;
@@ -3684,6 +3758,8 @@ function idxRenderDash() {
         <button class="btn btn-secondary btn-sm" onclick="idxSwitchTab('constituents')">＋ 新建任务（去成份浏览）</button>
       </div>
     </div></div>
+
+    ${idxDevTableHTML(tasks)}
 
     <div class="card mb-4">
       <div class="card-head">
