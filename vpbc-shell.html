@@ -2527,8 +2527,8 @@ function reportFormHTML(mode) {
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;margin:0"><input type="radio" name="reportType" value="非评级报告" onchange="reportTypeToggle(this.value)">非评级报告</label>
     </div>`, false)}
     ${cell('市场', sel('reportMarket', ['港股', '美股', 'A股'], isEdit ? '港股' : ''), false)}
-    ${cell('展望', sel('reportOutlook', ['正面', '稳定', '负面'], isEdit ? '正面' : ''), false)}
-    ${cell('评级', sel('reportRating', ['买入', '增持', '中性', '减持', '卖出'], isEdit ? '买入' : ''), false)}
+    ${cell('展望', sel('reportOutlook', ['买入', '卖出', '维持'], isEdit ? '维持' : ''), false)}
+    ${cell('评级', sel('reportRating', ['AAA+', 'AAA', 'AAA-', 'BBB+', 'BBB', 'BBB-', 'CCC+', 'CCC', 'CCC-', 'N/A'], isEdit ? 'AAA' : ''), false)}
     ${full('正文/摘要', `<div>
       <textarea id="reportBodyText" class="form-control" style="width:100%;box-sizing:border-box;height:150px;resize:vertical" maxlength="4000" oninput="reportSyncCount()" placeholder="请输入研报正文或摘要...">${bodyText}</textarea>
       <div class="tiny" style="color:var(--vp-gray-500);text-align:right;margin-top:4px"><span id="reportBodyCount">${bodyText.length}</span>/4000</div>
