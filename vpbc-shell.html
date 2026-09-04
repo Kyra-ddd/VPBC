@@ -2592,7 +2592,7 @@ function report3RHTML(isEdit) {
       <td style="width:36%">${it.text}</td>
       <td class="right bold" style="width:56px;font-variant-numeric:tabular-nums">${it.score}</td>
       <td class="cell-muted" style="width:36%">${it.note}</td>
-      <td style="width:110px"><input type="number" min="0" max="${it.score}" step="0.5" value="${v}" placeholder="0" class="form-control input-3r" style="width:100%;box-sizing:border-box;text-align:right" oninput="report3RSync()"></td>
+      <td style="width:110px"><input type="number" min="0" max="${it.score}" step="0.5" value="${v}" placeholder="0" class="form-control input-3r" style="width:100%;box-sizing:border-box;text-align:right" oninput="report3RSync(this)"></td>
     </tr>`; }).join('')}
   `).join('');
   const total = isEdit ? REPORT_3R_DEMO.reduce((a, b) => a + b, 0) : 0;
@@ -2618,8 +2618,13 @@ function report3RHTML(isEdit) {
   </div>`;
 }
 
-// 3R 得分实时合计（每项上限为该项分值）
-function report3RSync() {
+// 3R 得分：单行录入超出该行分值范围时立即夹紧到 [0, 分值]，并实时合计
+function report3RSync(inp) {
+  if (inp && inp.value !== '') {
+    const max = Number(inp.max) || 0;
+    const v = Number(inp.value);
+    if (!Number.isNaN(v)) inp.value = Math.max(0, Math.min(max, v));
+  }
   let total = 0;
   document.querySelectorAll('.input-3r').forEach(i => { total += Math.min(Number(i.value) || 0, Number(i.max) || 0); });
   const el = document.getElementById('report3RTotal');
