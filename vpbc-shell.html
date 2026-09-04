@@ -1080,9 +1080,15 @@ function reportShowEditor() {
   openTab('report-create', '新建研报');
 }
 
-// 根据股票代码自动带出市场和发行人（发行人 = 该证券的上市公司主体）
+// 根据股票代码自动带出市场和发行人（发行人 = 该证券的上市公司主体）；同步 3R评分 列头代码
 function reportAutoFill(code) {
-  if (!code) return;
+  const codeHeader = document.getElementById('report3RCode');
+  if (codeHeader) codeHeader.textContent = code ? code : '未填写代码';
+  if (!code) {
+    const issuerClear = document.getElementById('reportIssuer');
+    if (issuerClear) issuerClear.value = '';
+    return;
+  }
   const suffix = code.split('.').pop()?.toUpperCase();
   const marketMap = { 'HK': '港股', 'US': '美股', 'SH': 'A股', 'SZ': 'A股' };
   const marketSel = document.getElementById('reportMarket');
@@ -2514,8 +2520,8 @@ function reportFormHTML(mode) {
   const form = `
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 48px;width:100%;box-sizing:border-box">
     ${full('研报标题', `<input class="form-control" style="width:100%;box-sizing:border-box" ${isEdit ? 'value="腾讯控股深度覆盖报告"' : 'placeholder="如：港股科技行业深度报告"'}>`, true)}
-    ${cell('股票代码', `<input class="form-control" style="width:100%;box-sizing:border-box" ${isEdit ? 'value="00700.HK"' : 'placeholder="如：00700.HK"'} oninput="reportAutoFill(this.value)">`, true)}
-    ${cell('发行人', `<input id="reportIssuer" class="form-control" style="width:100%;box-sizing:border-box" ${isEdit ? 'value="腾讯控股"' : 'placeholder="输入代码后自动带出"}>`, false)}
+    ${cell('股票代码', `<input id="reportCodeInput" class="form-control" style="width:100%;box-sizing:border-box" ${isEdit ? 'value="00700.HK"' : 'placeholder="如：00700.HK"'} oninput="reportAutoFill(this.value)">`, true)}
+    ${cell('发行人', `<input id="reportIssuer" class="form-control" style="width:100%;box-sizing:border-box" ${isEdit ? 'value="腾讯控股"' : 'placeholder="输入代码后自动带出"'}>`, false)}
     ${cell('报告类型', `<div style="display:flex;align-items:center;gap:24px;height:36px">
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;margin:0"><input type="radio" name="reportType" value="评级报告" checked onchange="reportTypeToggle(this.value)">评级报告</label>
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;margin:0"><input type="radio" name="reportType" value="非评级报告" onchange="reportTypeToggle(this.value)">非评级报告</label>
@@ -2549,9 +2555,82 @@ function reportFormHTML(mode) {
       <button class="seg" onclick="reportSwitchSec(3)">财务信息</button>
     </div>
     <div id="reportSec1">${form}</div>
-    <div id="reportSec2" style="display:none"><div class="notice"><span class="ico">ⓘ</span>「3R评分」分区字段待产品定义，原型阶段先呈现「基本信息」分区的格式；3R 得分将在行业研究 → 覆盖股票明细中展示。</div></div>
+    <div id="reportSec2" style="display:none">${report3RHTML(isEdit)}</div>
     <div id="reportSec3" style="display:none"><div class="notice"><span class="ico">ⓘ</span>「财务信息」分区字段待产品定义，原型阶段先呈现「基本信息」分区的格式。</div></div>
   </div></div>`;
+}
+
+// ========== 3R 评分模板（Right People 25 / Right Business 55 / Right Price 20，合计 100 分） ==========
+// 评分项与分值固定，仅最后一列按股票打分；列头代码 = 基本信息里的股票代码
+const REPORT_3R = [
+  { group: '好的管理层 Right People（25分）', items: [
+    { text: '1、管理层能够创造价值，可以不断地开发新市场或者新业务，带动公司成长，并且有历史业绩证明。', score: 10, note: '现有管理层有具体开拓新市场或新业务的成功案例给10分；如果主要管理层发生变化，并且未通过验证，不超过5分。' },
+    { text: '2、管理层言行一致，诚信正直。曾经承诺的业绩大多数时候都能做到，没有有意欺瞒投资者。', score: 5, note: '如果曾经有过欺瞒投资者行为可以直接给0分；管理层正直但是和投资者沟通不充分扣3分。' },
+    { text: '3、大股东与小股东（我们）的利益一致，没有公司治理问题，核心利益没有输送。', score: 5, note: '大股东在体外有业务、和上市公司有明显利益输送风险的给0分；有潜在治理问题的酌情扣分。' },
+    { text: '4、CEO 和重要的管理人员具有在行业内有竞争力的薪资，股权激励在行业内领先。', score: 5, note: '管理层的薪资水平在全行业前 30%，或管理层中有多位重要人员持有具价值的股份给5分。' },
+  ]},
+  { group: '好的业务模式 Right Business（55分）', items: [
+    { text: '5、有溢价能力的企业，公司的 ROE 大于 WACC（11%）。', score: 10, note: '一般行业 WACC 要求 11%，资金成本低的行业可酌情考虑降低标准。' },
+    { text: '6、公司的利润率较高，利润率波动率很低，具有可持续性。', score: 5, note: '毛利率 20%+ 或净利率 5%+ 给5分；目前亏损、但可预见未来三年将要盈利的企业给3分。' },
+    { text: '7、市场竞争格局会逐步改善而非恶化，公司 ROE 有提升趋势。', score: 10, note: '未来 ROE 提升的企业给10分；ROE 下降的企业给不到5分。' },
+    { text: '8、公司在细分市场持续获取市场份额，有较高的壁垒，难以被替代或赶超，在行业内具有定价权，对上游供给方和下游客户有足够的议价能力。', score: 10, note: '行业有替代产品或服务威胁扣5分（如超市行业）；公司未来三年负债有上升风险扣5分；行业有被上游挤压利润风险扣3分。' },
+    { text: '9、公司不需要用高资本开支维持增长，投入的资本可以得到合理的回报；资产负债表健康，经营指标稳健，没有大比率股权质押或经营杠杆的风险。', score: 5, note: '过去三年资本开支超过未来三年经营性现金流扣2分；Net Gearing 超过 100% 扣3分；资产负债率超过 70% 扣2分；股权质押金额超过流通盘 50% 扣3分。' },
+    { text: '10、是否有政策风险。', score: 15, note: '有毁灭性的政策风险给0分；短期面对一些政策风险但不是毁灭性的，酌情给分；政策在未来一年支持的行业给15分。' },
+  ]},
+  { group: '好的价格 Right Price（20分）', items: [
+    { text: '11、目前的股价估值隐含持有一年回报 15% 以上（或两年 30%、三年 50%，将未来回报折现回来得到 15% 的年化回报），按各个行业的估值方法来估值。', score: 20, note: '年化 20% 及以上给20分；年化 10–20% 给10分；年化 10% 以下给5分；不到 0 则给0分。' },
+  ]},
+];
+// 修改研报演示用的预填得分（合计 87 / 100）
+const REPORT_3R_DEMO = [8, 5, 5, 4, 10, 5, 8, 10, 5, 12, 15];
+
+function report3RHTML(isEdit) {
+  let idx = 0;
+  const rows = REPORT_3R.map(g => `
+    <tr><td colspan="4" style="background:#FBF4E4;font-weight:600;padding:8px 12px">${g.group}</td></tr>
+    ${g.items.map(it => { const v = isEdit ? REPORT_3R_DEMO[idx++] : ''; return `<tr>
+      <td style="width:36%">${it.text}</td>
+      <td class="right bold" style="width:56px;font-variant-numeric:tabular-nums">${it.score}</td>
+      <td class="cell-muted" style="width:36%">${it.note}</td>
+      <td style="width:110px"><input type="number" min="0" max="${it.score}" step="0.5" value="${v}" placeholder="0" class="form-control input-3r" style="width:100%;box-sizing:border-box;text-align:right" oninput="report3RSync()"></td>
+    </tr>`; }).join('')}
+  `).join('');
+  const total = isEdit ? REPORT_3R_DEMO.reduce((a, b) => a + b, 0) : 0;
+  return `<div>
+    <div style="overflow:auto"><table class="data-table">
+      <thead><tr>
+        <th>评分项</th><th class="right">分值</th><th>说明</th>
+        <th class="right" style="background:#FFF9E8;white-space:nowrap"><span id="report3RCode">${isEdit ? '00700.HK' : '未填写代码'}</span><button class="btn btn-ghost btn-sm" onclick="reportEditCode()" title="回到基本信息修改股票代码" style="margin-left:4px;padding:2px 6px">✎</button></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+    <div style="margin-top:14px;max-width:560px;border:1px solid var(--vp-border);border-radius:var(--vp-radius);overflow:hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--vp-mint-50)">
+        <span style="font-weight:600">3R Score</span>
+        <span class="bold" style="font-variant-numeric:tabular-nums"><span id="report3RTotal">${total}</span> / 100</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px solid var(--vp-border)">
+        <span>Conviction Score <span class="tiny muted">(optional)</span></span>
+        <input type="number" min="0" max="100" value="${isEdit ? 80 : ''}" class="form-control" style="width:96px;text-align:right">
+      </div>
+      <div class="tiny muted" style="padding:10px 16px;border-top:1px dashed var(--vp-border)">1-vote reject：第 2、3、10 条打零分时，评级自动为 1（automatic）</div>
+    </div>
+  </div>`;
+}
+
+// 3R 得分实时合计（每项上限为该项分值）
+function report3RSync() {
+  let total = 0;
+  document.querySelectorAll('.input-3r').forEach(i => { total += Math.min(Number(i.value) || 0, Number(i.max) || 0); });
+  const el = document.getElementById('report3RTotal');
+  if (el) el.textContent = total.toFixed(1).replace(/\.0$/, '');
+}
+
+// 从 3R评分 页签跳回基本信息修改股票代码
+function reportEditCode() {
+  reportSwitchSec(1);
+  const inp = document.getElementById('reportCodeInput');
+  if (inp) inp.focus();
 }
 
 // 分区页签切换：基本信息 / 3R评分 / 财务信息
