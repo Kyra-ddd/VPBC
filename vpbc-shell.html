@@ -3802,7 +3802,7 @@ function idxRenderDashTable(tasks, idx) {
   const rows = tasks.map(t => ({ t, perf: idxPerf(idxTaskVals(t, s).vals) }))
     .sort((a, b) => ((b.perf?.ret ?? -9) - (a.perf?.ret ?? -9)));
   host.innerHTML = `<thead><tr>
-      <th>研究员</th><th>组合</th><th>建仓日期</th><th class="right">最新净值</th><th class="right">区间收益</th><th class="right">超额（vs基准）</th><th class="right">年化波动率</th><th class="right">夏普比率</th><th class="right">最大回撤</th><th class="right">调仓次数</th><th style="width:170px">操作</th>
+      <th>研究员</th><th>组合</th><th>建仓日期</th><th class="right">最新净值</th><th class="right">区间收益</th><th class="right">超额（vs基准）</th><th class="right">年化波动率</th><th class="right">夏普比率</th><th class="right">最大回撤</th><th class="right">调仓次数</th><th style="width:80px">操作</th>
     </tr></thead><tbody>
     ${bmArr ? `<tr style="background:var(--vp-mint-50)">
       <td class="cell-muted">基准</td>
@@ -3831,10 +3831,7 @@ function idxRenderDashTable(tasks, idx) {
         <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${perf?.sharpe != null ? perf.sharpe.toFixed(2) : "—"}</td>
         <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${perf ? (perf.mdd * 100).toFixed(1) + "%" : "—"}</td>
         <td class="right cell-muted">${t.rebalances.length}</td>
-        <td>
-          <button class="btn btn-secondary btn-sm" onclick="idxOpenDetail('${t.id}')">详情</button>
-          <button class="btn btn-secondary btn-sm" onclick="idxGoOps('${t.id}')">操作台</button>
-        </td>
+        <td><button class="btn btn-secondary btn-sm" onclick="idxOpenDetail('${t.id}')">详情</button></td>
       </tr>`;
     }).join("")}
     ${rows.length === 0 && !bmArr ? `<tr><td colspan="11" class="cell-muted" style="text-align:center;padding:32px">该指数暂无研究员组合</td></tr>` : ""}
@@ -3953,14 +3950,6 @@ function idxToast(msg) {
 }
 
 // ── 研究员操作台：自选成份股/权重 + 调仓 ──────────────────────────
-function idxGoOps(taskId) {
-  const t = IDX_TASKS.find(x => x.id === taskId);
-  if (!t) return;
-  idxOpsAnalyst = t.analyst;
-  idxOpsTaskId = t.id;
-  idxOpsEditTaskId = null;
-  idxSwitchTab("ops");
-}
 function idxOpsRenderAll() {
   const host = document.getElementById("idxOpsHost");
   if (!host) return;
