@@ -3340,16 +3340,12 @@ function buildIndexSim() {
   <div id="idxPaneConst">
     <div class="card mb-4">
       <div class="card-head">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3" style="flex-wrap:wrap">
           <div class="card-title">选择指数</div>
           <select class="select" style="width:140px" id="idxCategory" onchange="idxRenderIndexList()">
             <option value="msci">MSCI 系列</option><option value="csi">沪深系列</option>
             <option value="hk">港股系列</option><option value="us">美股系列</option>
           </select>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="flex items-center gap-3 mb-4" style="flex-wrap:wrap">
           <input type="text" class="input" style="flex:1;min-width:240px" id="idxSearch" placeholder="搜索指数名称或代码，如 MSCI China A 50" oninput="idxRenderIndexList()">
           <div class="flex gap-2" style="flex-wrap:wrap;align-items:center">
             <span class="tiny">最近：</span>
@@ -3357,6 +3353,8 @@ function buildIndexSim() {
             <button class="btn btn-secondary btn-sm" onclick="idxSelectByCode('000300')">沪深 300</button>
           </div>
         </div>
+      </div>
+      <div class="card-body">
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px" id="idxIndexGrid"></div>
       </div>
     </div>
