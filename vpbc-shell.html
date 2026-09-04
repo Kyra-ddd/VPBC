@@ -2556,7 +2556,7 @@ function reportFormHTML(mode) {
     </div>
     <div id="reportSec1">${form}</div>
     <div id="reportSec2" style="display:none">${report3RHTML(isEdit)}</div>
-    <div id="reportSec3" style="display:none"><div class="notice"><span class="ico">ⓘ</span>「财务信息」分区字段待产品定义，原型阶段先呈现「基本信息」分区的格式。</div></div>
+    <div id="reportSec3" style="display:none">${reportFinHTML()}</div>
   </div></div>`;
 }
 
@@ -2629,6 +2629,51 @@ function report3RSync(inp) {
   document.querySelectorAll('.input-3r').forEach(i => { total += Math.min(Number(i.value) || 0, Number(i.max) || 0); });
   const el = document.getElementById('report3RTotal');
   if (el) el.textContent = total.toFixed(1).replace(/\.0$/, '');
+}
+
+// ========== 财务信息模板（指标 × 期间矩阵：深绿 = 实际年度 FY，浅绿 = 期内 Q/H，蓝 = 预测年度 E） ==========
+const REPORT_FIN_COLS = [
+  { k: '2021FY', t: 'a' }, { k: '2022FY', t: 'a' }, { k: '2023FY', t: 'a' }, { k: '2024FY', t: 'a' },
+  { k: '2025Q1', t: 'i' }, { k: '2025H1', t: 'i' }, { k: '2025Q3', t: 'i' }, { k: '2025FY', t: 'a' },
+  { k: '2026Q1', t: 'i' }, { k: '2026Q2', t: 'i' },
+  { k: '2026E', t: 'e' }, { k: '2027E', t: 'e' }, { k: '2028E', t: 'e' },
+];
+const REPORT_FIN_ROWS = [
+  { group: '利润表摘要' },
+  { label: '营业收入' }, { label: 'YoY', sub: true },
+  { label: '营业成本' },
+  { label: '毛利' },
+  { label: '毛利率', hl: true }, { label: 'YoY', sub: true },
+  { label: '销售、管理、研发及减值' },
+  { label: '上述费用率' },
+  { label: '营业利润' }, { label: 'YoY', sub: true },
+  { label: '归母净利润' },
+  { label: '归母净利率', hl: true }, { label: 'YoY', sub: true },
+  { label: 'EPS' },
+  { label: 'PE' },
+];
+
+function reportFinHTML() {
+  const headBg = { a: 'var(--vp-green)', i: '#7EC6A2', e: '#2563EB' };
+  const head = REPORT_FIN_COLS.map(c => `<th class="right" style="background:${headBg[c.t]};color:#fff;white-space:nowrap;padding:8px 10px">${c.k}</th>`).join('');
+  const rows = REPORT_FIN_ROWS.map(r => {
+    if (r.group) return `<tr><td colspan="${REPORT_FIN_COLS.length + 1}" style="background:#FBF4E4;font-weight:600;padding:8px 12px">${r.group}</td></tr>`;
+    const bg = r.hl ? '#FFF9E8' : 'var(--vp-white)';
+    const labelStyle = r.sub ? 'color:var(--vp-gray-500);padding-left:30px' : (r.hl ? 'font-weight:600' : '');
+    const cells = REPORT_FIN_COLS.map(() => `<td style="background:${bg};padding:3px 6px"><input type="number" step="any" class="form-control" style="width:100%;box-sizing:border-box;padding:4px 8px;text-align:right;font-variant-numeric:tabular-nums"></td>`).join('');
+    return `<tr>
+      <td style="background:${bg};position:sticky;left:0;box-shadow:inset -1px 0 0 var(--vp-border);padding:7px 12px;width:190px;${labelStyle}">${r.label}</td>
+      ${cells}
+    </tr>`;
+  }).join('');
+  return `<div style="overflow:auto"><table class="data-table" style="white-space:nowrap">
+    <thead><tr>
+      <th style="background:var(--vp-green);color:#fff;padding:8px 12px;position:sticky;left:0;z-index:2;box-shadow:inset -1px 0 0 rgba(0,0,0,0.15)">财务指标</th>
+      ${head}
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="tiny muted" style="margin-top:8px">注：E 列为预测年度（蓝色表头），Q1/H1/Q3 为期内实际；黄色底行为比率指标。</div></div>`;
 }
 
 // 从 3R评分 页签跳回基本信息修改股票代码
