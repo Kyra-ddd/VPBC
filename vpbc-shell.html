@@ -1080,18 +1080,18 @@ function reportShowEditor() {
   openTab('report-create', '新建研报');
 }
 
-// 根据股票代码自动带出市场和行业
+// 根据股票代码自动带出市场和发行人（发行人 = 该证券的上市公司主体）
 function reportAutoFill(code) {
   if (!code) return;
   const suffix = code.split('.').pop()?.toUpperCase();
-  const marketMapCode = { 'HK': 'HK', 'US': 'US', 'SH': 'CN', 'SZ': 'CN', 'CN': 'CN', 'JP': 'JP', 'KS': 'KR' };
-  const marketCode = marketMapCode[suffix];
-  if (!marketCode) return;
-
-  const industrySel = document.getElementById('reportIndustry');
-  if (industrySel && marketCode && IND_DATA[marketCode]) {
-    const opts = IND_DATA[marketCode].industries.map(i => `<option value="${i.name}">${i.name}</option>`).join('');
-    industrySel.innerHTML = `<option value="">请选择行业</option>${opts}`;
+  const marketMap = { 'HK': '港股', 'US': '美股', 'SH': 'A股', 'SZ': 'A股' };
+  const marketSel = document.getElementById('reportMarket');
+  if (marketSel && marketMap[suffix]) marketSel.value = marketMap[suffix];
+  const issuer = document.getElementById('reportIssuer');
+  if (issuer) {
+    const bare = code.split('.')[0];
+    const hit = Object.values(STOCKS).flat().find(s => s.code === code || s.code === bare);
+    issuer.value = hit ? hit.name : '';
   }
 }
 
@@ -2498,62 +2498,95 @@ function buildResearchReport() {
 }
 
 // ========== Report Create / Edit Pages ==========
-function buildReportCreate() {
-  const L = 'style="display:flex;align-items:center;gap:8px"', LB = 'style="width:140px;flex-shrink:0;margin:0;font-weight:500;text-align:right"', IN = 'style="flex:1;min-width:0"';
+// 按原型格式重排：顶部「提交/取消」→ 分区页签（基本信息 | 3R评分 | 财务信息）→ 表单
+// 必填仅 研报标题 / 股票代码；提交时校验「正文或附件至少上传一种」
+function buildReportCreate() { return reportFormHTML('create'); }
+function buildReportEdit() { return reportFormHTML('edit'); }
+
+function reportFormHTML(mode) {
+  const isEdit = mode === 'edit';
   const R = '<span style="color:#dc2626;margin-right:2px">*</span>';
-  const cell = (label, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
-  const empty = `<div></div>`;
-  const row = (a, b, reqA, reqB) => b
-    ? `${cell(a[0], a[1], reqA)}${cell(b[0], b[1], reqB)}`
-    : `${cell(a[0], a[1], reqA)}${empty}`;
-  const fullRow = (label, field, req) => `<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><div style="flex:1;min-width:0">${field}</div></div>`;
-  const grid = `
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
-    <div style="grid-column:1/-1;display:flex;gap:12px;align-items:center">
-      <button class="btn btn-secondary" onclick="alert('原型：保存草稿')">💾 存草稿</button>
-      <button class="btn btn-primary" onclick="alert('原型：发布研报');openTab('research-report','研报中心')">🚀 发布</button>
-      <button class="btn btn-secondary" onclick="openTab('research-report','研报中心')">取消</button>
-    </div>
-    ${fullRow('研报标题', `<input class="form-control" style="width:1400px;box-sizing:border-box" placeholder="如：港股科技行业深度报告">`, true)}
-    <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px 2px;align-items:center;margin-left:148px">
-      ${cell('股票代码', `<input id="stockCodeInput" class="form-control" style="width:100%;box-sizing:border-box" placeholder="如：00700.HK" oninput="reportAutoFill(this.value)">`, true)}
-      ${cell('展望', `<select class="form-control" style="width:100%;box-sizing:border-box"><option value="">请选择展望</option><option>买入</option><option>卖出</option><option>维持</option></select>`, true)}
-      ${cell('评级', `<select class="form-control" style="width:100%;box-sizing:border-box"><option value="">请选择评级</option><option>AAA+</option><option>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option><option>A+</option><option>A</option></select>`, true)}
-      ${cell('行业', `<select id="reportIndustry" class="form-control" style="width:100%;box-sizing:border-box"><option value="">请先输入代码</option></select>`, true)}
-    </div>
-    ${fullRow('正文', `<textarea class="form-control" style="flex:1;box-sizing:border-box;width:1400px;height:160px" rows="4" placeholder="请输入研报正文内容..."></textarea>`, true)}
-    ${fullRow('上传附件', `<input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%">`, false)}
+  const lbl = top => `style="width:80px;flex-shrink:0;margin:0;font-weight:500;text-align:right${top ? ';padding-top:8px' : ''}"`;
+  const cell = (label, field, req, top) => `<div style="display:flex;align-items:${top ? 'flex-start' : 'center'};gap:12px"><label class="form-label" ${lbl(top)}>${req ? R : ''}${label}</label><div style="flex:1;min-width:0">${field}</div></div>`;
+  const full = (label, field, req, top) => `<div style="grid-column:1/-1">${cell(label, field, req, top)}</div>`;
+  const sel = (id, opts, cur) => `<select id="${id}" class="form-control" style="width:100%;box-sizing:border-box"><option value="">请选择</option>${opts.map(o => `<option${o === cur ? ' selected' : ''}>${o}</option>`).join('')}</select>`;
+  const bodyText = isEdit ? '基于当前市场环境和技术发展趋势，我们对腾讯控股维持买入评级，建议关注游戏出海与广告业务的持续复苏，目标价对应 2026E 约 18x P/E...' : '';
+  const form = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 48px;width:100%;box-sizing:border-box">
+    ${full('研报标题', `<input class="form-control" style="width:100%;box-sizing:border-box" ${isEdit ? 'value="腾讯控股深度覆盖报告"' : 'placeholder="如：港股科技行业深度报告"'}>`, true)}
+    ${cell('股票代码', `<input class="form-control" style="width:100%;box-sizing:border-box" ${isEdit ? 'value="00700.HK"' : 'placeholder="如：00700.HK"'} oninput="reportAutoFill(this.value)">`, true)}
+    ${cell('发行人', `<input id="reportIssuer" class="form-control" style="width:100%;box-sizing:border-box" ${isEdit ? 'value="腾讯控股"' : 'placeholder="输入代码后自动带出"}>`, false)}
+    ${cell('报告类型', `<div style="display:flex;align-items:center;gap:24px;height:36px">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;margin:0"><input type="radio" name="reportType" value="评级报告" checked onchange="reportTypeToggle(this.value)">评级报告</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;margin:0"><input type="radio" name="reportType" value="非评级报告" onchange="reportTypeToggle(this.value)">非评级报告</label>
+    </div>`, false)}
+    ${cell('市场', sel('reportMarket', ['港股', '美股', 'A股'], isEdit ? '港股' : ''), false)}
+    ${cell('展望', sel('reportOutlook', ['正面', '稳定', '负面'], isEdit ? '正面' : ''), false)}
+    ${cell('评级', sel('reportRating', ['买入', '增持', '中性', '减持', '卖出'], isEdit ? '买入' : ''), false)}
+    ${full('正文/摘要', `<div>
+      <textarea id="reportBodyText" class="form-control" style="width:100%;box-sizing:border-box;height:150px;resize:vertical" maxlength="4000" oninput="reportSyncCount()" placeholder="请输入研报正文或摘要...">${bodyText}</textarea>
+      <div class="tiny" style="color:var(--vp-gray-500);text-align:right;margin-top:4px"><span id="reportBodyCount">${bodyText.length}</span>/4000</div>
+    </div>`, false, true)}
+    ${full('附件上传', `<div>
+      <label for="reportFileInput" style="display:block;border:2px dashed var(--vp-gray-200);border-radius:var(--vp-radius);padding:22px;text-align:center;cursor:pointer">
+        <div style="margin-bottom:4px;color:var(--vp-gray-400)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+        <div style="font-size:13px;color:var(--vp-gray-600)">将文件拖拽到此处，或<span style="color:var(--vp-green);text-decoration:underline">点击上传</span></div>
+        <div class="tiny" style="color:var(--vp-gray-400);margin-top:2px">支持 .pdf / .doc / .docx / .xls / .xlsx，单文件 ≤ 20MB</div>
+      </label>
+      <input type="file" id="reportFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx" style="display:none" onchange="reportPickFile(this)">
+      <div id="reportFileName" class="tiny" style="color:var(--vp-gray-500);margin-top:6px">${isEdit ? '已上传：腾讯控股深度覆盖报告_v3.pdf（2.4MB）' : ''}</div>
+    </div>`, false, true)}
+    <div style="grid-column:1/-1" class="tiny muted">注：正文或附件至少要上传一种类型</div>
   </div>`;
-  return `<div class="card"><div class="card-body" style="padding:20px">${grid}</div></div>`;
+  return `<div class="card"><div class="card-body" style="padding:24px 28px">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="reportSubmit('${mode}')">${isEdit ? '更新' : '提交'}</button>
+      <button class="btn btn-secondary" onclick="openTab('research-report','研报管理')">取消</button>
+    </div>
+    <div class="segmented" id="reportSecTabs" style="margin-bottom:20px">
+      <button class="seg active" onclick="reportSwitchSec(1)">基本信息</button>
+      <button class="seg" onclick="reportSwitchSec(2)">3R评分</button>
+      <button class="seg" onclick="reportSwitchSec(3)">财务信息</button>
+    </div>
+    <div id="reportSec1">${form}</div>
+    <div id="reportSec2" style="display:none"><div class="notice"><span class="ico">ⓘ</span>「3R评分」分区字段待产品定义，原型阶段先呈现「基本信息」分区的格式；3R 得分将在行业研究 → 覆盖股票明细中展示。</div></div>
+    <div id="reportSec3" style="display:none"><div class="notice"><span class="ico">ⓘ</span>「财务信息」分区字段待产品定义，原型阶段先呈现「基本信息」分区的格式。</div></div>
+  </div></div>`;
 }
 
-function buildReportEdit() {
-  const L = 'style="display:flex;align-items:center;gap:8px"', LB = 'style="width:140px;flex-shrink:0;margin:0;font-weight:500;text-align:right"', IN = 'style="flex:1;min-width:0"';
-  const R = '<span style="color:#dc2626;margin-right:2px">*</span>';
-  const cell = (label, field, req) => `<div ${L}><label class="form-label" ${LB}>${req ? R : ''}${label}</label>${field}</div>`;
-  const empty = `<div></div>`;
-  const row = (a, b, reqA, reqB) => b
-    ? `${cell(a[0], a[1], reqA)}${cell(b[0], b[1], reqB)}`
-    : `${cell(a[0], a[1], reqA)}${empty}`;
-  const fullRow = (label, field, req) => `<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:4px 0"><label class="form-label" ${LB}>${req ? R : ''}${label}</label><div style="flex:1;min-width:0">${field}</div></div>`;
-  const grid = `
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;width:100%;box-sizing:border-box">
-    <div style="grid-column:1/-1;display:flex;gap:12px;align-items:center">
-      <button class="btn btn-secondary" onclick="alert('原型：保存草稿')">💾 存草稿</button>
-      <button class="btn btn-primary" onclick="alert('原型：更新研报');openTab('research-report','研报中心')">🚀 更新</button>
-      <button class="btn btn-secondary" onclick="openTab('research-report','研报中心')">取消</button>
-    </div>
-    ${fullRow('研报标题', `<input class="form-control" style="width:1400px;box-sizing:border-box" value="腾讯控股深度覆盖报告">`, true)}
-    <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px 2px;align-items:center;margin-left:148px">
-      ${cell('股票代码', `<input id="stockCodeInput" class="form-control" style="width:100%;box-sizing:border-box" value="00700.HK" oninput="reportAutoFill(this.value)">`, true)}
-      ${cell('展望', `<select class="form-control" style="width:100%;box-sizing:border-box"><option>买入</option><option selected>维持</option><option>卖出</option></select>`, true)}
-      ${cell('评级', `<select class="form-control" style="width:100%;box-sizing:border-box"><option>AAA+</option><option selected>AAA</option><option>AAA-</option><option>AA+</option><option>AA</option><option>AA-</option></select>`, true)}
-      ${cell('行业', `<select id="reportIndustry" class="form-control" style="width:100%;box-sizing:border-box"><option selected>科技</option><option>金融</option><option>消费</option></select>`, true)}
-    </div>
-    ${fullRow('正文', `<textarea class="form-control" style="flex:1;box-sizing:border-box;width:1400px;height:160px" rows="4">基于当前市场环境和技术发展趋势，我们对腾讯控股维持 AAA 评级，建议关注...</textarea>`, true)}
-    ${fullRow('上传附件', `<input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="width:100%">`, false)}
-  </div>`;
-  return `<div class="card"><div class="card-body" style="padding:20px">${grid}</div></div>`;
+// 分区页签切换：基本信息 / 3R评分 / 财务信息
+function reportSwitchSec(n) {
+  document.querySelectorAll('#reportSecTabs .seg').forEach(b => b.classList.remove('active'));
+  document.querySelector(`#reportSecTabs .seg[onclick="reportSwitchSec(${n})"]`).classList.add('active');
+  [1, 2, 3].forEach(i => { const p = document.getElementById('reportSec' + i); if (p) p.style.display = i === n ? '' : 'none'; });
+}
+
+// 报告类型 = 非评级报告 时，展望/评级不适用
+function reportTypeToggle(v) {
+  const dis = v !== '评级报告';
+  ['reportOutlook', 'reportRating'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.disabled = dis; if (dis) el.selectedIndex = 0; }
+  });
+}
+
+// 正文/摘要 字数统计（上限 4000）
+function reportSyncCount() {
+  const ta = document.getElementById('reportBodyText'), c = document.getElementById('reportBodyCount');
+  if (ta && c) c.textContent = ta.value.length;
+}
+
+function reportPickFile(inp) {
+  const el = document.getElementById('reportFileName');
+  if (el) el.textContent = inp.files.length ? '已选择：' + inp.files[0].name : '';
+}
+
+// 提交校验：正文或附件至少上传一种
+function reportSubmit(mode) {
+  const body = document.getElementById('reportBodyText'), file = document.getElementById('reportFileInput');
+  if ((!body || !body.value.trim()) && (!file || !file.files.length)) { alert('注：正文或附件至少要上传一种类型'); return; }
+  alert('原型：' + (mode === 'edit' ? '更新研报' : '提交研报'));
+  openTab('research-report', '研报管理');
 }
 
 // ========== Portfolio Data ==========
