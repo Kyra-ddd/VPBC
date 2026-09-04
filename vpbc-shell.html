@@ -3640,26 +3640,27 @@ function buildIndexSim() {
         <button class="btn btn-ghost btn-sm" onclick="idxCloseCreate()">✕</button>
       </div>
       <div class="modal-body">
-        <div class="form-row">
-          <label class="form-label">组合名称前缀 <span class="tiny" style="font-weight:400;color:var(--vp-gray-400)">留空则默认「指数名称 · 研究员」</span></label>
-          <input type="text" class="input" id="idxPortName" placeholder="默认：指数名称 · 研究员名称，可输入自定义前缀" style="width:100%">
+        <div class="form-row flex items-center" style="gap:12px">
+          <label class="form-label" style="width:112px;flex-shrink:0;margin:0" title="留空则默认「指数名称 · 研究员」">组合名称前缀</label>
+          <input type="text" class="input" id="idxPortName" placeholder="默认：指数名称 · 研究员名称，可输入自定义前缀" style="flex:1;min-width:0">
         </div>
-        <div class="form-row">
-          <label class="form-label">指派研究员（多选，每人独立建仓操盘）</label>
-          <div class="ms" id="msIdxAnalyst">
+        <div class="form-row flex items-center" style="gap:12px">
+          <label class="form-label" style="width:112px;flex-shrink:0;margin:0">指派研究员</label>
+          <div class="ms" id="msIdxAnalyst" style="flex:1;min-width:0">
             <div class="ms-field" onclick="msToggle('msIdxAnalyst',event)">
               <div class="ms-tags" id="msIdxAnalystTags"></div>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--vp-gray-400)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <div class="ms-panel" id="msIdxAnalystPanel" onclick="event.stopPropagation()"></div>
           </div>
+          <span class="tiny muted" style="flex-shrink:0">多选 · 每人独立建仓操盘</span>
         </div>
         <div class="form-row flex gap-3">
-          <div style="flex:1"><label class="form-label">追踪指数</label><input type="text" class="input" id="idxTrackIndex" readonly style="width:100%;background:var(--vp-gray-100)"></div>
-          <div style="flex:1"><label class="form-label">初始资金</label><input type="text" class="input" value="1000万" readonly style="width:100%;background:var(--vp-gray-100)"></div>
+          <div class="flex items-center" style="flex:1;gap:12px"><label class="form-label" style="width:76px;flex-shrink:0;margin:0">追踪指数</label><input type="text" class="input" id="idxTrackIndex" readonly style="flex:1;min-width:0;background:var(--vp-gray-100)"></div>
+          <div class="flex items-center" style="flex:1;gap:12px"><label class="form-label" style="width:76px;flex-shrink:0;margin:0">初始资金</label><input type="text" class="input" value="1000万" readonly style="flex:1;min-width:0;background:var(--vp-gray-100)"></div>
         </div>
-        <div class="form-row">
-          <label class="form-label">建仓方式</label>
+        <div class="form-row flex items-center" style="gap:12px">
+          <label class="form-label" style="width:112px;flex-shrink:0;margin:0">建仓方式</label>
           <div class="segmented" id="idxBuildSeg">
             <button class="seg active" onclick="idxSetBuild('full')">按指数权重</button>
             <button class="seg" onclick="idxSetBuild('top20')">仅前20大</button>
