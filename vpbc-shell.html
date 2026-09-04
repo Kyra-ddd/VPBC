@@ -2604,15 +2604,15 @@ function report3RHTML(isEdit) {
     <tbody>${rows}</tbody>
     <tfoot>
       <tr style="background:var(--vp-mint-50)">
-        <td colspan="3" style="padding:10px 12px;font-weight:600">3R Score</td>
+        <td colspan="3" style="padding:10px 12px;font-weight:600;text-align:right">3R Score</td>
         <td class="right bold" style="padding:10px 12px;font-variant-numeric:tabular-nums"><span id="report3RTotal">${total}</span> / 100</td>
       </tr>
       <tr>
-        <td colspan="3" style="padding:10px 12px">Conviction Score <span class="tiny muted">(optional)</span></td>
+        <td colspan="3" style="padding:10px 12px;text-align:right">Conviction Score <span class="tiny muted">(optional)</span></td>
         <td style="padding:8px 12px"><input type="number" min="0" max="100" value="${isEdit ? 80 : ''}" class="form-control" style="width:100%;box-sizing:border-box;text-align:right"></td>
       </tr>
       <tr>
-        <td colspan="4" class="tiny muted" style="padding:8px 12px;border-top:1px dashed var(--vp-border)">1-vote reject：第 2、3、10 条打零分时，评级自动为 1（automatic）</td>
+        <td colspan="4" class="tiny muted" style="padding:8px 12px;border-top:1px dashed var(--vp-border);text-align:right">1-vote reject：第 2、3、10 条打零分时，评级自动为 1（automatic）</td>
       </tr>
     </tfoot>
   </table></div>`;
