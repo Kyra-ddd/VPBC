@@ -3340,11 +3340,13 @@ function buildIndexSim() {
   <div id="idxPaneConst">
     <div class="card mb-4">
       <div class="card-head">
-        <div class="card-title">选择指数</div>
-        <select class="select" style="width:140px" id="idxCategory" onchange="idxRenderIndexList()">
-          <option value="msci">MSCI 系列</option><option value="csi">沪深系列</option>
-          <option value="hk">港股系列</option><option value="us">美股系列</option>
-        </select>
+        <div class="flex items-center gap-3">
+          <div class="card-title">选择指数</div>
+          <select class="select" style="width:140px" id="idxCategory" onchange="idxRenderIndexList()">
+            <option value="msci">MSCI 系列</option><option value="csi">沪深系列</option>
+            <option value="hk">港股系列</option><option value="us">美股系列</option>
+          </select>
+        </div>
       </div>
       <div class="card-body">
         <div class="flex items-center gap-3 mb-4" style="flex-wrap:wrap">
