@@ -3690,7 +3690,7 @@ function idxRenderDash() {
       </div>
       <div class="card-body">
         <div class="flex gap-4 mb-2" id="idxDashLegend" style="flex-wrap:wrap;font-size:12px;color:var(--vp-gray-700)"></div>
-        <svg id="idxDashChart" viewBox="0 0 760 300" style="width:100%;height:auto;display:block"></svg>
+        <svg id="idxDashChart" viewBox="0 0 760 260" style="width:100%;max-width:920px;height:auto;display:block"></svg>
         <div class="tiny" style="margin-top:6px">悬停查看各日期净值与区间涨跌 · 基准 = 原指数（同区间归一化）</div>
       </div>
     </div>
@@ -3712,7 +3712,7 @@ function idxRenderDashChart(tasks) {
   const svg = document.getElementById("idxDashChart");
   if (!svg) return;
   const n = IDX_NAV_DATES.length, s = idxRangeStart();
-  const W = 760, H = 300, PL = 52, PR = 118, PT = 14, PB = 24, iw = W - PL - PR, ih = H - PT - PB;
+  const W = 760, H = 260, PL = 52, PR = 118, PT = 14, PB = 24, iw = W - PL - PR, ih = H - PT - PB;
   const X = i => PL + iw * (i - s) / Math.max(1, n - 1 - s);
   const code = idxDashIndex;
   const bmArr = IDX_NAV_BM[code];
