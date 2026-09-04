@@ -3641,10 +3641,6 @@ function buildIndexSim() {
       </div>
       <div class="modal-body">
         <div class="form-row flex items-center" style="gap:12px">
-          <label class="form-label" style="width:112px;flex-shrink:0;margin:0" title="留空则默认「指数名称 · 研究员」">组合名称前缀</label>
-          <input type="text" class="input" id="idxPortName" placeholder="默认：指数名称 · 研究员名称，可输入自定义前缀" style="flex:1;min-width:0">
-        </div>
-        <div class="form-row flex items-center" style="gap:12px">
           <label class="form-label" style="width:112px;flex-shrink:0;margin:0">指派研究员</label>
           <div class="ms" id="msIdxAnalyst" style="flex:1;min-width:0">
             <div class="ms-field" onclick="msToggle('msIdxAnalyst',event)">
@@ -3656,21 +3652,13 @@ function buildIndexSim() {
           <span class="tiny muted" style="flex-shrink:0">多选 · 每人独立建仓操盘</span>
         </div>
         <div class="form-row flex gap-3">
-          <div class="flex items-center" style="flex:1;gap:12px"><label class="form-label" style="width:76px;flex-shrink:0;margin:0">追踪指数</label><input type="text" class="input" id="idxTrackIndex" readonly style="flex:1;min-width:0;background:var(--vp-gray-100)"></div>
-          <div class="flex items-center" style="flex:1;gap:12px"><label class="form-label" style="width:76px;flex-shrink:0;margin:0">初始资金</label><input type="text" class="input" value="1000万" readonly style="flex:1;min-width:0;background:var(--vp-gray-100)"></div>
-        </div>
-        <div class="form-row flex items-center" style="gap:12px">
-          <label class="form-label" style="width:112px;flex-shrink:0;margin:0">建仓方式</label>
-          <div class="segmented" id="idxBuildSeg">
-            <button class="seg active" onclick="idxSetBuild('full')">按指数权重</button>
-            <button class="seg" onclick="idxSetBuild('top20')">仅前20大</button>
-            <button class="seg" onclick="idxSetBuild('custom')">自定义选择</button>
-          </div>
+          <div class="flex items-center" style="flex:1;gap:12px"><label class="form-label" style="width:112px;flex-shrink:0;margin:0">追踪指数</label><input type="text" class="input" id="idxTrackIndex" readonly style="flex:1;min-width:0;background:var(--vp-gray-100)"></div>
+          <div class="flex items-center" style="flex:1;gap:12px"><label class="form-label" style="width:112px;flex-shrink:0;margin:0">初始资金</label><input type="text" class="input" id="idxPortCapital" value="1000万" style="flex:1;min-width:0" oninput="idxRenderBuildSummary()"></div>
         </div>
         <div id="idxBuildSummary" class="form-row"></div>
-        <div class="form-row">
-          <label class="form-label">备注（可选）</label>
-          <input type="text" class="input" id="idxPortNote" placeholder="如：MSCI 季度调仓后再平衡" style="width:100%">
+        <div class="form-row flex items-center" style="gap:12px">
+          <label class="form-label" style="width:112px;flex-shrink:0;margin:0">备注（可选）</label>
+          <input type="text" class="input" id="idxPortNote" placeholder="如：MSCI 季度调仓后再平衡" style="flex:1;min-width:0">
         </div>
       </div>
       <div class="modal-footer">
@@ -4354,10 +4342,9 @@ function idxOpenCreate(mode) {
   if (!idxCurIndex) { alert("请先选择一个指数"); return; }
   if (mode === 'custom' && idxSelected.size === 0) { alert("请先勾选要追加的成份股"); return; }
   idxBuildMode = mode || 'full';
-  idxSyncBuildSeg();
   const idx = idxFindIndex(idxCurIndex);
   document.getElementById("idxTrackIndex").value = idx ? idx.name + (mode === 'custom' ? `（已选 ${idxSelected.size} 只）` : "") : idxCurIndex;
-  document.getElementById("idxPortName").value = "";
+  document.getElementById("idxPortCapital").value = "1000万";
   document.getElementById("idxPortNote").value = "";
   const idxAnalysts = [...new Set(indGetIndustries().flatMap(i => (i.analysts || []).filter(a => a.status === "在职").map(a => a.name)))].sort();
   msInit('msIdxAnalyst', idxAnalysts, '请选择研究员（可多选）');
@@ -4367,15 +4354,6 @@ function idxOpenCreate(mode) {
 
 function idxCloseCreate() { document.getElementById("idxCreateModal").classList.remove("show"); }
 
-function idxSyncBuildSeg() {
-  document.querySelectorAll("#idxBuildSeg .seg").forEach(b => b.classList.remove("active"));
-  const map = { full: 0, top20: 1, custom: 2 };
-  const segs = document.querySelectorAll("#idxBuildSeg .seg");
-  if (segs[map[idxBuildMode]]) segs[map[idxBuildMode]].classList.add("active");
-}
-
-function idxSetBuild(mode) { idxBuildMode = mode; idxSyncBuildSeg(); idxRenderBuildSummary(); }
-
 function idxRenderBuildSummary() {
   const data = IDX_CONSTITUENTS[idxCurIndex] || [];
   let stocks;
@@ -4383,12 +4361,13 @@ function idxRenderBuildSummary() {
   else if (idxBuildMode === 'custom') stocks = data.filter(s => idxSelected.has(s.code));
   else stocks = data;
   const totalWt = stocks.reduce((s, x) => s + x.weight, 0);
+  const cap = parseFloat(document.getElementById("idxPortCapital")?.value) || 1000;
   document.getElementById("idxBuildSummary").innerHTML = `
     <div class="flex gap-4" style="flex-wrap:wrap;font-size:13px;color:var(--vp-gray-500)">
       <span>成份股 <span class="bold" style="color:var(--vp-gray-900)">${stocks.length}</span> 只</span>
       <span>合计权重 <span class="bold" style="color:var(--vp-gray-900)">${totalWt.toFixed(1)}%</span></span>
-      <span>初始资金 <span class="bold" style="color:var(--vp-gray-900)">1000万</span></span>
-      <span>预留现金 <span class="bold" style="color:var(--vp-gray-900)">${Math.max(0, 1000 - totalWt * 10).toFixed(0)}万</span></span>
+      <span>初始资金 <span class="bold" style="color:var(--vp-gray-900)">${cap}万</span></span>
+      <span>预留现金 <span class="bold" style="color:var(--vp-gray-900)">${Math.max(0, cap - totalWt * cap / 100).toFixed(0)}万</span></span>
     </div>
     <div class="flex gap-2" style="flex-wrap:wrap;margin-top:8px">
       ${stocks.slice(0, 8).map(s => `<span class="tag tag-gray">${s.code} ${s.weight.toFixed(1)}%</span>`).join("")}
@@ -4397,7 +4376,6 @@ function idxRenderBuildSummary() {
 }
 
 function idxConfirmCreate() {
-  const prefix = document.getElementById("idxPortName").value.trim();
   const analysts = MS_STATE['msIdxAnalyst'] ? [...MS_STATE['msIdxAnalyst'].selected] : [];
   if (analysts.length === 0) { alert("请选择研究员"); return; }
   const idx = idxFindIndex(idxCurIndex);
@@ -4407,15 +4385,17 @@ function idxConfirmCreate() {
     : idxBuildMode === 'custom' ? data.filter(s => idxSelected.has(s.code))
     : data;
   if (!stocks.length) { alert("当前建仓方式下没有成份股，请调整后重试"); return; }
+  const cap = parseFloat(document.getElementById("idxPortCapital")?.value) || 1000;
   const base = IDX_TASKS.length;
   analysts.forEach((a, i) => {
     IDX_TASKS.push({
       id: "T" + String(base + 1 + i).padStart(2, "0"),
       indexCode: idxCurIndex,
       analyst: a,
-      name: (prefix || indexName) + " · " + a,
+      name: indexName + " · " + a,
       createDate: "2026-09-03",
       buildMode: idxBuildMode,
+      capital: cap,
       status: "追踪中",
       off: IDX_NAV_DATES.length - 1,
       nav: [1.000],
