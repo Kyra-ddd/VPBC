@@ -2655,20 +2655,20 @@ const REPORT_FIN_ROWS = [
 
 function reportFinHTML() {
   const headBg = { a: 'var(--vp-green)', i: '#7EC6A2', e: '#2563EB' };
-  const head = REPORT_FIN_COLS.map(c => `<th class="right" style="background:${headBg[c.t]};color:#fff;white-space:nowrap;padding:8px 10px">${c.k}</th>`).join('');
+  const head = REPORT_FIN_COLS.map(c => `<th class="right" style="background:${headBg[c.t]};color:#fff;white-space:nowrap;width:90px;padding:8px 6px">${c.k}</th>`).join('');
   const rows = REPORT_FIN_ROWS.map(r => {
     if (r.group) return `<tr><td colspan="${REPORT_FIN_COLS.length + 1}" style="background:#FBF4E4;font-weight:600;padding:8px 12px">${r.group}</td></tr>`;
     const bg = r.hl ? '#FFF9E8' : 'var(--vp-white)';
     const labelStyle = r.sub ? 'color:var(--vp-gray-500);padding-left:30px' : (r.hl ? 'font-weight:600' : '');
-    const cells = REPORT_FIN_COLS.map(() => `<td style="background:${bg};padding:3px 6px"><input type="number" step="any" class="form-control" style="width:100%;box-sizing:border-box;padding:4px 8px;text-align:right;font-variant-numeric:tabular-nums"></td>`).join('');
+    const cells = REPORT_FIN_COLS.map(() => `<td style="background:${bg};padding:3px 4px"><input type="number" step="any" class="form-control" style="width:100%;box-sizing:border-box;padding:4px 6px;font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums"></td>`).join('');
     return `<tr>
-      <td style="background:${bg};position:sticky;left:0;box-shadow:inset -1px 0 0 var(--vp-border);padding:7px 12px;width:190px;${labelStyle}">${r.label}</td>
+      <td style="background:${bg};position:sticky;left:0;box-shadow:inset -1px 0 0 var(--vp-border);padding:7px 12px;width:170px;${labelStyle}">${r.label}</td>
       ${cells}
     </tr>`;
   }).join('');
-  return `<div style="overflow:auto"><table class="data-table" style="white-space:nowrap">
+  return `<div style="overflow:auto"><table class="data-table" style="white-space:nowrap;table-layout:fixed">
     <thead><tr>
-      <th style="background:var(--vp-green);color:#fff;padding:8px 12px;position:sticky;left:0;z-index:2;box-shadow:inset -1px 0 0 rgba(0,0,0,0.15)">财务指标</th>
+      <th style="background:var(--vp-green);color:#fff;padding:8px 12px;width:170px;position:sticky;left:0;z-index:2;box-shadow:inset -1px 0 0 rgba(0,0,0,0.15)">财务指标</th>
       ${head}
     </tr></thead>
     <tbody>${rows}</tbody>
