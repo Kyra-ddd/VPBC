@@ -2246,7 +2246,7 @@ const PROD_REGIONS = ['HK 香港', 'IE 爱尔兰', 'KY 开曼群岛', 'CN 中国
 
 function prodAddInit() {
   if (!MS_STATE['msRegionDict']) {
-    msInit('msRegionDict', PROD_REGIONS, '请选择（可多选）');
+    msInit('msRegionDict', PROD_REGIONS, '全部注册地区');
   } else {
     MS_STATE['msRegionDict'].selected.forEach(v => { const cb = document.querySelector(`#msRegionDictPanel input[value="${v}"]`); if (cb) cb.checked = true; });
     msRender('msRegionDict');
