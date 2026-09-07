@@ -417,6 +417,7 @@ function renderContent(html) {
   if (activeTabKey === 'config') { cfgSwitchTab('users'); }
   if (activeTabKey === 'share-class') { scRender(); }
   if (activeTabKey === 'share-class-add') { scAddInit(); }
+  if (activeTabKey === 'product-add') { prodAddInit(); }
   if (activeTabKey === 'fee') { feeRender(); }
 }
 function updateBreadcrumb(text) { if (document.getElementById('topbarBreadcrumb')) document.getElementById('topbarBreadcrumb').textContent = text; }
@@ -471,6 +472,11 @@ const IND_DATA = {
     { code: "JP-ELE", name: "电子", analysts: [{ id:"a10", name:"Sato", acct:"sato.t", focus:"电子元器件", status:"离职" }], stocks: [{code:"6758.JP",name:"索尼集团",issuer:"索尼グループ株式会社",r3Score:77},{code:"9984.JP",name:"软银集团",issuer:"SBG（SoftBank Group）",r3Score:71},{code:"8035.JP",name:"东京威力科创",issuer:"東京エレクトロン",r3Score:76}] },
   ]},
   KR: { name: "韩股", industries: [{ code: "KR-TECH", name: "科技", analysts: [{ id:"a11", name:"Kim", acct:"kim", focus:"韩国科技巨头", status:"在职" }], stocks: [{code:"005930.KS",name:"三星电子",issuer:"Samsung Electronics Co., Ltd.",r3Score:84},{code:"000660.KS",name:"SK海力士",issuer:"SK Hynix Inc.",r3Score:73},{code:"035420.KS",name:"NAVER",issuer:"NAVER Corporation",r3Score:80}] }] },
+  CN: { name: "A股", industries: [
+    { code: "CN-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"A股金融（跨市场）", status:"在职" }], stocks: [{code:"601318.SH",name:"中国平安",r3Score:89},{code:"600036.SH",name:"招商银行",r3Score:86},{code:"601398.SH",name:"工商银行",r3Score:84}] },
+    { code: "CN-CONS", name: "消费", analysts: [{ id:"a02", name:"Emma", acct:"emma", focus:"A股消费（跨市场）", status:"在职" }], stocks: [{code:"600519.SH",name:"贵州茅台",r3Score:95},{code:"000858.SZ",name:"五粮液",r3Score:88},{code:"601888.SH",name:"中国中免",r3Score:78}] },
+  ]},
+  IN: { name: "印股", industries: [{ code: "IN-TECH", name: "科技", analysts: [{ id:"a12", name:"Priya", acct:"priyas", focus:"印度 IT 服务外包", status:"在职" }], stocks: [{code:"TCS.NS",name:"塔塔咨询",r3Score:88},{code:"INFY.NS",name:"印孚瑟斯",r3Score:85},{code:"WIPRO.NS",name:"Wipro",r3Score:74}] }] },
 };
 
 let indCurrentMarket = "ALL";
@@ -674,7 +680,7 @@ function indShowStocks(name) {
   const tbody = document.getElementById("indStockBody");
   if (!panel || !title || !tbody) return;
   // Collect all stocks from ALL markets that have this industry name
-  const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股" };
+  const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股","CN":"A股","IN":"印股" };
   const allStocks = [];
   Object.entries(IND_DATA).forEach(([mcode, market]) => {
     const ind = market.industries.find(i => i.name === name);
@@ -705,7 +711,7 @@ function indOpenStock(name) {
   const title = document.getElementById("indStockModalTitle");
   const tbody = document.getElementById("indStockModalBody");
   if (!modal || !title || !tbody) return;
-  const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股" };
+  const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股","CN":"A股","IN":"印股" };
   const allStocks = [];
   Object.entries(IND_DATA).forEach(([mcode, market]) => {
     const ind = market.industries.find(i => i.name === name);
@@ -2185,6 +2191,7 @@ function buildProductManagement() {
     <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">状态</label><select class="form-control" id="prodSearchSt"><option value="">全部状态</option><option>运作中</option><option>募集中</option><option>已停用</option><option>已终止</option><option>清盘中</option></select></div>
     <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="prodResetFilter()">重置</button>
     <button class="btn btn-primary btn-sm" style="flex-shrink:0" onclick="prodDoFilter()">搜索</button>
+    <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="prodImport()">⬆ 导入</button>
     <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="prodExport()">⬇ 导出</button>
   </div></div></div>
   <div class="card"><div style="overflow-x:auto;">
@@ -2197,7 +2204,7 @@ function buildProductManagement() {
       <th class="sortable" onclick="prodSort('status')">状态 <span class="sort-icon">${sortIcon('status')}</span></th>
       <th class="sortable" onclick="prodSort('date')">成立日期 <span class="sort-icon">${sortIcon('date')}</span></th>
       <th class="sortable" onclick="prodSort('currency')">基础货币 <span class="sort-icon">${sortIcon('currency')}</span></th>
-      <th class="sortable" onclick="prodSort('manager')">基金经理 <span class="sort-icon">${sortIcon('manager')}</span></th>
+      <th class="sortable" onclick="prodSort('manager')">基金管理人 <span class="sort-icon">${sortIcon('manager')}</span></th>
       <th class="sortable" onclick="prodSort('updater')">更新人 <span class="sort-icon">${sortIcon('updater')}</span></th>
       <th class="sortable" onclick="prodSort('updateTime')">更新时间 <span class="sort-icon">${sortIcon('updateTime')}</span></th>
     </tr></thead>
@@ -2225,6 +2232,7 @@ function prodSort(field) {
 }
 
 function prodExport() { alert('原型：导出产品数据为 Excel'); }
+function prodImport() { alert('原型：导入产品数据（Excel / CSV）'); }
 function prodOpenDetail(code) { alert("查看产品详情：" + code); }
 function prodResetFilter() { document.getElementById("prodSearchCode").value=""; document.getElementById("prodSearchName").value=""; document.getElementById("prodSearchType").value=""; document.getElementById("prodSearchDom").value=""; document.getElementById("prodSearchSt").value=""; }
 function prodDoFilter() { alert("原型：按条件筛选"); }
@@ -2233,6 +2241,18 @@ function prodEditSelected() { if (!prodSelected) { alert('请先选择一个产�
 function prodDeleteSelected() { if (!prodSelected) { alert('请先选择一个产品'); return; } if (confirm('确认删除 ' + prodSelected + '？')) { alert('原型：删除产品 ' + prodSelected); prodSelected = ''; document.getElementById('content').innerHTML = buildProductManagement(); } }
 
 // ========== Product Add / Edit ==========
+// 注册地区字典：简称 + 全称（下拉/多选展示同一文案）
+const PROD_REGIONS = ['HK 香港', 'IE 爱尔兰', 'KY 开曼群岛', 'CN 中国', 'SG 新加坡', 'LU 卢森堡', 'GB 英国', 'US 美国', 'CH 瑞士', 'DE 德国', 'FR 法国', 'JP 日本'];
+
+function prodAddInit() {
+  if (!MS_STATE['msRegionDict']) {
+    msInit('msRegionDict', PROD_REGIONS, '请选择（可多选）');
+  } else {
+    MS_STATE['msRegionDict'].selected.forEach(v => { const cb = document.querySelector(`#msRegionDictPanel input[value="${v}"]`); if (cb) cb.checked = true; });
+    msRender('msRegionDict');
+  }
+}
+
 function buildProductAdd() {
   const L = 'style="display:flex;align-items:center;gap:8px"', LB = 'style="width:140px;flex-shrink:0;margin:0;font-weight:500;text-align:right"', IN = 'style="flex:1;min-width:0"';
   const R = '<span style="color:#dc2626;margin-right:2px">*</span>';
@@ -2263,19 +2283,25 @@ function buildProductAdd() {
     ${row(['投资者国籍限制', `<input type="text" class="form-control" ${IN} id="f-restrictionOnInvestorSNationality" placeholder="选填">`], ['投资者居留限制', `<input type="text" class="form-control" ${IN} id="f-restrictionOnInvestorSResidency" placeholder="选填">`], false, false)}
 
     ${hdr('主要相关方')}
-    ${row(['基金经理', `<input type="text" class="form-control" ${IN} id="f-fundManager">`], ['基金经理LEI', `<input type="text" class="form-control" ${IN} id="f-fundManagerLei" placeholder="20位字母数字">`], true, true)}
+    ${row(['基金管理人', `<input type="text" class="form-control" ${IN} id="f-fundManager">`], ['基金管理人LEI', `<input type="text" class="form-control" ${IN} id="f-fundManagerLei" placeholder="20位字母数字">`], true, true)}
     ${row(['副基金经理', `<input type="text" class="form-control" ${IN} id="f-subManager" placeholder="选填">`], ['投资顾问', `<input type="text" class="form-control" ${IN} id="f-investmentAdvisor" placeholder="选填">`], false, false)}
     ${row(['受托人/行政管理人', `<input type="text" class="form-control" ${IN} id="f-trusteeAdministrator" placeholder="选填">`], ['托管人/主经纪商', `<input type="text" class="form-control" ${IN} id="f-custodianPrimeBroker" placeholder="选填">`], false, false)}
     ${row(['副托管人', `<input type="text" class="form-control" ${IN} id="f-subCustodian" placeholder="选填">`], ['审计师', `<input type="text" class="form-control" ${IN} id="f-auditor" placeholder="选填">`], false, false)}
 
     ${hdr('投资策略')}
-    ${row(['主要工具类型', `<select class="form-control" ${IN} id="f-primaryInstrumentType"><option value="">请选择</option><option>Alternative (Private) Assets 另类（私募）资产</option><option>Commodities 商品</option><option>Digital Assets 数字资产</option><option>Equity 股票</option><option>Fixed Income 固定收益</option><option>Money Market (Liquidity) 货币市场（流动性）</option><option>Multi-Assets 多资产</option></select>`], ['被动/主动基金', `<select class="form-control" ${IN} id="f-passiveOrActiveFund"><option value="">请选择</option><option>Active 主动</option><option>Passive 被动</option></select>`], true, true)}
+    ${row(['主要投资工具类型', `<select class="form-control" ${IN} id="f-primaryInstrumentType"><option value="">请选择</option><option>Alternative (Private) Assets 另类（私募）资产</option><option>Commodities 商品</option><option>Digital Assets 数字资产</option><option>Equity 股票</option><option>Fixed Income 固定收益</option><option>Money Market (Liquidity) 货币市场（流动性）</option><option>Multi-Assets 多资产</option></select>`], ['被动/主动基金', `<select class="form-control" ${IN} id="f-passiveOrActiveFund"><option value="">请选择</option><option>Active 主动</option><option>Passive 被动</option></select>`], true, true)}
     ${row(['投资市场聚焦', `<select class="form-control" ${IN} id="f-investmentMarketFocus"><option value="">请选择</option><option>America 美洲</option><option>Asia Pacific 亚太</option><option>Emerging Markets 新兴市场</option><option>Europe 欧洲</option><option>Global 全球</option></select>`], ['晨星类别', `<input type="text" class="form-control" ${IN} id="f-morningstarCategory" placeholder="选填">`], true, false)}
     ${row(['风险等级', `<select class="form-control" ${IN} id="f-riskLevel"><option value="">请选择</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>`], ['对冲政策（基金）', `<select class="form-control" ${IN} id="f-hedgingPolicyFund"><option value="">请选择</option><option>Hedge to Base Currency 对冲至基础货币</option><option>Optional 可选</option><option>N/A 不适用</option></select>`], false, true)}
     ${row(['基准', `<input type="text" class="form-control" ${IN} id="f-benchmark" placeholder="选填">`], ['基准代码', `<input type="text" class="form-control" ${IN} id="f-benchmarkCode" placeholder="选填">`], false, false)}
     ${row(['最高杠杆比率', `<input type="number" class="form-control" ${IN} id="f-leverageRatioMax" placeholder="非负整数">`], ['最高衍生品比率', `<input type="number" class="form-control" ${IN} id="f-derivativesRatioMax" placeholder="非负整数">`], true, true)}
     ${row(['借款限额', `<input type="number" class="form-control" ${IN} id="f-borrowingLimit" placeholder="非负整数">`], ['止损限额', `<input type="number" class="form-control" ${IN} id="f-stopLossLimit" placeholder="非负，最多2位小数" step="0.01">`], true, false)}
-    ${row(['止损警报', `<input type="number" class="form-control" ${IN} id="f-stopLossAlert" placeholder="非负，最多2位小数" step="0.01">`], ['注册地区', `<select class="form-control" ${IN} id="f-regionDictCodes"><option value="">请选择</option><option>HK</option><option>IE</option><option>KY</option><option>CN</option><option>SG</option><option>LU</option><option>GB</option><option>US</option><option>CH</option><option>DE</option><option>FR</option><option>JP</option></select>`], true, false)}
+    ${row(['止损警报', `<input type="number" class="form-control" ${IN} id="f-stopLossAlert" placeholder="非负，最多2位小数" step="0.01">`], ['注册地区', `<div class="ms" id="msRegionDict" style="flex:1;min-width:0">
+      <div class="ms-field" onclick="msToggle('msRegionDict',event)">
+        <div class="ms-tags" id="msRegionDictTags"></div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--vp-gray-400)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ms-panel" id="msRegionDictPanel" onclick="event.stopPropagation()"></div>
+    </div>`], true, false)}
     ${taCell('投资目标', 'f-investmentObjective', '不超过2000字符', true)}
     ${taCell('投资策略', 'f-investmentStrategy', '不超过2000字符', true)}
     ${taCell('资产配置表', 'f-assetAllocationTable', '文本或图片，至少填一项', false)}
@@ -2368,7 +2394,7 @@ function prodSaveDraft() {
   else if (PRODUCTS.some(p => p.code === code)) { prodMarkErr('f-fundCode', '该基金代码已存在'); ok = false; }
   if (!nameEn) { prodMarkErr('f-fundNameEn', '请输入基金英文名称'); ok = false; }
   if (!nameTc) { prodMarkErr('f-fundNameTc', '请输入基金繁体名称'); ok = false; }
-  if (!mgr) { prodMarkErr('f-fundManager', '请输入基金经理'); ok = false; }
+  if (!mgr) { prodMarkErr('f-fundManager', '请输入基金管理人'); ok = false; }
   if (!ok) return;
   alert('草稿已保存');
 }
@@ -2380,8 +2406,8 @@ function prodSubmit() {
     ['f-fundCode','基金代码'], ['f-fundNameEn','基金英文名称'], ['f-fundNameTc','基金繁体名称'],
     ['f-fundType','基金类型'], ['f-domicileJurisdiction','注册地/管辖区'],
     ['f-primaryRegulator','主要监管机构'], ['f-fundStatus','基金状态'],
-    ['f-complexProduct','复杂产品'], ['f-fundManager','基金经理'],
-    ['f-fundManagerLei','基金经理LEI'], ['f-primaryInstrumentType','主要工具类型'],
+    ['f-complexProduct','复杂产品'], ['f-fundManager','基金管理人'],
+    ['f-fundManagerLei','基金管理人LEI'], ['f-primaryInstrumentType','主要投资工具类型'],
     ['f-passiveOrActiveFund','被动/主动基金'], ['f-investmentMarketFocus','投资市场聚焦'],
     ['f-riskLevel','风险等级'], ['f-leverageRatioMax','最高杠杆比率'],
     ['f-derivativesRatioMax','最高衍生品比率'], ['f-borrowingLimit','借款限额'],
@@ -2392,6 +2418,19 @@ function prodSubmit() {
     const el = document.getElementById(id);
     if (!el?.value.trim()) { prodMarkErr(id, label + '为必填项'); ok = false; }
   });
+  // 注册地区为多选，校验 MS_STATE 而非表单控件
+  if (!MS_STATE['msRegionDict'] || MS_STATE['msRegionDict'].selected.size === 0) {
+    const fld = document.querySelector('#msRegionDict .ms-field');
+    if (fld) {
+      fld.classList.add('prod-error');
+      const d = document.createElement('div');
+      d.className = 'prod-err-msg';
+      d.style = 'font-size:11px;color:#dc2626;margin-top:2px';
+      d.textContent = '注册地区为必填项';
+      fld.parentElement.appendChild(d);
+    }
+    ok = false;
+  }
   if (!ok) { alert('请填写所有必填项（*标记）'); return; }
   alert('提交成功！');
 }
