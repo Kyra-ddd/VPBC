@@ -2156,6 +2156,13 @@ function buildConfig() {
 let prodSortField = '';
 let prodSortDir = 'asc';
 let prodSelected = '';
+// 自定义搜索：用户勾选加入搜索栏的字段（标签/箭头均可点击排序）
+let prodCustomFields = [];
+const PROD_CUSTOM_FIELDS = [
+  { key: 'code', label: '基金代码' }, { key: 'nameEn', label: '基金名称' }, { key: 'type', label: '基金类型' },
+  { key: 'domicile', label: '注册地' }, { key: 'status', label: '状态' }, { key: 'date', label: '成立日期' },
+  { key: 'currency', label: '基础货币' }, { key: 'manager', label: '基金管理人' }, { key: 'updater', label: '更新人' }, { key: 'updateTime', label: '更新时间' },
+];
 
 function buildProductManagement() {
   const rows = PRODUCTS.map(p => {
@@ -2193,7 +2200,23 @@ function buildProductManagement() {
     <button class="btn btn-primary btn-sm" style="flex-shrink:0" onclick="prodDoFilter()">搜索</button>
     <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="prodImport()">⬆ 导入</button>
     <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="prodExport()">⬇ 导出</button>
-  </div></div></div>
+    <div style="position:relative;flex-shrink:0">
+      <button class="btn btn-secondary btn-sm" onclick="prodToggleCustomPanel(event)">⚙ 自定义搜索</button>
+      <div class="ms-panel" id="prodCustomPanel" style="left:auto;right:0;width:190px" onclick="event.stopPropagation()">
+        <div class="tiny" style="padding:6px 12px;color:var(--vp-gray-400)">勾选要加入搜索栏的字段</div>
+        ${PROD_CUSTOM_FIELDS.map(f => `<label class="ms-opt"><input type="checkbox" value="${f.key}" ${prodCustomFields.includes(f.key) ? 'checked' : ''} onchange="prodToggleCustomField('${f.key}',this.checked)">${f.label}</label>`).join('')}
+      </div>
+    </div>
+  </div>
+  ${prodCustomFields.length ? `<div id="prodCustomBar" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed var(--vp-border)">
+    ${prodCustomFields.map(key => { const f = PROD_CUSTOM_FIELDS.find(x => x.key === key); const dir = prodSortField === f.key ? (prodSortDir === 'asc' ? '↑' : '↓') : '↕'; return `
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        <label class="form-label" style="margin:0;cursor:pointer" title="点击按${f.label}排序" onclick="prodSort('${f.key}')">${f.label}</label>
+        <input type="text" class="form-control" placeholder="输入${f.label}搜索" style="width:130px" id="prodCf-${f.key}">
+        <button class="btn btn-ghost btn-sm" style="padding:2px 8px" title="按${f.label}排序" onclick="prodSort('${f.key}')">${dir}</button>
+      </div>`; }).join('')}
+  </div>` : ''}
+  </div></div>
   <div class="card"><div style="overflow-x:auto;">
     <table class="data-table"><thead><tr>
       <th></th>
@@ -2233,6 +2256,11 @@ function prodSort(field) {
 
 function prodExport() { alert('原型：导出产品数据为 Excel'); }
 function prodImport() { alert('原型：导入产品数据（Excel / CSV）'); }
+function prodToggleCustomPanel(e) { e.stopPropagation(); document.getElementById('prodCustomPanel').classList.toggle('open'); }
+function prodToggleCustomField(key, checked) {
+  prodCustomFields = checked ? [...prodCustomFields, key] : prodCustomFields.filter(k => k !== key);
+  document.getElementById('content').innerHTML = buildProductManagement();
+}
 function prodOpenDetail(code) { alert("查看产品详情：" + code); }
 function prodResetFilter() { document.getElementById("prodSearchCode").value=""; document.getElementById("prodSearchName").value=""; document.getElementById("prodSearchType").value=""; document.getElementById("prodSearchDom").value=""; document.getElementById("prodSearchSt").value=""; }
 function prodDoFilter() { alert("原型：按条件筛选"); }
@@ -2253,6 +2281,26 @@ function prodAddInit() {
   }
 }
 
+// 伞型/OFC名称：输入时模糊联动已有基金的英文名称，点选回填
+function umbSuggest(q) {
+  const panel = document.getElementById('umbPanel');
+  if (!panel) return;
+  const kw = (q || '').trim().toLowerCase();
+  if (!kw) { panel.classList.remove('open'); panel.innerHTML = ''; return; }
+  const hits = PRODUCTS.filter(p => (p.nameEn || '').toLowerCase().includes(kw)).slice(0, 8);
+  panel.innerHTML = hits.length
+    ? hits.map(p => `<div class="ms-opt" onmousedown="umbPick('${p.code}')"><span class="cell-code">${p.code}</span><span>${p.nameEn}</span></div>`).join('')
+    : `<div class="ms-opt" style="color:var(--vp-gray-400);cursor:default">无匹配的基金名称（英文）</div>`;
+  panel.classList.add('open');
+}
+function umbPick(code) {
+  const p = PRODUCTS.find(x => x.code === code);
+  const inp = document.getElementById('f-umbrellaOfcName');
+  if (p && inp) inp.value = p.nameEn;
+  const panel = document.getElementById('umbPanel');
+  if (panel) { panel.classList.remove('open'); panel.innerHTML = ''; }
+}
+
 function buildProductAdd() {
   const L = 'style="display:flex;align-items:center;gap:8px"', LB = 'style="width:140px;flex-shrink:0;margin:0;font-weight:500;text-align:right"', IN = 'style="flex:1;min-width:0"';
   const R = '<span style="color:#dc2626;margin-right:2px">*</span>';
@@ -2271,7 +2319,10 @@ function buildProductAdd() {
     ${hdr('基金核心身份')}
     ${row(['基金代码', `<input type="text" class="form-control" ${IN} placeholder="不超过20字符" id="f-fundCode">`], ['基金名称（英文）', `<input type="text" class="form-control" ${IN} placeholder="不超过200字符" id="f-fundNameEn">`], true, true)}
     ${row(['基金名称（繁体）', `<input type="text" class="form-control" ${IN} placeholder="不超过200字符" id="f-fundNameTc">`], ['基金名称（简体）', `<input type="text" class="form-control" ${IN} placeholder="不超过200字符" id="f-fundNameSc">`], true, true)}
-    ${row(['基金类型', `<select class="form-control" ${IN} id="f-fundType"><option value="">请选择</option><option>SFC Authorized Fund（UT）香港证监会认可基金（单位信托）</option><option>SFC Authorized Fund（OFC）香港证监会认可基金（开放式基金型公司）</option><option>SFC Authorized Fund（Cayman）香港证监会认可基金（开曼）</option><option>SFC Authorized Fund（ICAV）香港证监会认可基金（爱尔兰集体资产管理工具）</option><option>Private Fund（Cayman）私募基金（开曼）</option><option>Private Fund（Chinese Mainland）私募基金（中国内地）</option><option>Investment Advisory（Offshore）投资咨询（离岸）</option><option>Investment Advisory（Chinese Mainland）投资咨询（中国内地）</option><option>Other Mutual Fund 其他共同基金</option></select>`], ['伞型/OFC名称', `<input type="text" class="form-control" ${IN} id="f-umbrellaOfcName" placeholder="选填">`], true, false)}
+    ${row(['基金类型', `<select class="form-control" ${IN} id="f-fundType"><option value="">请选择</option><option>SFC Authorized Fund（UT）香港证监会认可基金（单位信托）</option><option>SFC Authorized Fund（OFC）香港证监会认可基金（开放式基金型公司）</option><option>SFC Authorized Fund（Cayman）香港证监会认可基金（开曼）</option><option>SFC Authorized Fund（ICAV）香港证监会认可基金（爱尔兰集体资产管理工具）</option><option>Private Fund（Cayman）私募基金（开曼）</option><option>Private Fund（Chinese Mainland）私募基金（中国内地）</option><option>Investment Advisory（Offshore）投资咨询（离岸）</option><option>Investment Advisory（Chinese Mainland）投资咨询（中国内地）</option><option>Other Mutual Fund 其他共同基金</option></select>`], ['伞型/OFC名称', `<div style="position:relative;flex:1;min-width:0">
+      <input type="text" class="form-control" style="width:100%;box-sizing:border-box" id="f-umbrellaOfcName" placeholder="输入后模糊联动基金名称（英文）" autocomplete="off" oninput="umbSuggest(this.value)">
+      <div class="ms-panel" id="umbPanel" style="left:0;right:0" onclick="event.stopPropagation()"></div>
+    </div>`], true, false)}
     ${row(['子基金代码', `<input type="text" class="form-control" ${IN} id="f-subFundCode" placeholder="选填">`], ['注册地/管辖区', `<select class="form-control" ${IN} id="f-domicileJurisdiction"><option value="">请选择</option><option>HK</option><option>IE</option><option>KY</option><option>CN</option><option>SG</option><option>LU</option><option>GB</option><option>US</option><option>CH</option><option>DE</option><option>FR</option><option>JP</option><option>BM</option><option>VG</option><option>AU</option><option>NL</option><option>TW</option><option>MO</option><option>MY</option><option>KR</option><option>IN</option><option>IT</option><option>ES</option><option>SE</option><option>FI</option><option>DK</option><option>NO</option></select>`], false, true)}
     ${row(['主要监管机构', `<input type="text" class="form-control" ${IN} id="f-primaryRegulator">`], ['基础货币', `<select class="form-control" ${IN} id="f-baseCurrency"><option value="">请选择</option><option>HKD</option><option>USD</option><option>EUR</option><option>CNY</option><option>CNH</option><option>GBP</option><option>JPY</option><option>SGD</option><option>CHF</option><option>AUD</option><option>CAD</option><option>NZD</option><option>RMB</option></select>`], true, false)}
     ${row(['基金状态', `<select class="form-control" ${IN} id="f-fundStatus"><option value="">请选择</option><option>In Offering 募集中</option><option>Active 运作中</option><option>In Liquidation 清算中</option><option>Liquidated 已清算</option></select>`], ['申请提交日期', `<input type="date" class="form-control" ${IN} id="f-applicationSubmissionDate">`], true, false)}
