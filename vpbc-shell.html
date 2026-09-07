@@ -2274,7 +2274,7 @@ const PROD_REGIONS = ['HK 香港', 'IE 爱尔兰', 'KY 开曼群岛', 'CN 中国
 
 function prodAddInit() {
   if (!MS_STATE['msRegionDict']) {
-    msInit('msRegionDict', PROD_REGIONS, '全部注册地区');
+    msInit('msRegionDict', PROD_REGIONS, '请选择（可多选）');
   } else {
     MS_STATE['msRegionDict'].selected.forEach(v => { const cb = document.querySelector(`#msRegionDictPanel input[value="${v}"]`); if (cb) cb.checked = true; });
     msRender('msRegionDict');
@@ -2346,7 +2346,7 @@ function buildProductAdd() {
     ${row(['基准', `<input type="text" class="form-control" ${IN} id="f-benchmark" placeholder="选填">`], ['基准代码', `<input type="text" class="form-control" ${IN} id="f-benchmarkCode" placeholder="选填">`], false, false)}
     ${row(['最高杠杆比率', `<input type="number" class="form-control" ${IN} id="f-leverageRatioMax" placeholder="非负整数">`], ['最高衍生品比率', `<input type="number" class="form-control" ${IN} id="f-derivativesRatioMax" placeholder="非负整数">`], true, true)}
     ${row(['借款限额', `<input type="number" class="form-control" ${IN} id="f-borrowingLimit" placeholder="非负整数">`], ['止损限额', `<input type="number" class="form-control" ${IN} id="f-stopLossLimit" placeholder="非负，最多2位小数" step="0.01">`], true, false)}
-    ${row(['止损警报', `<input type="number" class="form-control" ${IN} id="f-stopLossAlert" placeholder="非负，最多2位小数" step="0.01">`], ['注册地区', `<div class="ms" id="msRegionDict" style="flex:1;min-width:0">
+    ${row(['止损警报', `<input type="number" class="form-control" ${IN} id="f-stopLossAlert" placeholder="非负，最多2位小数" step="0.01">`], ['全部注册地区', `<div class="ms" id="msRegionDict" style="flex:1;min-width:0">
       <div class="ms-field" onclick="msToggle('msRegionDict',event)">
         <div class="ms-tags" id="msRegionDictTags"></div>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--vp-gray-400)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
@@ -2477,7 +2477,7 @@ function prodSubmit() {
       const d = document.createElement('div');
       d.className = 'prod-err-msg';
       d.style = 'font-size:11px;color:#dc2626;margin-top:2px';
-      d.textContent = '注册地区为必填项';
+      d.textContent = '全部注册地区为必填项';
       fld.parentElement.appendChild(d);
     }
     ok = false;
