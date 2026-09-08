@@ -647,15 +647,16 @@ function indRenderUnified() {
   if (!rows.length) { body.innerHTML = '<tr><td colspan="8" class="muted" style="text-align:center;padding:32px">暂无数据</td></tr>'; return; }
   body.innerHTML = rows.map(ind => {
     const hasStocks = ind.stocks && ind.stocks.length > 0;
-    const nameHtml = hasStocks
-      ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green)" onclick="indShowStocks('${ind.name}')">${ind.name}</span>`
-      : ind.name;
+    // 明细入口挂在「覆盖股票个数」上；行业名仅为纯文本
+    const countHtml = hasStocks
+      ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green);font-variant-numeric:tabular-nums" onclick="indShowStocks('${ind.name}')">${ind._stockCount}</span>`
+      : `<span class="muted" style="font-variant-numeric:tabular-nums">0</span>`;
     const checked = indSelected === ind.name ? 'checked' : '';
     return `<tr>
       <td><input type="checkbox" ${checked} onclick="indToggleSelect('${ind.name}')"></td>
       <td>${ind._analystNames}</td>
-      <td style="font-variant-numeric:tabular-nums">${ind._stockCount}</td>
-      <td class="bold">${nameHtml}</td>
+      <td>${countHtml}</td>
+      <td class="bold">${ind.name}</td>
       <td>${(ind.marketNames || []).join("、")}</td>
       <td class="muted">${ind._updater}</td>
       <td class="muted" style="font-variant-numeric:tabular-nums">${ind._time}</td>
