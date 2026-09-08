@@ -30,6 +30,7 @@
 - **字体**：标题 Poppins，正文 Open Sans；中文 `PingFang TC`/`Microsoft JhengHei`
 - **数字/时间/利率**开 `font-variant-numeric: tabular-nums`
 - **整页背景 `--vp-mint-50: #F2F8F4`**，内容用纯白卡片承载
+- **表单/弹窗字段：标签与控件同一行**——标签在左（固定宽度、左对齐、`flex-shrink:0`），控件在右占满剩余宽度（`flex:1`）；不做「标签在上、控件在下」的上下结构。可换行控件（如多选 tag 输入）用 `align-items:flex-start` 并让标签对齐首行
 
 ## 协作约定
 

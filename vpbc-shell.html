@@ -2660,33 +2660,35 @@ function buildIndustry() {
           <button onclick="indCloseAdd()" title="关闭" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:none;border-radius:6px;background:transparent;color:var(--vp-gray-500);cursor:pointer;transition:background .15s,color .15s" onmouseover="this.style.background='var(--vp-mint-50)';this.style.color='var(--vp-gray-900)'" onmouseout="this.style.background='transparent';this.style.color='var(--vp-gray-500)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
         <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
-          <div>
-            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">研究员 <span style="color:var(--vp-red)">*</span></label>
-            <select class="form-control" id="indAddAnalyst" style="width:100%"></select>
+          <div style="display:flex;align-items:center;gap:12px">
+            <label style="width:84px;flex-shrink:0;margin:0;font-size:13px;font-weight:600;color:#3D4A42">研究员 <span style="color:var(--vp-red)">*</span></label>
+            <select class="form-control" id="indAddAnalyst" style="flex:1;min-width:0"></select>
           </div>
-          <div>
-            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">市场</label>
-            <div class="ms" id="msMarket">
+          <div style="display:flex;align-items:center;gap:12px">
+            <label style="width:84px;flex-shrink:0;margin:0;font-size:13px;font-weight:600;color:#3D4A42">市场</label>
+            <div style="flex:1;min-width:0"><div class="ms" id="msMarket">
               <div class="ms-field" onclick="msToggle('msMarket',event)">
                 <div class="ms-tags" id="msMarketTags"></div>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--vp-gray-400)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
               </div>
               <div class="ms-panel" id="msMarketPanel" onclick="event.stopPropagation()"></div>
-            </div>
+            </div></div>
           </div>
-          <div>
-            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">覆盖股票</label>
-            <div style="position:relative">
-              <div style="border:1px solid var(--vp-border);border-radius:8px;padding:6px 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:38px;box-sizing:border-box;background:#fff;cursor:text" onclick="document.getElementById('indCovInput').focus()">
-                <span id="indCovTags" style="display:contents"></span>
-                <input type="text" id="indCovInput" autocomplete="off" placeholder="输入股票代码/名称，模糊搜索后选中" style="flex:1;min-width:140px;border:none;outline:none;font-size:13px;color:var(--vp-gray-800)" oninput="indStockSuggest(this.value)">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <label style="width:84px;flex-shrink:0;margin:9px 0 0;font-size:13px;font-weight:600;color:#3D4A42">覆盖股票</label>
+            <div style="flex:1;min-width:0">
+              <div style="position:relative">
+                <div style="border:1px solid var(--vp-border);border-radius:8px;padding:6px 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:38px;box-sizing:border-box;background:#fff;cursor:text" onclick="document.getElementById('indCovInput').focus()">
+                  <span id="indCovTags" style="display:contents"></span>
+                  <input type="text" id="indCovInput" autocomplete="off" placeholder="输入股票代码/名称，模糊搜索后选中" style="flex:1;min-width:140px;border:none;outline:none;font-size:13px;color:var(--vp-gray-800)" oninput="indStockSuggest(this.value)">
+                </div>
+                <div class="ms-panel" id="indCovPanel" style="left:0;right:0" onclick="event.stopPropagation()"></div>
               </div>
-              <div class="ms-panel" id="indCovPanel" style="left:0;right:0" onclick="event.stopPropagation()"></div>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-              <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('indCovFile').click()">⬆ 上传文件导入</button>
-              <input type="file" id="indCovFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="indCovFilePick(this)">
-              <span id="indCovFileName" class="tiny muted"></span>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('indCovFile').click()">⬆ 上传文件导入</button>
+                <input type="file" id="indCovFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="indCovFilePick(this)">
+                <span id="indCovFileName" class="tiny muted"></span>
+              </div>
             </div>
           </div>
         </div>
