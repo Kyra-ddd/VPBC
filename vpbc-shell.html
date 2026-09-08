@@ -326,7 +326,7 @@
         <span class="arrow">▼</span>
       </div>
       <div class="submenu open" id="submenu-research">
-        <div class="submenu-item active" onclick="openTab('industry', '行业配置')">行业配置</div>
+        <div class="submenu-item active" onclick="openTab('industry', '个股覆盖')">个股覆盖</div>
         <div class="submenu-item" onclick="openTab('research-report', '研报管理')">研报管理</div>
         <div class="submenu-item" onclick="openTab('stock-pool', '股票池')">股票池</div>
         <div class="submenu-item" onclick="openTab('portfolio', '模拟组合')">模拟组合</div>
@@ -4991,7 +4991,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (hash && hash !== 'industry') {
     openTabByHash(hash);
   } else {
-    openTab('industry', '行业配置');
+    openTab('industry', '个股覆盖');
   }
 });
 
@@ -5003,7 +5003,7 @@ function openTabByHash(key) {
     'share-class': '份额信息',
     'share-class-add': '新增份额',
     'research-share': '研报共享',
-    'industry': '行业配置',
+    'industry': '个股覆盖',
     'research-report': '研究报告',
     'stock-pool': '股票池',
     'portfolio': '模拟组合',
