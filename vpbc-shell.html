@@ -594,6 +594,7 @@ function indResetFilter() {
   document.getElementById("indFMarket").value = "";
   document.getElementById("indFIndustry").value = "";
   document.getElementById("indFAnalyst").value = "";
+  document.getElementById("indFStock").value = "";
   indRenderUnified();
 }
 
@@ -606,9 +607,12 @@ function indRenderUnified() {
   const fMarket = document.getElementById("indFMarket")?.value || "";
   const fIndustry = document.getElementById("indFIndustry")?.value || "";
   const fAnalyst = document.getElementById("indFAnalyst")?.value || "";
+  const fStock = document.getElementById("indFStock")?.value.trim().toLowerCase() || "";
   if (fMarket) rows = rows.filter(r => (r.marketNames || []).includes(IND_DATA[fMarket]?.name));
   if (fIndustry) rows = rows.filter(r => r.name === fIndustry);
   if (fAnalyst) rows = rows.filter(r => (r.analysts || []).filter(a => a.status === "在职").some(a => a.name === fAnalyst));
+  // 股票代码模糊搜索：命中该行业任一成份股代码即保留整行
+  if (fStock) rows = rows.filter(r => (r.stocks || []).some(s => (s.code || "").toLowerCase().includes(fStock)));
 
   // 每行 = 单个研究员 × 行业：表格记录单个研究员覆盖的股票情况
   rows = rows.flatMap((ind, i) => {
@@ -2497,6 +2501,7 @@ function buildIndustry() {
       <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">市场</label><select class="form-control" style="width:auto" id="indFMarket" onchange="indDoFilter()"><option value="">全部市场</option></select></div>
       <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">行业</label><select class="form-control" style="width:auto" id="indFIndustry" onchange="indDoFilter()"><option value="">全部行业</option></select></div>
       <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">研究员</label><select class="form-control" style="width:auto" id="indFAnalyst" onchange="indDoFilter()"><option value="">全部研究员</option></select></div>
+      <div style="margin:0;flex-shrink:0;display:flex;align-items:center;gap:6px"><label class="form-label" style="margin:0">股票代码</label><input type="text" class="form-control" style="width:150px" id="indFStock" placeholder="模糊搜索，如 600519" oninput="indRenderUnified()"></div>
       <button class="btn btn-secondary btn-sm" style="flex-shrink:0" onclick="indResetFilter()">重置</button>
     </div></div></div>
     <div class="card"><div class="card-body" style="padding:0"><div style="max-height:264px;overflow-y:auto">
