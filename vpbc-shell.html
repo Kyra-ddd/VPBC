@@ -610,16 +610,13 @@ function indRenderUnified() {
   if (fIndustry) rows = rows.filter(r => r.name === fIndustry);
   if (fAnalyst) rows = rows.filter(r => (r.analysts || []).filter(a => a.status === "在职").some(a => a.name === fAnalyst));
 
-  // Attach computed fields
-  rows = rows.map((ind, i) => {
+  // 每行 = 单个研究员 × 行业：表格记录单个研究员覆盖的股票情况
+  rows = rows.flatMap((ind, i) => {
+    const time = ind._time || ["2026/08/20 09:15:32","2026/08/18 14:22:07","2026/08/15 11:03:45","2026/08/12 16:40:18","2026/08/10 08:55:01","2026/08/08 10:30:44","2026/08/05 13:20:11","2026/08/03 15:07:38","2026/08/01 09:42:56","2026/07/30 17:18:22","2026/07/28 11:05:33"][i % 11];
+    const base = { ...ind, _stockCount: ind.stocks ? ind.stocks.length : 0, _time: time };
     const analysts = (ind.analysts || []).filter(a => a.status === "在职");
-    return {
-      ...ind,
-      _analystNames: analysts.length ? analysts.map(a => a.name).join("、") : "—",
-      _updater: analysts.length ? analysts[0].name : "—",
-      _stockCount: ind.stocks ? ind.stocks.length : 0,
-      _time: ind._time || ["2026/08/20 09:15:32","2026/08/18 14:22:07","2026/08/15 11:03:45","2026/08/12 16:40:18","2026/08/10 08:55:01","2026/08/08 10:30:44","2026/08/05 13:20:11","2026/08/03 15:07:38","2026/08/01 09:42:56","2026/07/30 17:18:22","2026/07/28 11:05:33"][i % 11]
-    };
+    if (!analysts.length) return [{ ...base, analyst: "—", _updater: "—", _key: ind.name }];
+    return analysts.map(a => ({ ...base, analyst: a.name, _updater: a.name, _key: a.name + " · " + ind.name }));
   });
 
   // Sort
@@ -628,7 +625,7 @@ function indRenderUnified() {
       let av, bv;
       if (indSortField === "name")    { av = a.name; bv = b.name; }
       else if (indSortField === "market")  { av = (a.marketNames || []).join(""); bv = (b.marketNames || []).join(""); }
-      else if (indSortField === "analyst") { av = a._analystNames; bv = b._analystNames; }
+      else if (indSortField === "analyst") { av = a.analyst; bv = b.analyst; }
       else if (indSortField === "updater") { av = a._updater; bv = b._updater; }
       else if (indSortField === "stocks")  { av = a._stockCount; bv = b._stockCount; }
       else if (indSortField === "time")    { av = a._time; bv = b._time; }
@@ -651,10 +648,10 @@ function indRenderUnified() {
     const countHtml = hasStocks
       ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green);font-variant-numeric:tabular-nums" onclick="indShowStocks('${ind.name}')">${ind._stockCount}</span>`
       : `<span class="muted" style="font-variant-numeric:tabular-nums">0</span>`;
-    const checked = indSelected === ind.name ? 'checked' : '';
+    const checked = indSelected === ind._key ? 'checked' : '';
     return `<tr>
-      <td><input type="checkbox" ${checked} onclick="indToggleSelect('${ind.name}')"></td>
-      <td>${ind._analystNames}</td>
+      <td><input type="checkbox" ${checked} onclick="indToggleSelect('${ind._key}')"></td>
+      <td>${ind.analyst}</td>
       <td>${countHtml}</td>
       <td class="bold">${ind.name}</td>
       <td>${(ind.marketNames || []).join("、")}</td>
