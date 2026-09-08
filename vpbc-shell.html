@@ -653,10 +653,10 @@ function indRenderUnified() {
     const checked = indSelected === ind.name ? 'checked' : '';
     return `<tr>
       <td><input type="checkbox" ${checked} onclick="indToggleSelect('${ind.name}')"></td>
-      <td class="bold">${nameHtml}</td>
-      <td>${(ind.marketNames || []).join("、")}</td>
       <td>${ind._analystNames}</td>
       <td style="font-variant-numeric:tabular-nums">${ind._stockCount}</td>
+      <td class="bold">${nameHtml}</td>
+      <td>${(ind.marketNames || []).join("、")}</td>
       <td class="muted">${ind._updater}</td>
       <td class="muted" style="font-variant-numeric:tabular-nums">${ind._time}</td>
       <td><button class="btn btn-secondary btn-sm" onclick="indOpenImport('${ind.name}')">导入股票明细</button></td>
@@ -2504,10 +2504,10 @@ function buildIndustry() {
     <div class="card"><div class="card-body" style="padding:0"><div style="max-height:264px;overflow-y:auto">
       <table class="data-table"><thead><tr>
         <th style="width:40px"></th>
-        <th class="sortable" onclick="indSort('name')">行业 <span class="sort-icon" id="sort-name"></span></th>
-        <th class="sortable" onclick="indSort('market')">市场 <span class="sort-icon" id="sort-market"></span></th>
         <th class="sortable" onclick="indSort('analyst')">研究员 <span class="sort-icon" id="sort-analyst"></span></th>
         <th class="sortable" onclick="indSort('stocks')">覆盖股票个数 <span class="sort-icon" id="sort-stocks"></span></th>
+        <th class="sortable" onclick="indSort('name')">行业 <span class="sort-icon" id="sort-name"></span></th>
+        <th class="sortable" onclick="indSort('market')">市场 <span class="sort-icon" id="sort-market"></span></th>
         <th class="sortable" onclick="indSort('updater')">更新人 <span class="sort-icon" id="sort-updater"></span></th>
         <th class="sortable" onclick="indSort('time')">更新时间 <span class="sort-icon" id="sort-time"></span></th>
         <th>操作</th>
