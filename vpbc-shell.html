@@ -598,6 +598,16 @@ function indResetFilter() {
   indRenderUnified();
 }
 
+// 跨市场收集同名行业的全部股票（与下方股票明细口径一致）
+function indAllStocks(name) {
+  const out = [];
+  Object.values(IND_DATA).forEach(m => {
+    const ind = m.industries.find(i => i.name === name);
+    if (ind && ind.stocks) ind.stocks.forEach(s => out.push(s));
+  });
+  return out;
+}
+
 function indRenderUnified() {
   const body = document.getElementById("indUniBody");
   if (!body) return;
@@ -611,13 +621,13 @@ function indRenderUnified() {
   if (fMarket) rows = rows.filter(r => (r.marketNames || []).includes(IND_DATA[fMarket]?.name));
   if (fIndustry) rows = rows.filter(r => r.name === fIndustry);
   if (fAnalyst) rows = rows.filter(r => (r.analysts || []).filter(a => a.status === "在职").some(a => a.name === fAnalyst));
-  // 股票代码模糊搜索：命中该行业任一成份股代码即保留整行
-  if (fStock) rows = rows.filter(r => (r.stocks || []).some(s => (s.code || "").toLowerCase().includes(fStock)));
+  // 股票代码模糊搜索：命中该行业（跨市场）任一成份股代码即保留整行
+  if (fStock) rows = rows.filter(r => indAllStocks(r.name).some(s => (s.code || "").toLowerCase().includes(fStock)));
 
   // 每行 = 单个研究员 × 行业：表格记录单个研究员覆盖的股票情况
   rows = rows.flatMap((ind, i) => {
     const time = ind._time || ["2026/08/20 09:15:32","2026/08/18 14:22:07","2026/08/15 11:03:45","2026/08/12 16:40:18","2026/08/10 08:55:01","2026/08/08 10:30:44","2026/08/05 13:20:11","2026/08/03 15:07:38","2026/08/01 09:42:56","2026/07/30 17:18:22","2026/07/28 11:05:33"][i % 11];
-    const base = { ...ind, _stockCount: ind.stocks ? ind.stocks.length : 0, _time: time };
+    const base = { ...ind, _stockCount: indAllStocks(ind.name).length, _time: time };
     const analysts = (ind.analysts || []).filter(a => a.status === "在职");
     if (!analysts.length) return [{ ...base, analyst: "—", _updater: "—", _key: ind.name }];
     return analysts.map(a => ({ ...base, analyst: a.name, _updater: a.name, _key: a.name + " · " + ind.name }));
@@ -647,8 +657,8 @@ function indRenderUnified() {
 
   if (!rows.length) { body.innerHTML = '<tr><td colspan="8" class="muted" style="text-align:center;padding:32px">暂无数据</td></tr>'; return; }
   body.innerHTML = rows.map(ind => {
-    const hasStocks = ind.stocks && ind.stocks.length > 0;
-    // 明细入口挂在「覆盖股票个数」上；行业名仅为纯文本
+    // 明细入口挂在「覆盖股票个数」上（个数 = 明细表行数，跨市场口径）；行业名仅为纯文本
+    const hasStocks = ind._stockCount > 0;
     const countHtml = hasStocks
       ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green);font-variant-numeric:tabular-nums" onclick="indShowStocks('${ind.name}')">${ind._stockCount}</span>`
       : `<span class="muted" style="font-variant-numeric:tabular-nums">0</span>`;
