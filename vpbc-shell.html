@@ -456,27 +456,27 @@ const PROD_TYPE_OPTIONS = ['股票型基金','债券型基金','混合资产基�
 // ========== Industry Data ==========
 const IND_DATA = {
   HK: { name: "港股", industries: [
-    { code: "HK-RE", name: "地产", analysts: [{ id:"a01", name:"David", acct:"davidw", focus:"港股内房股", status:"在职" }, { id:"a02", name:"Emma", acct:"emma", focus:"物业管理", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、REITs", status:"在职" }], stocks: [{code:"00178.HK",name:"置富产业信托",r3Score:72},{code:"01109.HK",name:"华润置地",r3Score:85},{code:"06098.HK",name:"龙湖集团",r3Score:68}] },
-    { code: "HK-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"中资银行、券商", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、金融", status:"在职" }], stocks: [{code:"0939.HK",name:"建设银行",r3Score:90},{code:"1398.HK",name:"工商银行",r3Score:88},{code:"3988.HK",name:"中国银行",r3Score:86}] },
-    { code: "HK-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"互联网平台、消费电子", status:"在职" }, { id:"a06", name:"Kevin", acct:"kevinl", focus:"半导体代工", status:"在职" }], stocks: [{code:"00700.HK",name:"腾讯控股",issuer:"腾讯控股有限公司",r3Score:95},{code:"09988.HK",name:"阿里巴巴",issuer:"阿里巴巴集团控股有限公司",r3Score:92},{code:"02382.HK",name:"舜宇光学",issuer:"舜宇光学科技（集团）有限公司",r3Score:78},{code:"1810.HK",name:"小米集团",issuer:"小米集团",r3Score:80},{code:"3690.HK",name:"美团",issuer:"美团",r3Score:83},{code:"9618.HK",name:"京东集团",issuer:"京东集团股份有限公司",r3Score:81},{code:"9999.HK",name:"网易",issuer:"网易股份有限公司",r3Score:79}] },
+    { code: "HK-RE", name: "地产", analysts: [{ id:"a01", name:"David", acct:"davidw", focus:"港股内房股", status:"在职" }, { id:"a02", name:"Emma", acct:"emma", focus:"物业管理", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、REITs", status:"在职" }], stocks: [{code:"00178.HK",name:"置富产业信托",r3Score:72,a:"Eric"},{code:"01109.HK",name:"华润置地",r3Score:85,a:"David"},{code:"06098.HK",name:"龙湖集团",r3Score:68,a:"David"}] },
+    { code: "HK-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"中资银行、券商", status:"在职" }, { id:"a03", name:"Eric", acct:"ericc", focus:"香港地产、金融", status:"在职" }], stocks: [{code:"0939.HK",name:"建设银行",r3Score:90,a:"Grace"},{code:"1398.HK",name:"工商银行",r3Score:88,a:"Grace"},{code:"3988.HK",name:"中国银行",r3Score:86,a:"Eric"}] },
+    { code: "HK-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"互联网平台、消费电子", status:"在职" }, { id:"a06", name:"Kevin", acct:"kevinl", focus:"半导体代工", status:"在职" }], stocks: [{code:"00700.HK",name:"腾讯控股",issuer:"腾讯控股有限公司",r3Score:95,a:"Kyra"},{code:"09988.HK",name:"阿里巴巴",issuer:"阿里巴巴集团控股有限公司",r3Score:92,a:"Kyra"},{code:"02382.HK",name:"舜宇光学",issuer:"舜宇光学科技（集团）有限公司",r3Score:78,a:"Kevin"},{code:"1810.HK",name:"小米集团",issuer:"小米集团",r3Score:80,a:"Kyra"},{code:"3690.HK",name:"美团",issuer:"美团",r3Score:83,a:"Kyra"},{code:"9618.HK",name:"京东集团",issuer:"京东集团股份有限公司",r3Score:81,a:"Kyra"},{code:"9999.HK",name:"网易",issuer:"网易股份有限公司",r3Score:79,a:"Kyra"}] },
     { code: "HK-CONS", name: "消费", analysts: [{ id:"a02", name:"Emma", acct:"emma", focus:"消费、物业管理", status:"在职" }] },
   ]},
   US: { name: "美股", industries: [
-    { code: "US-SEM", name: "半导体", analysts: [{ id:"a06", name:"Kevin", acct:"kevinl", focus:"美股半导体（跨市场）", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片", status:"在职" }], stocks: [{code:"NVDA.US",name:"英伟达",r3Score:98},{code:"AMD.US",name:"超微半导体",r3Score:74},{code:"INTC.US",name:"英特尔",r3Score:65}] },
+    { code: "US-SEM", name: "半导体", analysts: [{ id:"a06", name:"Kevin", acct:"kevinl", focus:"美股半导体（跨市场）", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片", status:"在职" }], stocks: [{code:"NVDA.US",name:"英伟达",r3Score:98,a:"Lily"},{code:"AMD.US",name:"超微半导体",r3Score:74,a:"Kevin"},{code:"INTC.US",name:"英特尔",r3Score:65,a:"Kevin"}] },
     { code: "US-BIO", name: "生物科技", analysts: [{ id:"a08", name:"Nancy", acct:"nancym", focus:"创新药、CXO", status:"在职" }] },
-    { code: "US-NET", name: "互联网", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"美股互联网（跨市场）", status:"在职" }], stocks: [{code:"GOOGL.US",name:"Alphabet",r3Score:94},{code:"META.US",name:"Meta Platforms",r3Score:91},{code:"AMZN.US",name:"亚马逊",r3Score:89}] },
-    { code: "US-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"AI 上游平台", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片与硬件", status:"在职" }], stocks: [{code:"AAPL.US",name:"Apple",issuer:"Apple Inc.",r3Score:96},{code:"MSFT.US",name:"Microsoft",issuer:"Microsoft Corporation",r3Score:97},{code:"GOOGL.US",name:"Alphabet",issuer:"Alphabet Inc.",r3Score:94},{code:"AMZN.US",name:"Amazon",issuer:"Amazon.com, Inc.",r3Score:89},{code:"TSLA.US",name:"Tesla",issuer:"Tesla, Inc.",r3Score:82},{code:"META.US",name:"Meta",issuer:"Meta Platforms, Inc.",r3Score:91}] },
+    { code: "US-NET", name: "互联网", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"美股互联网（跨市场）", status:"在职" }], stocks: [{code:"GOOGL.US",name:"Alphabet",r3Score:94,a:"Kyra"},{code:"META.US",name:"Meta Platforms",r3Score:91,a:"Kyra"},{code:"AMZN.US",name:"亚马逊",r3Score:89,a:"Kyra"}] },
+    { code: "US-TECH", name: "科技", analysts: [{ id:"a05", name:"Kyra", acct:"kyra", focus:"AI 上游平台", status:"在职" }, { id:"a07", name:"Lily", acct:"lilyz", focus:"AI 芯片与硬件", status:"在职" }], stocks: [{code:"AAPL.US",name:"Apple",issuer:"Apple Inc.",r3Score:96,a:"Lily"},{code:"MSFT.US",name:"Microsoft",issuer:"Microsoft Corporation",r3Score:97,a:"Kyra"},{code:"GOOGL.US",name:"Alphabet",issuer:"Alphabet Inc.",r3Score:94,a:"Kyra"},{code:"AMZN.US",name:"Amazon",issuer:"Amazon.com, Inc.",r3Score:89,a:"Kyra"},{code:"TSLA.US",name:"Tesla",issuer:"Tesla, Inc.",r3Score:82,a:"Kyra"},{code:"META.US",name:"Meta",issuer:"Meta Platforms, Inc.",r3Score:91,a:"Kyra"}] },
   ]},
   JP: { name: "日股", industries: [
     { code: "JP-AUTO", name: "汽车", analysts: [{ id:"a09", name:"Tanaka", acct:"tanakak", focus:"日系整车厂", status:"在职" }] },
-    { code: "JP-ELE", name: "电子", analysts: [{ id:"a10", name:"Sato", acct:"sato.t", focus:"电子元器件", status:"离职" }], stocks: [{code:"6758.JP",name:"索尼集团",issuer:"索尼グループ株式会社",r3Score:77},{code:"9984.JP",name:"软银集团",issuer:"SBG（SoftBank Group）",r3Score:71},{code:"8035.JP",name:"东京威力科创",issuer:"東京エレクトロン",r3Score:76}] },
+    { code: "JP-ELE", name: "电子", analysts: [{ id:"a10", name:"Sato", acct:"sato.t", focus:"电子元器件", status:"离职" }], stocks: [{code:"6758.JP",name:"索尼集团",issuer:"索尼グループ株式会社",r3Score:77,a:"Sato"},{code:"9984.JP",name:"软银集团",issuer:"SBG（SoftBank Group）",r3Score:71,a:"Sato"},{code:"8035.JP",name:"东京威力科创",issuer:"東京エレクトロン",r3Score:76,a:"Sato"}] },
   ]},
-  KR: { name: "韩股", industries: [{ code: "KR-TECH", name: "科技", analysts: [{ id:"a11", name:"Kim", acct:"kim", focus:"韩国科技巨头", status:"在职" }], stocks: [{code:"005930.KS",name:"三星电子",issuer:"Samsung Electronics Co., Ltd.",r3Score:84},{code:"000660.KS",name:"SK海力士",issuer:"SK Hynix Inc.",r3Score:73},{code:"035420.KS",name:"NAVER",issuer:"NAVER Corporation",r3Score:80}] }] },
+  KR: { name: "韩股", industries: [{ code: "KR-TECH", name: "科技", analysts: [{ id:"a11", name:"Kim", acct:"kim", focus:"韩国科技巨头", status:"在职" }], stocks: [{code:"005930.KS",name:"三星电子",issuer:"Samsung Electronics Co., Ltd.",r3Score:84,a:"Kim"},{code:"000660.KS",name:"SK海力士",issuer:"SK Hynix Inc.",r3Score:73,a:"Kim"},{code:"035420.KS",name:"NAVER",issuer:"NAVER Corporation",r3Score:80,a:"Kim"}] }] },
   CN: { name: "A股", industries: [
-    { code: "CN-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"A股金融（跨市场）", status:"在职" }], stocks: [{code:"601318.CH",name:"中国平安",r3Score:89},{code:"600036.CH",name:"招商银行",r3Score:86},{code:"601398.CH",name:"工商银行",r3Score:84}] },
-    { code: "CN-CONS", name: "消费", analysts: [{ id:"a02", name:"Emma", acct:"emma", focus:"A股消费（跨市场）", status:"在职" }], stocks: [{code:"600519.CH",name:"贵州茅台",r3Score:95},{code:"000858.CH",name:"五粮液",r3Score:88},{code:"601888.CH",name:"中国中免",r3Score:78}] },
+    { code: "CN-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"A股金融（跨市场）", status:"在职" }], stocks: [{code:"601318.CH",name:"中国平安",r3Score:89,a:"Grace"},{code:"600036.CH",name:"招商银行",r3Score:86,a:"Grace"},{code:"601398.CH",name:"工商银行",r3Score:84,a:"Grace"}] },
+    { code: "CN-CONS", name: "消费", analysts: [{ id:"a02", name:"Emma", acct:"emma", focus:"A股消费（跨市场）", status:"在职" }], stocks: [{code:"600519.CH",name:"贵州茅台",r3Score:95,a:"Emma"},{code:"000858.CH",name:"五粮液",r3Score:88,a:"Emma"},{code:"601888.CH",name:"中国中免",r3Score:78,a:"Emma"}] },
   ]},
-  IN: { name: "印股", industries: [{ code: "IN-TECH", name: "科技", analysts: [{ id:"a12", name:"Priya", acct:"priyas", focus:"印度 IT 服务外包", status:"在职" }], stocks: [{code:"TCS.NS",name:"塔塔咨询",r3Score:88},{code:"INFY.NS",name:"印孚瑟斯",r3Score:85},{code:"WIPRO.NS",name:"Wipro",r3Score:74}] }] },
+  IN: { name: "印股", industries: [{ code: "IN-TECH", name: "科技", analysts: [{ id:"a12", name:"Priya", acct:"priyas", focus:"印度 IT 服务外包", status:"在职" }], stocks: [{code:"TCS.NS",name:"塔塔咨询",r3Score:88,a:"Priya"},{code:"INFY.NS",name:"印孚瑟斯",r3Score:85,a:"Priya"},{code:"WIPRO.NS",name:"Wipro",r3Score:74,a:"Priya"}] }] },
 };
 
 let indCurrentMarket = "ALL";
@@ -621,17 +621,21 @@ function indRenderUnified() {
   if (fMarket) rows = rows.filter(r => (r.marketNames || []).includes(IND_DATA[fMarket]?.name));
   if (fIndustry) rows = rows.filter(r => r.name === fIndustry);
   if (fAnalyst) rows = rows.filter(r => (r.analysts || []).filter(a => a.status === "在职").some(a => a.name === fAnalyst));
-  // 股票代码模糊搜索：命中该行业（跨市场）任一成份股代码即保留整行
-  if (fStock) rows = rows.filter(r => indAllStocks(r.name).some(s => (s.code || "").toLowerCase().includes(fStock)));
 
   // 每行 = 单个研究员 × 行业：表格记录单个研究员覆盖的股票情况
+  // 单只股票只归属一个研究员：每行的覆盖股票 = 该行业（跨市场）中归属此研究员的股票
   rows = rows.flatMap((ind, i) => {
     const time = ind._time || ["2026/08/20 09:15:32","2026/08/18 14:22:07","2026/08/15 11:03:45","2026/08/12 16:40:18","2026/08/10 08:55:01","2026/08/08 10:30:44","2026/08/05 13:20:11","2026/08/03 15:07:38","2026/08/01 09:42:56","2026/07/30 17:18:22","2026/07/28 11:05:33"][i % 11];
-    const base = { ...ind, _stockCount: indAllStocks(ind.name).length, _time: time };
+    const base = { ...ind, _time: time };
     const analysts = (ind.analysts || []).filter(a => a.status === "在职");
-    if (!analysts.length) return [{ ...base, analyst: "—", _updater: "—", _key: ind.name }];
-    return analysts.map(a => ({ ...base, analyst: a.name, _updater: a.name, _key: a.name + " · " + ind.name }));
+    if (!analysts.length) return [{ ...base, analyst: "—", _updater: "—", _key: ind.name, _stocks: [], _stockCount: 0 }];
+    return analysts.map(a => {
+      const own = indAllStocks(ind.name).filter(s => s.a === a.name);
+      return { ...base, analyst: a.name, _updater: a.name, _key: a.name + " · " + ind.name, _stocks: own, _stockCount: own.length };
+    });
   });
+  // 股票代码模糊搜索：命中该行（研究员×行业）任一归属股票代码即保留
+  if (fStock) rows = rows.filter(r => (r._stocks || []).some(s => (s.code || "").toLowerCase().includes(fStock)));
 
   // Sort
   if (indSortField) {
@@ -657,10 +661,10 @@ function indRenderUnified() {
 
   if (!rows.length) { body.innerHTML = '<tr><td colspan="8" class="muted" style="text-align:center;padding:32px">暂无数据</td></tr>'; return; }
   body.innerHTML = rows.map(ind => {
-    // 明细入口挂在「覆盖股票个数」上（个数 = 明细表行数，跨市场口径）；行业名仅为纯文本
-    const hasStocks = ind._stockCount > 0;
+    // 明细入口挂在「覆盖股票个数」上（个数 = 该研究员在此行业的归属股票数）；行业名仅为纯文本
+    const hasStocks = (ind._stocks || []).length > 0;
     const countHtml = hasStocks
-      ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green);font-variant-numeric:tabular-nums" onclick="indShowStocks('${ind.name}')">${ind._stockCount}</span>`
+      ? `<span style="text-decoration:underline;cursor:pointer;color:var(--vp-green);font-variant-numeric:tabular-nums" onclick="indShowStocks('${ind.name}','${ind.analyst}')">${ind._stocks.length}</span>`
       : `<span class="muted" style="font-variant-numeric:tabular-nums">0</span>`;
     const checked = indSelected === ind._key ? 'checked' : '';
     return `<tr>
@@ -685,22 +689,22 @@ function indSort(field) {
   indRenderUnified();
 }
 
-// Show stock panel below the table when clicking an industry name
-function indShowStocks(name) {
+// Show stock panel below the table when clicking a stock count (industry × analyst)
+function indShowStocks(name, analyst) {
   const panel = document.getElementById("indStockPanel");
   const title = document.getElementById("indStockTitle");
   const tbody = document.getElementById("indStockBody");
   if (!panel || !title || !tbody) return;
-  // Collect all stocks from ALL markets that have this industry name
+  // 单只股票只归属一个研究员：明细 = 该行业（跨市场）中归属此研究员的股票
   const marketMap = { "HK":"港股","US":"美股","JP":"日股","KR":"韩股","CN":"A股","IN":"印股" };
   const allStocks = [];
   Object.entries(IND_DATA).forEach(([mcode, market]) => {
     const ind = market.industries.find(i => i.name === name);
     if (ind && ind.stocks && ind.stocks.length) {
-      ind.stocks.forEach(s => allStocks.push({ ...s, _market: marketMap[mcode] || mcode }));
+      ind.stocks.forEach(s => { if (!analyst || s.a === analyst) allStocks.push({ ...s, _market: marketMap[mcode] || mcode }); });
     }
   });
-  title.textContent = name + " — 股票明细";
+  title.textContent = name + (analyst ? " · " + analyst : "") + " — 股票明细";
   if (!allStocks.length) {
     tbody.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">暂无股票数据，请先上传</td></tr>';
   } else {
