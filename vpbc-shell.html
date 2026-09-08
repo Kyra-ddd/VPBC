@@ -2754,14 +2754,11 @@ function reportFormHTML(mode) {
     ${cell('股票代码', `<input id="reportCodeInput" class="form-control" style="width:100%;box-sizing:border-box" ${isEdit ? 'value="00700.HK"' : 'placeholder="如：00700.HK"'} oninput="reportAutoFill(this.value)">`, true)}
     ${cell('发行人', `<input id="reportIssuer" class="form-control" style="width:100%;box-sizing:border-box" ${isEdit ? 'value="腾讯控股"' : 'placeholder="输入代码后自动带出"'}>`, false)}
     ${cell('报告类型', `<div style="display:flex;align-items:center;gap:24px;height:36px">
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;margin:0"><input type="radio" name="reportType" value="内部报告" checked onchange="reportTypeToggle(this.value)">内部报告</label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;margin:0"><input type="radio" name="reportType" value="券商报告" onchange="reportTypeToggle(this.value)">券商报告</label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;margin:0"><input type="radio" name="reportType" value="财报" onchange="reportTypeToggle(this.value)">财报</label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;margin:0"><input type="radio" name="reportType" value="专家纪要" onchange="reportTypeToggle(this.value)">专家纪要</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;margin:0"><input type="radio" name="reportType" value="评级报告" checked onchange="reportTypeToggle(this.value)">评级报告</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;margin:0"><input type="radio" name="reportType" value="非评级报告" onchange="reportTypeToggle(this.value)">非评级报告</label>
     </div>`, false)}
     ${cell('市场', sel('reportMarket', ['港股', '美股', 'A股'], isEdit ? '港股' : ''), false)}
-    ${cell('展望', sel('reportOutlook', ['买入', '卖出', '维持'], isEdit ? '维持' : ''), false)}
-    ${cell('评级', sel('reportRating', ['AAA+', 'AAA', 'AAA-', 'BBB+', 'BBB', 'BBB-', 'CCC+', 'CCC', 'CCC-', 'N/A'], isEdit ? 'AAA' : ''), false)}
+    ${cell('评级', sel('reportRating', ['买入', '卖出', '维持'], isEdit ? '维持' : ''), false)}
     ${full('正文/摘要', `<div>
       <textarea id="reportBodyText" class="form-control" style="width:100%;box-sizing:border-box;height:150px;resize:vertical" maxlength="4000" oninput="reportSyncCount()" placeholder="请输入研报正文或摘要...">${bodyText}</textarea>
       <div class="tiny" style="color:var(--vp-gray-500);text-align:right;margin-top:4px"><span id="reportBodyCount">${bodyText.length}</span>/4000</div>
@@ -2922,14 +2919,12 @@ function reportSwitchSec(n) {
   [1, 2, 3].forEach(i => { const p = document.getElementById('reportSec' + i); if (p) p.style.display = i === n ? '' : 'none'; });
 }
 
-// 报告类型 = 财报 / 专家纪要 时，展望/评级不适用
+// 报告类型 = 非评级报告 时，评级不适用
 function reportTypeToggle(v) {
-  // 财报 / 专家纪要无评级维度：禁用并清空 展望、评级；内部报告 / 券商报告可评
-  const dis = v === '财报' || v === '专家纪要';
-  ['reportOutlook', 'reportRating'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.disabled = dis; if (dis) el.selectedIndex = 0; }
-  });
+  // 非评级报告无评级维度：禁用并清空 评级（买入/卖出/维持）；评级报告可评
+  const dis = v === '非评级报告';
+  const el = document.getElementById('reportRating');
+  if (el) { el.disabled = dis; if (dis) el.selectedIndex = 0; }
 }
 
 // 正文/摘要 字数统计（上限 4000）
