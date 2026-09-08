@@ -540,7 +540,10 @@ function msRender(id) {
 }
 document.addEventListener('click', () => document.querySelectorAll('.ms-panel.open').forEach(p => p.classList.remove('open')));
 
+let indEditMode = false;
 function indOpenAdd() {
+  indEditMode = false;
+  document.getElementById('indAddTitle').textContent = '新增';
   document.getElementById('indAddModal').classList.add('show');
   document.getElementById('indAddName').value = '';
   const allInds = indGetIndustries();
@@ -548,6 +551,35 @@ function indOpenAdd() {
   const analysts = [...new Set(allInds.flatMap(i => (i.analysts || []).filter(a => a.status === "在职").map(a => a.name)))].sort();
   msInit('msMarket', markets, '请选择市场（可多选）');
   msInit('msAnalyst', analysts, '请选择研究员（可多选）');
+}
+
+function indOpenEdit() {
+  if (!indSelected) { alert('请先勾选一条行业数据'); return; }
+  indEditMode = true;
+  document.getElementById('indAddTitle').textContent = '修改';
+  document.getElementById('indAddModal').classList.add('show');
+  // 勾选行 key 格式：「研究员 · 行业」或「行业」（无研究员行）
+  const industry = indSelected.includes(' · ') ? indSelected.split(' · ')[1] : indSelected;
+  document.getElementById('indAddName').value = industry;
+  const allInds = indGetIndustries();
+  const markets = Object.keys(IND_DATA).map(code => IND_DATA[code].name);
+  const analysts = [...new Set(allInds.flatMap(i => (i.analysts || []).filter(a => a.status === "在职").map(a => a.name)))].sort();
+  msInit('msMarket', markets, '请选择市场（可多选）');
+  msInit('msAnalyst', analysts, '请选择研究员（可多选）');
+  const grouped = allInds.find(i => i.name === industry);
+  if (grouped) {
+    (grouped.marketNames || []).forEach(m => {
+      MS_STATE.msMarket.selected.add(m);
+      const cb = document.querySelector(`#msMarketPanel input[value="${m}"]`);
+      if (cb) cb.checked = true;
+    });
+    (grouped.analysts || []).filter(a => a.status === '在职').forEach(a => {
+      MS_STATE.msAnalyst.selected.add(a.name);
+      const cb = document.querySelector(`#msAnalystPanel input[value="${a.name}"]`);
+      if (cb) cb.checked = true;
+    });
+    msRender('msMarket'); msRender('msAnalyst');
+  }
 }
 
 function indCloseAdd() { document.getElementById('indAddModal').classList.remove('show'); }
@@ -560,7 +592,7 @@ function indSaveAdd() {
   if (!markets.length) { alert('市场为必填项'); return; }
   const analysts = [...MS_STATE.msAnalyst.selected];
   if (!analysts.length) { alert('研究员为必填项'); return; }
-  alert(`新增行业：${name}\n市场：${markets.join('、')}\n研究员：${analysts.join('、')}`);
+  alert(`${indEditMode ? '修改' : '新增'}：${name}\n市场：${markets.join('、')}\n研究员：${analysts.join('、')}`);
   indCloseAdd();
 }
 
@@ -2515,7 +2547,7 @@ function buildIndustry() {
     </div></div></div>
     <div class="toolbar"><div class="flex gap-2">
       <button class="btn btn-secondary btn-sm" onclick="indOpenAdd()">＋ 新增</button>
-      <button class="btn btn-secondary btn-sm" onclick="indSelected ? alert('修改行业：' + indSelected) : alert('请先勾选一条行业数据')">修改</button>
+      <button class="btn btn-secondary btn-sm" onclick="indOpenEdit()">修改</button>
       <button class="btn btn-secondary btn-sm" onclick="indSelected ? alert('删除行业：' + indSelected) : alert('请先勾选一条行业数据')">删除</button>
     </div></div>
     <div class="card"><div class="card-body" style="padding:0"><div style="max-height:264px;overflow-y:auto">
@@ -2563,7 +2595,7 @@ function buildIndustry() {
         <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #EEF5F0">
           <div style="display:flex;align-items:center;gap:10px">
             <span style="width:4px;height:18px;border-radius:2px;background:var(--vp-green)"></span>
-            <span style="font-family:Poppins,sans-serif;font-size:15px;font-weight:600;color:var(--vp-gray-900)">新增行业</span>
+            <span id="indAddTitle" style="font-family:Poppins,sans-serif;font-size:15px;font-weight:600;color:var(--vp-gray-900)">新增</span>
           </div>
           <button onclick="indCloseAdd()" title="关闭" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border:none;border-radius:6px;background:transparent;color:var(--vp-gray-500);cursor:pointer;transition:background .15s,color .15s" onmouseover="this.style.background='var(--vp-mint-50)';this.style.color='var(--vp-gray-900)'" onmouseout="this.style.background='transparent';this.style.color='var(--vp-gray-500)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
