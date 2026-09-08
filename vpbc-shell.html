@@ -541,16 +541,78 @@ function msRender(id) {
 document.addEventListener('click', () => document.querySelectorAll('.ms-panel.open').forEach(p => p.classList.remove('open')));
 
 let indEditMode = false;
+const CURRENT_USER = "Kyra"; // 原型：当前登录人
+let indCovPicked = [];       // 覆盖股票：手工选中的 {code,name}
+let indCovFile = null;       // 覆盖股票：上传的文件
+
+// 全市场股票字典（按代码去重），供覆盖股票模糊搜索
+function indAllStockDict() {
+  const seen = new Set(); const out = [];
+  Object.values(IND_DATA).forEach(m => m.industries.forEach(i => (i.stocks || []).forEach(s => {
+    if (s.code && !seen.has(s.code)) { seen.add(s.code); out.push({ code: s.code, name: s.name }); }
+  })));
+  return out;
+}
+function indStockSuggest(q) {
+  const panel = document.getElementById('indCovPanel');
+  if (!panel) return;
+  const kw = (q || '').trim().toLowerCase();
+  if (!kw) { panel.classList.remove('open'); panel.innerHTML = ''; return; }
+  const hits = indAllStockDict().filter(s => !indCovPicked.some(p => p.code === s.code)
+    && (s.code.toLowerCase().includes(kw) || (s.name || '').toLowerCase().includes(kw))).slice(0, 8);
+  panel.innerHTML = hits.length
+    ? hits.map(s => `<div class="ms-opt" onmousedown="indCovPick('${s.code}',event)"><span class="cell-code">${s.code}</span><span>${s.name}</span></div>`).join('')
+    : `<div class="ms-opt" style="color:var(--vp-gray-400);cursor:default">无匹配的股票</div>`;
+  panel.classList.add('open');
+}
+function indCovPick(code, e) {
+  if (e) e.preventDefault();
+  const s = indAllStockDict().find(x => x.code === code);
+  if (s && !indCovPicked.some(p => p.code === code)) indCovPicked.push(s);
+  const inp = document.getElementById('indCovInput');
+  if (inp) { inp.value = ''; inp.focus(); }
+  const panel = document.getElementById('indCovPanel');
+  if (panel) { panel.classList.remove('open'); panel.innerHTML = ''; }
+  indCovRender();
+}
+function indCovRemove(code, e) {
+  if (e) e.stopPropagation();
+  indCovPicked = indCovPicked.filter(p => p.code !== code);
+  indCovRender();
+}
+function indCovRender() {
+  const el = document.getElementById('indCovTags');
+  if (el) el.innerHTML = indCovPicked.map(p => `<span class="ms-tag">${p.code} ${p.name}<b onclick="indCovRemove('${p.code}',event)">✕</b></span>`).join('');
+}
+function indCovFilePick(input) {
+  const file = input.files[0];
+  if (!file) return;
+  indCovFile = file;
+  document.getElementById('indCovFileName').textContent = `已选择：${file.name}（解析后追加至覆盖股票清单）`;
+}
+function indCovReset() {
+  indCovPicked = []; indCovFile = null;
+  ['indCovInput', 'indCovFileName', 'indCovFile'].forEach(id => { const el = document.getElementById(id); if (el) { el.value = ''; if (id === 'indCovFileName') el.textContent = ''; } });
+  const panel = document.getElementById('indCovPanel');
+  if (panel) { panel.classList.remove('open'); panel.innerHTML = ''; }
+  indCovRender();
+}
+
+// 研究员单选下拉选项（在职、去重、排序）
+function indAnalystOptions() {
+  return [...new Set(indGetIndustries().flatMap(i => (i.analysts || []).filter(a => a.status === "在职").map(a => a.name)))].sort();
+}
+
 function indOpenAdd() {
   indEditMode = false;
   document.getElementById('indAddTitle').textContent = '新增';
   document.getElementById('indAddModal').classList.add('show');
-  document.getElementById('indAddName').value = '';
-  const allInds = indGetIndustries();
-  const markets = Object.keys(IND_DATA).map(code => IND_DATA[code].name);
-  const analysts = [...new Set(allInds.flatMap(i => (i.analysts || []).filter(a => a.status === "在职").map(a => a.name)))].sort();
-  msInit('msMarket', markets, '请选择市场（可多选）');
-  msInit('msAnalyst', analysts, '请选择研究员（可多选）');
+  const analysts = indAnalystOptions();
+  const sel = document.getElementById('indAddAnalyst');
+  sel.innerHTML = analysts.map(a => `<option value="${a}">${a}</option>`).join('');
+  sel.value = analysts.includes(CURRENT_USER) ? CURRENT_USER : (analysts[0] || '');
+  msInit('msMarket', Object.keys(IND_DATA).map(code => IND_DATA[code].name), '请选择市场（可多选）');
+  indCovReset();
 }
 
 function indOpenEdit() {
@@ -559,40 +621,38 @@ function indOpenEdit() {
   document.getElementById('indAddTitle').textContent = '修改';
   document.getElementById('indAddModal').classList.add('show');
   // 勾选行 key 格式：「研究员 · 行业」或「行业」（无研究员行）
+  const analyst = indSelected.includes(' · ') ? indSelected.split(' · ')[0] : '';
   const industry = indSelected.includes(' · ') ? indSelected.split(' · ')[1] : indSelected;
-  document.getElementById('indAddName').value = industry;
-  const allInds = indGetIndustries();
-  const markets = Object.keys(IND_DATA).map(code => IND_DATA[code].name);
-  const analysts = [...new Set(allInds.flatMap(i => (i.analysts || []).filter(a => a.status === "在职").map(a => a.name)))].sort();
-  msInit('msMarket', markets, '请选择市场（可多选）');
-  msInit('msAnalyst', analysts, '请选择研究员（可多选）');
-  const grouped = allInds.find(i => i.name === industry);
+  const analysts = indAnalystOptions();
+  const sel = document.getElementById('indAddAnalyst');
+  sel.innerHTML = analysts.map(a => `<option value="${a}">${a}</option>`).join('');
+  sel.value = analysts.includes(analyst) ? analyst : (analysts.includes(CURRENT_USER) ? CURRENT_USER : (analysts[0] || ''));
+  msInit('msMarket', Object.keys(IND_DATA).map(code => IND_DATA[code].name), '请选择市场（可多选）');
+  const grouped = indGetIndustries().find(i => i.name === industry);
   if (grouped) {
     (grouped.marketNames || []).forEach(m => {
       MS_STATE.msMarket.selected.add(m);
       const cb = document.querySelector(`#msMarketPanel input[value="${m}"]`);
       if (cb) cb.checked = true;
     });
-    (grouped.analysts || []).filter(a => a.status === '在职').forEach(a => {
-      MS_STATE.msAnalyst.selected.add(a.name);
-      const cb = document.querySelector(`#msAnalystPanel input[value="${a.name}"]`);
-      if (cb) cb.checked = true;
-    });
-    msRender('msMarket'); msRender('msAnalyst');
+    msRender('msMarket');
   }
+  indCovReset();
+  // 回填该研究员在此行业（跨市场）的归属股票
+  if (analyst) indCovPicked = indAllStocks(industry).filter(s => s.a === analyst).map(s => ({ code: s.code, name: s.name }));
+  indCovRender();
 }
 
 function indCloseAdd() { document.getElementById('indAddModal').classList.remove('show'); }
 
 function indSaveAdd() {
-  const name = document.getElementById('indAddName').value.trim();
-  if (!name) { alert('行业名称为必填项'); return; }
-  if (name.length > 50) { alert('行业名称最多50字符'); return; }
+  const analyst = document.getElementById('indAddAnalyst').value;
+  if (!analyst) { alert('研究员为必填项'); return; }
   const markets = [...MS_STATE.msMarket.selected];
-  if (!markets.length) { alert('市场为必填项'); return; }
-  const analysts = [...MS_STATE.msAnalyst.selected];
-  if (!analysts.length) { alert('研究员为必填项'); return; }
-  alert(`${indEditMode ? '修改' : '新增'}：${name}\n市场：${markets.join('、')}\n研究员：${analysts.join('、')}`);
+  const lines = [`研究员：${analyst}`, `市场：${markets.length ? markets.join('、') : '—'}`];
+  lines.push(`覆盖股票：${indCovPicked.length ? indCovPicked.map(p => p.code).join('、') : '—'}`);
+  if (indCovFile) lines.push(`导入文件：${indCovFile.name}`);
+  alert(`${indEditMode ? '修改' : '新增'}\n${lines.join('\n')}`);
   indCloseAdd();
 }
 
@@ -2601,11 +2661,11 @@ function buildIndustry() {
         </div>
         <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
           <div>
-            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">行业 <span style="color:var(--vp-red)">*</span></label>
-            <input type="text" class="form-control" id="indAddName" maxlength="50" placeholder="请输入行业名称，最多50字符" style="width:100%;box-sizing:border-box">
+            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">研究员 <span style="color:var(--vp-red)">*</span></label>
+            <select class="form-control" id="indAddAnalyst" style="width:100%"></select>
           </div>
           <div>
-            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">市场 <span style="color:var(--vp-red)">*</span></label>
+            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">市场</label>
             <div class="ms" id="msMarket">
               <div class="ms-field" onclick="msToggle('msMarket',event)">
                 <div class="ms-tags" id="msMarketTags"></div>
@@ -2615,13 +2675,18 @@ function buildIndustry() {
             </div>
           </div>
           <div>
-            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">研究员 <span style="color:var(--vp-red)">*</span></label>
-            <div class="ms" id="msAnalyst">
-              <div class="ms-field" onclick="msToggle('msAnalyst',event)">
-                <div class="ms-tags" id="msAnalystTags"></div>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--vp-gray-400)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+            <label style="display:block;font-size:13px;font-weight:600;color:#3D4A42;margin-bottom:6px">覆盖股票</label>
+            <div style="position:relative">
+              <div style="border:1px solid var(--vp-border);border-radius:8px;padding:6px 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:38px;box-sizing:border-box;background:#fff;cursor:text" onclick="document.getElementById('indCovInput').focus()">
+                <span id="indCovTags" style="display:contents"></span>
+                <input type="text" id="indCovInput" autocomplete="off" placeholder="输入股票代码/名称，模糊搜索后选中" style="flex:1;min-width:140px;border:none;outline:none;font-size:13px;color:var(--vp-gray-800)" oninput="indStockSuggest(this.value)">
               </div>
-              <div class="ms-panel" id="msAnalystPanel" onclick="event.stopPropagation()"></div>
+              <div class="ms-panel" id="indCovPanel" style="left:0;right:0" onclick="event.stopPropagation()"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('indCovFile').click()">⬆ 上传文件导入</button>
+              <input type="file" id="indCovFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="indCovFilePick(this)">
+              <span id="indCovFileName" class="tiny muted"></span>
             </div>
           </div>
         </div>
