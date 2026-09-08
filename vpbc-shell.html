@@ -473,8 +473,8 @@ const IND_DATA = {
   ]},
   KR: { name: "韩股", industries: [{ code: "KR-TECH", name: "科技", analysts: [{ id:"a11", name:"Kim", acct:"kim", focus:"韩国科技巨头", status:"在职" }], stocks: [{code:"005930.KS",name:"三星电子",issuer:"Samsung Electronics Co., Ltd.",r3Score:84},{code:"000660.KS",name:"SK海力士",issuer:"SK Hynix Inc.",r3Score:73},{code:"035420.KS",name:"NAVER",issuer:"NAVER Corporation",r3Score:80}] }] },
   CN: { name: "A股", industries: [
-    { code: "CN-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"A股金融（跨市场）", status:"在职" }], stocks: [{code:"601318.SH",name:"中国平安",r3Score:89},{code:"600036.SH",name:"招商银行",r3Score:86},{code:"601398.SH",name:"工商银行",r3Score:84}] },
-    { code: "CN-CONS", name: "消费", analysts: [{ id:"a02", name:"Emma", acct:"emma", focus:"A股消费（跨市场）", status:"在职" }], stocks: [{code:"600519.SH",name:"贵州茅台",r3Score:95},{code:"000858.SZ",name:"五粮液",r3Score:88},{code:"601888.SH",name:"中国中免",r3Score:78}] },
+    { code: "CN-FIN", name: "金融", analysts: [{ id:"a04", name:"Grace", acct:"gracew", focus:"A股金融（跨市场）", status:"在职" }], stocks: [{code:"601318.CH",name:"中国平安",r3Score:89},{code:"600036.CH",name:"招商银行",r3Score:86},{code:"601398.CH",name:"工商银行",r3Score:84}] },
+    { code: "CN-CONS", name: "消费", analysts: [{ id:"a02", name:"Emma", acct:"emma", focus:"A股消费（跨市场）", status:"在职" }], stocks: [{code:"600519.CH",name:"贵州茅台",r3Score:95},{code:"000858.CH",name:"五粮液",r3Score:88},{code:"601888.CH",name:"中国中免",r3Score:78}] },
   ]},
   IN: { name: "印股", industries: [{ code: "IN-TECH", name: "科技", analysts: [{ id:"a12", name:"Priya", acct:"priyas", focus:"印度 IT 服务外包", status:"在职" }], stocks: [{code:"TCS.NS",name:"塔塔咨询",r3Score:88},{code:"INFY.NS",name:"印孚瑟斯",r3Score:85},{code:"WIPRO.NS",name:"Wipro",r3Score:74}] }] },
 };
@@ -781,7 +781,7 @@ const REPORTS = [
   { id:"R004", title:"港股金融板块周报：降息预期升温", type:"券商报告", market:"港股", industry:"金融", stock:"0939.HK", company:"建设银行", rating:"AAA-", ratingCls:"tag-green", creator:"Grace", time:"2026-08-07", attachment:null },
   { id:"R005", title:"固收专题：美债收益率曲线倒挂分析", type:"内部报告", market:"美股", industry:"宏观", stock:"—", company:"—", rating:"BBB+", ratingCls:"tag-gray", creator:"Grace", time:"2026-08-05", attachment:{ name:"rates-curve.xlsx", size:"0.4MB", type:"XLSX" } },
   { id:"R006", title:"腾讯控股跟踪报告：游戏回暖，广告提速", type:"内部报告", market:"港股", industry:"科技", stock:"00700.HK", company:"腾讯控股", rating:"AA+", ratingCls:"tag-blue", creator:"David", time:"2026-08-03", attachment:{ name:"Tencent-update.pdf", size:"1.1MB", type:"PDF" } },
-  { id:"R007", title:"贵州茅台 2025 年度财报", type:"财报", market:"A股", industry:"消费", stock:"600519.SH", company:"贵州茅台", rating:"—", ratingCls:"tag-gray", creator:"系统导入", time:"2026-08-12", attachment:{ name:"600519-2025-annual.pdf", size:"3.1MB", type:"PDF" } },
+  { id:"R007", title:"贵州茅台 2025 年度财报", type:"财报", market:"A股", industry:"消费", stock:"600519.CH", company:"贵州茅台", rating:"—", ratingCls:"tag-gray", creator:"系统导入", time:"2026-08-12", attachment:{ name:"600519-2025-annual.pdf", size:"3.1MB", type:"PDF" } },
   { id:"R008", title:"专家纪要：消费电子需求展望与 AI 端侧落地", type:"专家纪要", market:"美股", industry:"科技", stock:"AAPL.US", company:"苹果", rating:"—", ratingCls:"tag-gray", creator:"Kyra", time:"2026-08-13", attachment:{ name:"消费电子专家交流纪要.docx", size:"0.6MB", type:"DOCX" } },
 ];
 
@@ -814,10 +814,10 @@ const SHARED_REPORTS = [
   { id:"S020", title:"Microsoft Copilot 商业化进展",               type:"专题报告", source:"自研",     stock:"MSFT.US", issuer:"微软",      market:"美股", industry:"科技", rating:"AAA",   publisher:"Value Partners 投研", publishDate:"2026-07-30", subscribed:true },
 
   // ===== A 股 =====
-  { id:"S021", title:"A股消费板块复盘：白酒韧性、新兴品类突围",   type:"深度报告", source:"自研",     stock:"600519.SH", issuer:"贵州茅台", market:"A股", industry:"消费", rating:"AAA-",  publisher:"Value Partners 投研", publishDate:"2026-08-06", subscribed:false },
-  { id:"S022", title:"宁德时代海外产能与欧洲份额追踪",             type:"追踪报告", source:"Wind",     stock:"300750.SZ", issuer:"宁德时代", market:"A股", industry:"新能源", rating:"AA+", publisher:"Wind 资讯",          publishDate:"2026-08-08", subscribed:true },
+  { id:"S021", title:"A股消费板块复盘：白酒韧性、新兴品类突围",   type:"深度报告", source:"自研",     stock:"600519.CH", issuer:"贵州茅台", market:"A股", industry:"消费", rating:"AAA-",  publisher:"Value Partners 投研", publishDate:"2026-08-06", subscribed:false },
+  { id:"S022", title:"宁德时代海外产能与欧洲份额追踪",             type:"追踪报告", source:"Wind",     stock:"300750.CH", issuer:"宁德时代", market:"A股", industry:"新能源", rating:"AA+", publisher:"Wind 资讯",          publishDate:"2026-08-08", subscribed:true },
   { id:"S023", title:"A股半导体设备国产化率月报",                   type:"月报",     source:"自研",     stock:"—",         issuer:"—",         market:"A股", industry:"半导体", rating:"—",   publisher:"Value Partners 投研", publishDate:"2026-08-03", subscribed:false },
-  { id:"S024", title:"中国平安寿险新单与代理人产能",               type:"专题报告", source:"Wind",     stock:"601318.SH", issuer:"中国平安", market:"A股", industry:"金融", rating:"AA",    publisher:"Wind 资讯",          publishDate:"2026-08-01", subscribed:false },
+  { id:"S024", title:"中国平安寿险新单与代理人产能",               type:"专题报告", source:"Wind",     stock:"601318.CH", issuer:"中国平安", market:"A股", industry:"金融", rating:"AA",    publisher:"Wind 资讯",          publishDate:"2026-08-01", subscribed:false },
   { id:"S025", title:"光伏组件价格周观察",                         type:"周报",     source:"Wind",     stock:"—",         issuer:"—",         market:"A股", industry:"新能源", rating:"—",  publisher:"Wind 资讯",          publishDate:"2026-08-12", subscribed:false },
   { id:"S026", title:"A股宏观流动性月报：社融与 M2 剪刀差",       type:"月报",     source:"自研",     stock:"—",         issuer:"—",         market:"A股", industry:"宏观", rating:"—",     publisher:"Value Partners 投研", publishDate:"2026-08-05", subscribed:false },
 
@@ -985,7 +985,7 @@ function shareInitFilters() {
 function shareRenderSubChips() {
   const host = document.getElementById("shareSubChips");
   if (!host) return;
-  const subs = [...SHARE_SUBSCRIBED_PUBLISHERS];
+  const subs = [...CHARE_SUBSCRIBED_PUBLISHERS];
   host.innerHTML = subs.length
     ? subs.map(p => `<span style="display:inline-flex;align-items:center;gap:6px;background:var(--vp-mint-50);border:1px solid var(--vp-border);border-radius:14px;padding:3px 10px;font-size:12px;color:var(--vp-gray-700)">${p}<b style="cursor:pointer;color:var(--vp-gray-500);font-weight:500" onclick="shareUnsubscribe('${p}')">✕</b></span>`).join("")
     : `<span class="tiny muted">尚未订阅任何发行人，点右上角「＋ 订阅发行人」开始</span>`;
@@ -1062,7 +1062,7 @@ function shareConfirmSub() {
 }
 
 function shareOpenUnsubModal() {
-  const subs = [...SHARE_SUBSCRIBED_PUBLISHERS];
+  const subs = [...CHARE_SUBSCRIBED_PUBLISHERS];
   if (!subs.length) { alert("尚未订阅任何发行人"); return; }
   const list = document.getElementById("shareUnsubPickList");
   if (list) list.innerHTML = subs.map(p => `<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--vp-border);border-radius:8px;margin-bottom:8px;cursor:pointer"><input type="checkbox" value="${p}"><div><div style="font-weight:600">${p}</div><div class="tiny muted">取消后该发行人新研报将不再推送</div></div></label>`).join("");
@@ -1112,7 +1112,7 @@ function reportAutoFill(code) {
     return;
   }
   const suffix = code.split('.').pop()?.toUpperCase();
-  const marketMap = { 'HK': '港股', 'US': '美股', 'SH': 'A股', 'SZ': 'A股' };
+  const marketMap = { 'HK': '港股', 'US': '美股', 'CH': 'A股', 'SH': 'A股', 'SZ': 'A股' };
   const marketSel = document.getElementById('reportMarket');
   if (marketSel && marketMap[suffix]) marketSel.value = marketMap[suffix];
   const issuer = document.getElementById('reportIssuer');
@@ -3489,87 +3489,87 @@ const IDX_CATEGORIES = {
 };
 const IDX_CONSTITUENTS = {
   "MCHINA50": [
-    { code:"600519.SH", ticker:"600519", sedol:"BLV9K72", name:"贵州茅台", market:"A股", industry:"消费",   weight:8.52, price:1432.0, chg:+0.82 },
-    { code:"601318.SH", ticker:"601318", sedol:"BFM4N24", name:"中国平安", market:"A股", industry:"金融",   weight:5.73, price:42.15,  chg:-0.34 },
-    { code:"600036.SH", ticker:"600036", sedol:"BKM6T81", name:"招商银行", market:"A股", industry:"金融",   weight:4.21, price:33.60,  chg:+0.18 },
-    { code:"002594.SZ", ticker:"002594", sedol:"BMD7Q55", name:"比亚迪",   market:"A股", industry:"汽车",   weight:3.85, price:238.50, chg:+1.52 },
-    { code:"300750.SZ", ticker:"300750", sedol:"BHR3W19", name:"宁德时代", market:"A股", industry:"新能源", weight:3.42, price:198.30, chg:-0.65 },
-    { code:"601888.SH", ticker:"601888", sedol:"BYS8D46", name:"中国中免", market:"A股", industry:"消费",   weight:2.68, price:68.40,  chg:+2.10 },
-    { code:"600030.SH", ticker:"600030", sedol:"BFK2Z63", name:"中信证券", market:"A股", industry:"金融",   weight:2.45, price:22.35,  chg:-0.22 },
-    { code:"601166.SH", ticker:"601166", sedol:"BGN5X90", name:"兴业银行", market:"A股", industry:"金融",   weight:2.31, price:17.80,  chg:+0.15 },
-    { code:"002415.SZ", ticker:"002415", sedol:"BQB6M37", name:"海康威视", market:"A股", industry:"科技",   weight:2.18, price:34.20,  chg:+0.95 },
-    { code:"300059.SZ", ticker:"300059", sedol:"BVC1P82", name:"东方财富", market:"A股", industry:"金融",   weight:1.96, price:18.45,  chg:+1.28 },
-    { code:"601012.SH", ticker:"601012", sedol:"BLN4R08", name:"隆基绿能", market:"A股", industry:"新能源", weight:1.85, price:19.30,  chg:-1.42 },
-    { code:"002230.SZ", ticker:"002230", sedol:"BWG7S51", name:"科大讯飞", market:"A股", industry:"科技",   weight:1.72, price:52.80,  chg:+3.25 },
-    { code:"600276.SH", ticker:"600276", sedol:"BHT2N74", name:"恒瑞医药", market:"A股", industry:"医药",   weight:1.68, price:48.90,  chg:+0.56 },
-    { code:"000858.SZ", ticker:"000858", sedol:"BWP9L26", name:"五粮液",   market:"A股", industry:"消费",   weight:1.55, price:142.60, chg:+0.42 },
-    { code:"601398.SH", ticker:"601398", sedol:"BCC3V68", name:"工商银行", market:"A股", industry:"金融",   weight:1.48, price:5.23,   chg:-0.19 },
-    { code:"600887.SH", ticker:"600887", sedol:"BJR5F17", name:"伊利股份", market:"A股", industry:"消费",   weight:1.35, price:25.60,  chg:+0.28 },
-    { code:"601328.SH", ticker:"601328", sedol:"BCD8Y43", name:"交通银行", market:"A股", industry:"金融",   weight:1.18, price:5.87,   chg:+0.17 },
-    { code:"000568.SZ", ticker:"000568", sedol:"BXM2G79", name:"泸州老窖", market:"A股", industry:"消费",   weight:1.12, price:162.40, chg:+0.63 },
-    { code:"600585.SH", ticker:"600585", sedol:"BSF6H20", name:"海螺水泥", market:"A股", industry:"原材料", weight:1.05, price:23.70,  chg:-0.85 },
-    { code:"002236.SZ", ticker:"002236", sedol:"BZN4K85", name:"大华股份", market:"A股", industry:"科技",   weight:1.02, price:16.30,  chg:+0.74 },
+    { code:"600519.CH", ticker:"600519", sedol:"BLV9K72", name:"贵州茅台", market:"A股", industry:"消费",   weight:8.52, price:1432.0, chg:+0.82 },
+    { code:"601318.CH", ticker:"601318", sedol:"BFM4N24", name:"中国平安", market:"A股", industry:"金融",   weight:5.73, price:42.15,  chg:-0.34 },
+    { code:"600036.CH", ticker:"600036", sedol:"BKM6T81", name:"招商银行", market:"A股", industry:"金融",   weight:4.21, price:33.60,  chg:+0.18 },
+    { code:"002594.CH", ticker:"002594", sedol:"BMD7Q55", name:"比亚迪",   market:"A股", industry:"汽车",   weight:3.85, price:238.50, chg:+1.52 },
+    { code:"300750.CH", ticker:"300750", sedol:"BHR3W19", name:"宁德时代", market:"A股", industry:"新能源", weight:3.42, price:198.30, chg:-0.65 },
+    { code:"601888.CH", ticker:"601888", sedol:"BYS8D46", name:"中国中免", market:"A股", industry:"消费",   weight:2.68, price:68.40,  chg:+2.10 },
+    { code:"600030.CH", ticker:"600030", sedol:"BFK2Z63", name:"中信证券", market:"A股", industry:"金融",   weight:2.45, price:22.35,  chg:-0.22 },
+    { code:"601166.CH", ticker:"601166", sedol:"BGN5X90", name:"兴业银行", market:"A股", industry:"金融",   weight:2.31, price:17.80,  chg:+0.15 },
+    { code:"002415.CH", ticker:"002415", sedol:"BQB6M37", name:"海康威视", market:"A股", industry:"科技",   weight:2.18, price:34.20,  chg:+0.95 },
+    { code:"300059.CH", ticker:"300059", sedol:"BVC1P82", name:"东方财富", market:"A股", industry:"金融",   weight:1.96, price:18.45,  chg:+1.28 },
+    { code:"601012.CH", ticker:"601012", sedol:"BLN4R08", name:"隆基绿能", market:"A股", industry:"新能源", weight:1.85, price:19.30,  chg:-1.42 },
+    { code:"002230.CH", ticker:"002230", sedol:"BWG7S51", name:"科大讯飞", market:"A股", industry:"科技",   weight:1.72, price:52.80,  chg:+3.25 },
+    { code:"600276.CH", ticker:"600276", sedol:"BHT2N74", name:"恒瑞医药", market:"A股", industry:"医药",   weight:1.68, price:48.90,  chg:+0.56 },
+    { code:"000858.CH", ticker:"000858", sedol:"BWP9L26", name:"五粮液",   market:"A股", industry:"消费",   weight:1.55, price:142.60, chg:+0.42 },
+    { code:"601398.CH", ticker:"601398", sedol:"BCC3V68", name:"工商银行", market:"A股", industry:"金融",   weight:1.48, price:5.23,   chg:-0.19 },
+    { code:"600887.CH", ticker:"600887", sedol:"BJR5F17", name:"伊利股份", market:"A股", industry:"消费",   weight:1.35, price:25.60,  chg:+0.28 },
+    { code:"601328.CH", ticker:"601328", sedol:"BCD8Y43", name:"交通银行", market:"A股", industry:"金融",   weight:1.18, price:5.87,   chg:+0.17 },
+    { code:"000568.CH", ticker:"000568", sedol:"BXM2G79", name:"泸州老窖", market:"A股", industry:"消费",   weight:1.12, price:162.40, chg:+0.63 },
+    { code:"600585.CH", ticker:"600585", sedol:"BSF6H20", name:"海螺水泥", market:"A股", industry:"原材料", weight:1.05, price:23.70,  chg:-0.85 },
+    { code:"002236.CH", ticker:"002236", sedol:"BZN4K85", name:"大华股份", market:"A股", industry:"科技",   weight:1.02, price:16.30,  chg:+0.74 },
   ],
   "MCAS": [
     { code:"0700.HK",  ticker:"700",  sedol:"B4J0T76", name:"腾讯控股",     market:"港股",     industry:"互联网", weight:12.85, price:612.00, chg:+1.15 },
     { code:"BABA.US",  ticker:"BABA", sedol:"BF3XQ92", name:"阿里巴巴",     market:"美股中概", industry:"互联网", weight:8.42,  price:148.60, chg:+2.32 },
-    { code:"600519.SH", ticker:"600519", sedol:"BLV9K72", name:"贵州茅台", market:"A股",      industry:"消费",   weight:3.26,  price:1432.0, chg:+0.82 },
+    { code:"600519.CH", ticker:"600519", sedol:"BLV9K72", name:"贵州茅台", market:"A股",      industry:"消费",   weight:3.26,  price:1432.0, chg:+0.82 },
     { code:"3690.HK",  ticker:"3690", sedol:"B5M8V12", name:"美团-W",       market:"港股",     industry:"互联网", weight:2.85,  price:168.40, chg:-0.86 },
     { code:"PDD.US",   ticker:"PDD",  sedol:"B7K2N94", name:"拼多多",       market:"美股中概", industry:"互联网", weight:2.64,  price:156.20, chg:+3.18 },
     { code:"0941.HK",  ticker:"941",  sedol:"B2R6Y38", name:"中国移动",     market:"港股",     industry:"通信",   weight:2.12,  price:118.60, chg:+0.35 },
     { code:"1810.HK",  ticker:"1810", sedol:"B8W4J51", name:"小米集团-W",   market:"港股",     industry:"科技",   weight:1.95,  price:52.80,  chg:+2.05 },
-    { code:"002594.SZ", ticker:"002594", sedol:"BMD7Q55", name:"比亚迪",   market:"A股",      industry:"汽车",   weight:1.78,  price:238.50, chg:+1.52 },
-    { code:"300750.SZ", ticker:"300750", sedol:"BHR3W19", name:"宁德时代", market:"A股",      industry:"新能源", weight:1.72,  price:198.30, chg:-0.65 },
-    { code:"601398.SH", ticker:"601398", sedol:"BCC3V68", name:"工商银行", market:"A股",      industry:"金融",   weight:1.58,  price:5.23,   chg:-0.19 },
+    { code:"002594.CH", ticker:"002594", sedol:"BMD7Q55", name:"比亚迪",   market:"A股",      industry:"汽车",   weight:1.78,  price:238.50, chg:+1.52 },
+    { code:"300750.CH", ticker:"300750", sedol:"BHR3W19", name:"宁德时代", market:"A股",      industry:"新能源", weight:1.72,  price:198.30, chg:-0.65 },
+    { code:"601398.CH", ticker:"601398", sedol:"BCC3V68", name:"工商银行", market:"A股",      industry:"金融",   weight:1.58,  price:5.23,   chg:-0.19 },
     { code:"JD.US",    ticker:"JD",   sedol:"B3F9Q76", name:"京东",         market:"美股中概", industry:"互联网", weight:1.35,  price:102.40, chg:+1.86 },
-    { code:"601939.SH", ticker:"601939", sedol:"BDF7P19", name:"建设银行", market:"A股",      industry:"金融",   weight:1.31,  price:9.86,   chg:+0.24 },
+    { code:"601939.CH", ticker:"601939", sedol:"BDF7P19", name:"建设银行", market:"A股",      industry:"金融",   weight:1.31,  price:9.86,   chg:+0.24 },
     { code:"NTES.US",  ticker:"NTES", sedol:"B6D2M85", name:"网易",         market:"美股中概", industry:"互联网", weight:1.28,  price:118.90, chg:-0.52 },
     { code:"0883.HK",  ticker:"883",  sedol:"B9H5T23", name:"中国海洋石油", market:"港股",   industry:"能源",   weight:1.24,  price:21.35,  chg:+0.94 },
-    { code:"000858.SZ", ticker:"000858", sedol:"BWP9L26", name:"五粮液",   market:"A股",      industry:"消费",   weight:1.18,  price:142.60, chg:+0.42 },
-    { code:"601318.SH", ticker:"601318", sedol:"BFM4N24", name:"中国平安", market:"A股",      industry:"金融",   weight:1.10,  price:42.15,  chg:-0.34 },
+    { code:"000858.CH", ticker:"000858", sedol:"BWP9L26", name:"五粮液",   market:"A股",      industry:"消费",   weight:1.18,  price:142.60, chg:+0.42 },
+    { code:"601318.CH", ticker:"601318", sedol:"BFM4N24", name:"中国平安", market:"A股",      industry:"金融",   weight:1.10,  price:42.15,  chg:-0.34 },
     { code:"TCOM.US",  ticker:"TCOM", sedol:"B4Y8K67", name:"携程集团",     market:"美股中概", industry:"消费",   weight:0.95,  price:78.50,  chg:+1.42 },
-    { code:"000333.SZ", ticker:"000333", sedol:"BMK2W64", name:"美的集团", market:"A股",      industry:"消费",   weight:0.92,  price:76.80,  chg:+0.68 },
+    { code:"000333.CH", ticker:"000333", sedol:"BMK2W64", name:"美的集团", market:"A股",      industry:"消费",   weight:0.92,  price:76.80,  chg:+0.68 },
     { code:"1024.HK",  ticker:"1024", sedol:"B1N3W49", name:"快手-W",       market:"港股",     industry:"互联网", weight:0.88,  price:62.40,  chg:-1.12 },
     { code:"2020.HK",  ticker:"2020", sedol:"B7S6F18", name:"安踏体育",     market:"港股",     industry:"消费",   weight:0.85,  price:88.60,  chg:+0.57 },
   ],
   "000300": [
-    { code:"600519.SH", ticker:"600519", sedol:"BLV9K72", name:"贵州茅台", market:"A股", industry:"消费",   weight:5.21, price:1432.0, chg:+0.82 },
-    { code:"601318.SH", ticker:"601318", sedol:"BFM4N24", name:"中国平安", market:"A股", industry:"金融",   weight:3.82, price:42.15,  chg:-0.34 },
-    { code:"600036.SH", ticker:"600036", sedol:"BKM6T81", name:"招商银行", market:"A股", industry:"金融",   weight:2.95, price:33.60,  chg:+0.18 },
-    { code:"002594.SZ", ticker:"002594", sedol:"BMD7Q55", name:"比亚迪",   market:"A股", industry:"汽车",   weight:2.68, price:238.50, chg:+1.52 },
-    { code:"300750.SZ", ticker:"300750", sedol:"BHR3W19", name:"宁德时代", market:"A股", industry:"新能源", weight:2.41, price:198.30, chg:-0.65 },
-    { code:"000001.SZ", ticker:"000001", sedol:"BPF3R87", name:"平安银行", market:"A股", industry:"金融",   weight:1.82, price:11.20,  chg:+0.45 },
-    { code:"600030.SH", ticker:"600030", sedol:"BFK2Z63", name:"中信证券", market:"A股", industry:"金融",   weight:1.65, price:22.35,  chg:-0.22 },
-    { code:"601166.SH", ticker:"601166", sedol:"BGN5X90", name:"兴业银行", market:"A股", industry:"金融",   weight:1.54, price:17.80,  chg:+0.15 },
-    { code:"002415.SZ", ticker:"002415", sedol:"BQB6M37", name:"海康威视", market:"A股", industry:"科技",   weight:1.42, price:34.20,  chg:+0.95 },
-    { code:"300059.SZ", ticker:"300059", sedol:"BVC1P82", name:"东方财富", market:"A股", industry:"金融",   weight:1.28, price:18.45,  chg:+1.28 },
+    { code:"600519.CH", ticker:"600519", sedol:"BLV9K72", name:"贵州茅台", market:"A股", industry:"消费",   weight:5.21, price:1432.0, chg:+0.82 },
+    { code:"601318.CH", ticker:"601318", sedol:"BFM4N24", name:"中国平安", market:"A股", industry:"金融",   weight:3.82, price:42.15,  chg:-0.34 },
+    { code:"600036.CH", ticker:"600036", sedol:"BKM6T81", name:"招商银行", market:"A股", industry:"金融",   weight:2.95, price:33.60,  chg:+0.18 },
+    { code:"002594.CH", ticker:"002594", sedol:"BMD7Q55", name:"比亚迪",   market:"A股", industry:"汽车",   weight:2.68, price:238.50, chg:+1.52 },
+    { code:"300750.CH", ticker:"300750", sedol:"BHR3W19", name:"宁德时代", market:"A股", industry:"新能源", weight:2.41, price:198.30, chg:-0.65 },
+    { code:"000001.CH", ticker:"000001", sedol:"BPF3R87", name:"平安银行", market:"A股", industry:"金融",   weight:1.82, price:11.20,  chg:+0.45 },
+    { code:"600030.CH", ticker:"600030", sedol:"BFK2Z63", name:"中信证券", market:"A股", industry:"金融",   weight:1.65, price:22.35,  chg:-0.22 },
+    { code:"601166.CH", ticker:"601166", sedol:"BGN5X90", name:"兴业银行", market:"A股", industry:"金融",   weight:1.54, price:17.80,  chg:+0.15 },
+    { code:"002415.CH", ticker:"002415", sedol:"BQB6M37", name:"海康威视", market:"A股", industry:"科技",   weight:1.42, price:34.20,  chg:+0.95 },
+    { code:"300059.CH", ticker:"300059", sedol:"BVC1P82", name:"东方财富", market:"A股", industry:"金融",   weight:1.28, price:18.45,  chg:+1.28 },
   ],
 };
 // 成份股英文注册名（中文 + 英文并列展示用；同一证券跨指数共用）
 const IDX_STOCK_EN = {
-  "600519.SH":"Kweichow Moutai Co., Ltd.",
-  "601318.SH":"Ping An Insurance (Group) Co. of China, Ltd.",
-  "600036.SH":"China Merchants Bank Co., Ltd.",
-  "002594.SZ":"BYD Co., Ltd.",
-  "300750.SZ":"Contemporary Amperex Technology Co., Ltd.",
-  "601888.SH":"China Tourism Group Duty Free Co., Ltd.",
-  "600030.SH":"CITIC Securities Co., Ltd.",
-  "601166.SH":"Industrial Bank Co., Ltd.",
-  "002415.SZ":"Hangzhou Hikvision Digital Technology Co., Ltd.",
-  "300059.SZ":"East Money Information Co., Ltd.",
-  "601012.SH":"LONGi Green Energy Technology Co., Ltd.",
-  "002230.SZ":"iFLYTEK Co., Ltd.",
-  "600276.SH":"Jiangsu Hengrui Pharmaceuticals Co., Ltd.",
-  "000858.SZ":"Wuliangye Yibin Co., Ltd.",
-  "601398.SH":"Industrial and Commercial Bank of China Ltd.",
-  "600887.SH":"Inner Mongolia Yili Industrial Group Co., Ltd.",
-  "601328.SH":"Bank of Communications Co., Ltd.",
-  "000568.SZ":"Luzhou Laojiao Co., Ltd.",
-  "600585.SH":"Anhui Conch Cement Co., Ltd.",
-  "002236.SZ":"Zhejiang Dahua Technology Co., Ltd.",
-  "601939.SH":"China Construction Bank Corp.",
-  "000333.SZ":"Midea Group Co., Ltd.",
-  "000001.SZ":"Ping An Bank Co., Ltd.",
+  "600519.CH":"Kweichow Moutai Co., Ltd.",
+  "601318.CH":"Ping An Insurance (Group) Co. of China, Ltd.",
+  "600036.CH":"China Merchants Bank Co., Ltd.",
+  "002594.CH":"BYD Co., Ltd.",
+  "300750.CH":"Contemporary Amperex Technology Co., Ltd.",
+  "601888.CH":"China Tourism Group Duty Free Co., Ltd.",
+  "600030.CH":"CITIC Securities Co., Ltd.",
+  "601166.CH":"Industrial Bank Co., Ltd.",
+  "002415.CH":"Hangzhou Hikvision Digital Technology Co., Ltd.",
+  "300059.CH":"East Money Information Co., Ltd.",
+  "601012.CH":"LONGi Green Energy Technology Co., Ltd.",
+  "002230.CH":"iFLYTEK Co., Ltd.",
+  "600276.CH":"Jiangsu Hengrui Pharmaceuticals Co., Ltd.",
+  "000858.CH":"Wuliangye Yibin Co., Ltd.",
+  "601398.CH":"Industrial and Commercial Bank of China Ltd.",
+  "600887.CH":"Inner Mongolia Yili Industrial Group Co., Ltd.",
+  "601328.CH":"Bank of Communications Co., Ltd.",
+  "000568.CH":"Luzhou Laojiao Co., Ltd.",
+  "600585.CH":"Anhui Conch Cement Co., Ltd.",
+  "002236.CH":"Zhejiang Dahua Technology Co., Ltd.",
+  "601939.CH":"China Construction Bank Corp.",
+  "000333.CH":"Midea Group Co., Ltd.",
+  "000001.CH":"Ping An Bank Co., Ltd.",
   "0700.HK":"Tencent Holdings Ltd.",
   "BABA.US":"Alibaba Group Holding Ltd.",
   "3690.HK":"Meituan",
@@ -3596,10 +3596,10 @@ const IDX_SERIES_COLORS = ["#2a78d6", "#eb6834", "#1baf7a"]; // 研究员序列�
 let IDX_TASKS = [
   { id:"T01", indexCode:"MCHINA50", analyst:"Kyra",  name:"MSCI China A 50 · Kyra",  createDate:"2026-04-30", buildMode:"custom", status:"追踪中", off:0,
     nav:[1.000,1.012,1.035,1.048,1.031,1.056,1.078,1.069,1.094,1.112,1.094,1.118,1.136,1.124,1.148,1.163,1.151,1.168],
-    holdings:[{code:"002594.SZ",name:"比亚迪",wt:10.5},{code:"300750.SZ",name:"宁德时代",wt:9.5},{code:"002230.SZ",name:"科大讯飞",wt:8.5},{code:"600519.SH",name:"贵州茅台",wt:7.0},{code:"002415.SZ",name:"海康威视",wt:7.5},{code:"300059.SZ",name:"东方财富",wt:7.0},{code:"601888.SH",name:"中国中免",wt:6.0},{code:"600036.SH",name:"招商银行",wt:5.0},{code:"601318.SH",name:"中国平安",wt:4.5},{code:"600276.SH",name:"恒瑞医药",wt:7.0},{code:"000858.SZ",name:"五粮液",wt:7.0}],
+    holdings:[{code:"002594.CH",name:"比亚迪",wt:10.5},{code:"300750.CH",name:"宁德时代",wt:9.5},{code:"002230.CH",name:"科大讯飞",wt:8.5},{code:"600519.CH",name:"贵州茅台",wt:7.0},{code:"002415.CH",name:"海康威视",wt:7.5},{code:"300059.CH",name:"东方财富",wt:7.0},{code:"601888.CH",name:"中国中免",wt:6.0},{code:"600036.CH",name:"招商银行",wt:5.0},{code:"601318.CH",name:"中国平安",wt:4.5},{code:"600276.CH",name:"恒瑞医药",wt:7.0},{code:"000858.CH",name:"五粮液",wt:7.0}],
     rebalances:[
-      { date:"2026-06-15", note:"减持白酒、加仓新能源", changes:[{code:"600519.SH",name:"贵州茅台",from:8.0,to:7.0},{code:"000858.SZ",name:"五粮液",from:8.0,to:7.0},{code:"300750.SZ",name:"宁德时代",from:8.5,to:9.5}] },
-      { date:"2026-08-10", note:"清仓隆基、加仓 AI 算力", changes:[{code:"601012.SH",name:"隆基绿能",from:6.5,to:0},{code:"002230.SZ",name:"科大讯飞",from:7.5,to:8.5}] },
+      { date:"2026-06-15", note:"减持白酒、加仓新能源", changes:[{code:"600519.CH",name:"贵州茅台",from:8.0,to:7.0},{code:"000858.CH",name:"五粮液",from:8.0,to:7.0},{code:"300750.CH",name:"宁德时代",from:8.5,to:9.5}] },
+      { date:"2026-08-10", note:"清仓隆基、加仓 AI 算力", changes:[{code:"601012.CH",name:"隆基绿能",from:6.5,to:0},{code:"002230.CH",name:"科大讯飞",from:7.5,to:8.5}] },
     ] },
   { id:"T02", indexCode:"MCHINA50", analyst:"Kevin", name:"MSCI China A 50 · Kevin", createDate:"2026-04-30", buildMode:"full",   status:"追踪中", off:0,
     nav:[1.000,0.990,1.008,1.014,1.001,1.018,1.031,1.024,1.041,1.048,1.035,1.055,1.063,1.056,1.072,1.081,1.072,1.069],
@@ -3607,29 +3607,29 @@ let IDX_TASKS = [
     rebalances:[] },
   { id:"T03", indexCode:"MCHINA50", analyst:"Grace", name:"MSCI China A 50 · Grace", createDate:"2026-04-30", buildMode:"custom", status:"追踪中", off:0,
     nav:[1.000,0.996,1.010,1.018,1.012,1.022,1.030,1.026,1.037,1.042,1.036,1.048,1.054,1.049,1.058,1.060,1.052,1.039],
-    holdings:[{code:"601318.SH",name:"中国平安",wt:8.5},{code:"600519.SH",name:"贵州茅台",wt:8.0},{code:"600036.SH",name:"招商银行",wt:7.5},{code:"601398.SH",name:"工商银行",wt:6.0},{code:"601166.SH",name:"兴业银行",wt:5.5},{code:"601328.SH",name:"交通银行",wt:4.5},{code:"000858.SZ",name:"五粮液",wt:5.0},{code:"600887.SH",name:"伊利股份",wt:4.5},{code:"600585.SH",name:"海螺水泥",wt:4.0},{code:"000568.SZ",name:"泸州老窖",wt:4.0},{code:"601888.SH",name:"中国中免",wt:3.5}],
+    holdings:[{code:"601318.CH",name:"中国平安",wt:8.5},{code:"600519.CH",name:"贵州茅台",wt:8.0},{code:"600036.CH",name:"招商银行",wt:7.5},{code:"601398.CH",name:"工商银行",wt:6.0},{code:"601166.CH",name:"兴业银行",wt:5.5},{code:"601328.CH",name:"交通银行",wt:4.5},{code:"000858.CH",name:"五粮液",wt:5.0},{code:"600887.CH",name:"伊利股份",wt:4.5},{code:"600585.CH",name:"海螺水泥",wt:4.0},{code:"000568.CH",name:"泸州老窖",wt:4.0},{code:"601888.CH",name:"中国中免",wt:3.5}],
     rebalances:[
-      { date:"2026-07-27", note:"加仓银行防御", changes:[{code:"601318.SH",name:"中国平安",from:7.5,to:8.5},{code:"601398.SH",name:"工商银行",from:5.0,to:6.0}] },
+      { date:"2026-07-27", note:"加仓银行防御", changes:[{code:"601318.CH",name:"中国平安",from:7.5,to:8.5},{code:"601398.CH",name:"工商银行",from:5.0,to:6.0}] },
     ] },
   { id:"T04", indexCode:"000300", analyst:"Emma",  name:"沪深 300 · Emma",  createDate:"2026-05-06", buildMode:"custom", status:"追踪中", off:0,
     nav:[1.000,0.992,1.012,1.024,1.008,1.024,1.042,1.032,1.052,1.062,1.046,1.068,1.080,1.070,1.084,1.094,1.083,1.071],
-    holdings:[{code:"600519.SH",name:"贵州茅台",wt:5.5},{code:"002594.SZ",name:"比亚迪",wt:5.5},{code:"300750.SZ",name:"宁德时代",wt:5.0},{code:"601318.SH",name:"中国平安",wt:4.0},{code:"600036.SH",name:"招商银行",wt:3.2},{code:"000001.SZ",name:"平安银行",wt:2.5},{code:"002415.SZ",name:"海康威视",wt:2.5},{code:"300059.SZ",name:"东方财富",wt:2.5},{code:"600030.SH",name:"中信证券",wt:2.0},{code:"601166.SH",name:"兴业银行",wt:1.8}],
+    holdings:[{code:"600519.CH",name:"贵州茅台",wt:5.5},{code:"002594.CH",name:"比亚迪",wt:5.5},{code:"300750.CH",name:"宁德时代",wt:5.0},{code:"601318.CH",name:"中国平安",wt:4.0},{code:"600036.CH",name:"招商银行",wt:3.2},{code:"000001.CH",name:"平安银行",wt:2.5},{code:"002415.CH",name:"海康威视",wt:2.5},{code:"300059.CH",name:"东方财富",wt:2.5},{code:"600030.CH",name:"中信证券",wt:2.0},{code:"601166.CH",name:"兴业银行",wt:1.8}],
     rebalances:[
-      { date:"2026-08-03", note:"新能源获利了结", changes:[{code:"300750.SZ",name:"宁德时代",from:6.0,to:5.0},{code:"002594.SZ",name:"比亚迪",from:6.5,to:5.5}] },
+      { date:"2026-08-03", note:"新能源获利了结", changes:[{code:"300750.CH",name:"宁德时代",from:6.0,to:5.0},{code:"002594.CH",name:"比亚迪",from:6.5,to:5.5}] },
     ] },
   { id:"T05", indexCode:"000300", analyst:"David", name:"沪深 300 · David", createDate:"2026-05-06", buildMode:"full",   status:"追踪中", off:0,
     nav:[1.000,0.988,1.002,1.010,0.998,1.008,1.018,1.011,1.024,1.030,1.018,1.032,1.039,1.031,1.041,1.047,1.038,1.026],
     holdings:[], // 初始化时按等权填充
     rebalances:[
-      { date:"2026-06-29", note:"等权再平衡", changes:[{code:"000001.SZ",name:"平安银行",from:3.5,to:3.0},{code:"600030.SH",name:"中信证券",from:2.5,to:3.0}] },
-      { date:"2026-08-17", note:"剔除平安银行、补足招商", changes:[{code:"000001.SZ",name:"平安银行",from:3.0,to:0},{code:"600036.SH",name:"招商银行",from:2.5,to:3.0}] },
+      { date:"2026-06-29", note:"等权再平衡", changes:[{code:"000001.CH",name:"平安银行",from:3.5,to:3.0},{code:"600030.CH",name:"中信证券",from:2.5,to:3.0}] },
+      { date:"2026-08-17", note:"剔除平安银行、补足招商", changes:[{code:"000001.CH",name:"平安银行",from:3.0,to:0},{code:"600036.CH",name:"招商银行",from:2.5,to:3.0}] },
     ] },
 ];
 (function idxSeedTaskHoldings() {
   // T02 = 按指数权重（全部成份股）
   IDX_TASKS[1].holdings = (IDX_CONSTITUENTS["MCHINA50"] || []).map(s => ({ code:s.code, name:s.name, wt:s.weight }));
   // T05 = 剔除平安银行后的等权组合
-  IDX_TASKS[4].holdings = (IDX_CONSTITUENTS["000300"] || []).filter(s => s.code !== "000001.SZ").map(s => ({ code:s.code, name:s.name, wt:3.0 }));
+  IDX_TASKS[4].holdings = (IDX_CONSTITUENTS["000300"] || []).filter(s => s.code !== "000001.CH").map(s => ({ code:s.code, name:s.name, wt:3.0 }));
 })();
 let idxCurIndex = null;
 let idxSortKey = 'weight';
