@@ -11,14 +11,113 @@
 
   <!-- ============ 左侧导航 ============ -->
   <aside class="sidebar">
-    <nav class="side-nav">
-      <div class="side-label">主菜单</div>
-      <a class="side-item active" href="02-industry-analyst.html"><span class="ico">👥</span><span data-lang="zh">行业配置</span><span data-lang="en" style="display:none">Industries</span></a>
-      <a class="side-item" href="05-research-report.html"><span class="ico">📄</span><span data-lang="zh">研报管理</span><span data-lang="en" style="display:none">Research</span></a>
-      <a class="side-item" href="03-stock-pool.html"><span class="ico">📊</span><span>股票池</span></a>
-      <a class="side-item" href="04-portfolio.html"><span class="ico">📈</span><span>模拟组合</span></a>
-      <a class="side-item" href="01-config.html"><span class="ico">⚙️</span><span>配置</span></a>
+    <div class="sidebar-head">
+      <button class="avatar-button" aria-label="用户菜单">
+        <div class="avatar"><span>KW</span></div>
+      </button>
+      <div class="head-actions">
+        <button class="head-icon-button" aria-label="主题切换">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2.5v2.3M12 19.2v2.3M4.8 4.8l1.6 1.6M17.6 17.6l1.6 1.6M2.5 12h2.3M19.2 12h2.3M4.8 19.2l1.6-1.6M17.6 6.4l1.6-1.6"></path>
+          </svg>
+        </button>
+        <button class="language-toggle-button" aria-label="切换语言">中</button>
+      </div>
+    </div>
+    <div class="sidebar-search">
+      <div class="search-box-new">
+        <span class="search-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="11" cy="11" r="6.5"></circle>
+            <path d="m20 20-4.3-4.3"></path>
+          </svg>
+        </span>
+        <input type="search" placeholder="搜索页面或最近访问">
+      </div>
+    </div>
+    <nav class="menu">
+      <section class="menu-block">
+        <div class="menu-link primary group-trigger">
+          <span class="menu-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3.5" y="7" width="17" height="12.5" rx="2"></rect>
+              <path d="M9 7V4.5h6V7M3.5 11.5h17M9.5 14h5"></path>
+            </svg>
+            <span class="menu-text">数据中心</span>
+          </span>
+          <button class="group-toggle-btn" aria-label="展开菜单">
+            <span class="chevron">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="m6 9 6 6 6-6"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
+        <div class="submenu">
+          <a href="#"><span class="menu-text">Bloomberg 数据</span></a>
+          <a href="#"><span class="menu-text">Charles River 数据</span></a>
+          <a href="#"><span class="menu-text">CMBWL 数据</span></a>
+        </div>
+      </section>
+
+      <section class="menu-block open">
+        <div class="menu-link primary group-trigger active">
+          <span class="menu-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm-7 8a7 7 0 0 1 14 0"></path>
+            </svg>
+            <span class="menu-text">研报管理</span>
+          </span>
+          <button class="group-toggle-btn" aria-label="折叠菜单">
+            <span class="chevron open">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="m6 9 6 6 6-6"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
+        <div class="submenu">
+          <a href="02-industry-analyst.html" class="active"><span class="menu-text">行业配置</span></a>
+          <a href="05-research-report.html"><span class="menu-text">研报管理</span></a>
+          <a href="03-stock-pool.html"><span class="menu-text">股票池</span></a>
+          <a href="04-portfolio.html"><span class="menu-text">模拟组合</span></a>
+          <a href="01-config.html"><span class="menu-text">配置</span></a>
+        </div>
+      </section>
+
+      <section class="menu-block">
+        <div class="menu-link primary group-trigger">
+          <span class="menu-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M12 3 5 6v5c0 4.6 2.6 7.8 7 10 4.4-2.2 7-5.4 7-10V6z"></path>
+            </svg>
+            <span class="menu-text">系统管理</span>
+          </span>
+          <button class="group-toggle-btn" aria-label="展开菜单">
+            <span class="chevron">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="m6 9 6 6 6-6"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
+        <div class="submenu">
+          <a href="#"><span class="menu-text">用户管理</span></a>
+          <a href="#"><span class="menu-text">角色管理</span></a>
+          <a href="#"><span class="menu-text">权限管理</span></a>
+        </div>
+      </section>
     </nav>
+    <div class="sidebar-footer">
+      <button class="collapse-btn" aria-label="收起侧边栏">
+        <span class="collapse-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="m14.5 6-6 6 6 6"></path>
+          </svg>
+        </span>
+      </button>
+    </div>
   </aside>
 
   <!-- ============ 主列 ============ -->
@@ -126,7 +225,7 @@
           </div>
         </div>
         <div class="card-body" style="padding:0">
-          <div id="stockImportResult" class="tiny" style="margin:12px 16px 12px;color:var(--vp-green-dark)">当前行业未导入股票清单</div>
+          <div id="stockImportResult" class="tiny" style="margin:12px 16px 12px;color:var(--text-accent)">当前行业未导入股票清单</div>
           <div id="importHistoryList" style="margin-top:8px;display:flex;flex-direction:column;gap:8px"></div>
         </div>
       </section>
@@ -414,7 +513,7 @@ function handleStockImport(event) {
 
   const fileReader = new FileReader();
   fileReader.onload = function() {
-    const sampleCodes = INDUSTRY_IMPORTS[industry.name] || ["00700.HK", "02382.HK", "09988.HK"]; 
+    const sampleCodes = INDUSTRY_IMPORTS[industry.name] || ["00700.HK", "02382.HK", "09988.HK"];
     const details = [...sampleCodes].slice(0, 12);
     const entry = {
       uploadedAt: new Date().toLocaleString('zh-CN', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }),
@@ -535,14 +634,14 @@ renderIndustries();
   transition: background-color 0.15s ease;
 }
 .import-history-table tbody tr:hover {
-  background: rgba(32, 160, 110, 0.04);
+  background: rgba(79,141,240,0.04);
 }
 .empty-state {
   padding: 18px 16px;
-  color: var(--vp-gray);
-  background: var(--vp-mint-50);
+  color: var(--text-secondary);
+  background: var(--bg-card);
   border-radius: 8px;
-  border: 1px dashed rgba(32, 160, 110, 0.25);
+  border: 1px dashed rgba(79,141,240,0.25);
   margin: 8px 16px 16px;
 }
 </style>

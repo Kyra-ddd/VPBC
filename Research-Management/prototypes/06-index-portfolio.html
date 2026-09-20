@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>指数模拟组合 · 研报管理</title>
+<link rel="stylesheet" href="vp.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ 左侧导航 ============ -->
+  <aside class="sidebar">
+    <nav class="side-nav">
+      <div class="side-label">主菜单</div>
+      <a class="side-item" href="02-industry-analyst.html"><span class="ico">👥</span><span>行业配置</span></a>
+      <a class="side-item" href="05-research-report.html"><span class="ico">📄</span><span>研报管理</span></a>
+      <a class="side-item" href="03-stock-pool.html"><span class="ico">📊</span><span>股票池</span></a>
+      <a class="side-item" href="04-portfolio.html"><span class="ico">📈</span><span>模拟组合</span></a>
+      <a class="side-item active" href="06-index-portfolio.html"><span class="ico">🎯</span><span>指数模拟</span></a>
+      <a class="side-item" href="01-config.html"><span class="ico">⚙️</span><span>配置</span></a>
+    </nav>
+  </aside>
+
+  <!-- ============ 主列 ============ -->
+  <div class="main-col">
+
+    <!-- 顶栏 -->
+    <header class="topbar">
+      <div class="flex items-center gap-3">
+        <button class="sidebar-toggle" onclick="toggleSidebar()" title="收起菜单">☰</button>
+        <div class="brand">
+          <div class="brand-logo">VPBC</div>
+          <span class="brand-name">研报管理</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="tiny" style="color:rgba(255,255,255,0.8)" id="clock"></span>
+        <div class="user-chip">
+          <div class="avatar">K</div>
+          <span>kyra-ddd</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="container">
+
+      <!-- 页面标题区 -->
+      <div class="page-head">
+        <div class="page-title"><span class="ti">🎯</span>指数模拟组合</div>
+        <div class="page-meta">基于 MSCI / 沪深指数创建模拟组合 · 追踪指数，成份即是仓位</div>
+      </div>
+
+      <!-- 子页签 -->
+      <div class="segmented mb-4" id="mainTab">
+        <button class="seg active" data-tab="constituents">📋 成份浏览</button>
+        <button class="seg" data-tab="portfolios">📈 我的指数组合</button>
+      </div>
+
+      <!-- ============ Tab 1：成份浏览 ============ -->
+      <section class="tab-pane" data-pane="constituents">
+
+        <!-- 指数选择区 -->
+        <div class="card mb-4">
+          <div class="card-head">
+            <div class="flex items-center gap-3">
+              <div class="card-title">选择指数</div>
+            </div>
+            <div class="flex gap-2">
+              <select class="select" style="width:160px" id="indexCategory" onchange="renderIndexList()">
+                <option value="msci">MSCI 系列</option>
+                <option value="csi">沪深系列</option>
+                <option value="hk">港股系列</option>
+                <option value="us">美股系列</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- 搜索 + 最近使用 -->
+            <div class="flex items-center gap-3 mb-4 flex-wrap">
+              <div class="search-box" style="flex:1;min-width:280px">
+                <input class="input" id="indexSearch" placeholder="搜索指数名称或代码，如 MSCI China A 50" oninput="renderIndexList()">
+              </div>
+              <div class="flex gap-2 flex-wrap">
+                <span class="tiny" style="color:var(--vp-gray-light);align-self:center">最近：</span>
+                <button class="tag tag-blue" onclick="selectIndex('MSCI China A 50')" style="cursor:pointer;border:none">MSCI China A 50</button>
+                <button class="tag tag-blue" onclick="selectIndex('CSI 300')" style="cursor:pointer;border:none">沪深 300</button>
+                <button class="tag tag-blue" onclick="selectIndex('MSCI China')" style="cursor:pointer;border:none">MSCI China</button>
+              </div>
+            </div>
+            <!-- 指数卡片列表 -->
+            <div class="index-grid" id="indexGrid"></div>
+          </div>
+        </div>
+
+        <!-- 成份股浏览区（选了一个指数后显示） -->
+        <div id="constituentSection" style="display:none">
+          <!-- 指数信息头 -->
+          <div class="card mb-4" id="indexInfoCard">
+            <div class="card-body">
+              <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="index-badge" id="indexBadge">--</div>
+                  <div>
+                    <div class="card-title" id="indexName">--</div>
+                    <div class="tiny" id="indexMeta">--</div>
+                  </div>
+                </div>
+                <div class="flex gap-3">
+                  <div class="index-stat">
+                    <div class="index-stat-num" id="indexCount">--</div>
+                    <div class="index-stat-label">成份股</div>
+                  </div>
+                  <div class="index-stat">
+                    <div class="index-stat-num" id="indexTop10Wt">--</div>
+                    <div class="index-stat-label">前10权重</div>
+                  </div>
+                  <div class="index-stat">
+                    <div class="index-stat-num" id="indexCode">--</div>
+                    <div class="index-stat-label">指数代码</div>
+                  </div>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="openCreateFromIndex()">🎯 基于此指数创建组合</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 工具栏 + 成份股表格 -->
+          <div class="card">
+            <div class="card-head">
+              <div class="flex items-center gap-3 flex-wrap">
+                <div class="card-title">成份明细 <span class="tiny" id="constituentCount"></span></div>
+                <div class="flex items-center gap-2">
+                  <span class="tiny">排序：</span>
+                  <div class="segmented" id="sortSeg">
+                    <button class="seg active" data-sort="weight" onclick="setSort('weight')">权重</button>
+                    <button class="seg" data-sort="code" onclick="setSort('code')">代码</button>
+                    <button class="seg" data-sort="name" onclick="setSort('name')">名称</button>
+                  </div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <div class="search-box">
+                  <input class="input" id="stockSearch" placeholder="搜索代码/名称" oninput="renderConstituents()">
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="toggleSelectAll()">☑ 全选</button>
+                <button class="btn btn-primary btn-sm" onclick="openCreateFromSelected()">＋ 追加到组合</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div style="max-height:520px;overflow:auto" id="constituentScroll">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th style="width:36px"><input type="checkbox" id="selectAllCheck" onchange="toggleSelectAll()"></th>
+                      <th>代码</th><th>名称</th><th>市场</th><th>行业</th>
+                      <th class="num">权重(%)</th>
+                      <th style="width:180px">权重可视化</th>
+                      <th class="num">最新价</th><th class="num">今日涨跌</th>
+                      <th class="num">累计权重</th>
+                    </tr>
+                  </thead>
+                  <tbody id="constituentBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 无选中指数时的引导 -->
+        <div id="emptyState" class="card">
+          <div class="card-body" style="text-align:center;padding:60px 40px">
+            <div style="font-size:48px;margin-bottom:16px">🎯</div>
+            <div class="card-title" style="margin-bottom:8px">选择一个指数开始</div>
+            <div class="tiny" style="max-width:400px;margin:0 auto">从上方搜索 MSCI 中国A50、沪深300、恒生指数等主流指数，选择后查看完整成份股与权重，可基于指数创建模拟组合进行追踪</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Tab 2：我的指数组合 ============ -->
+      <section class="tab-pane" data-pane="portfolios" style="display:none">
+
+        <!-- 工具栏 -->
+        <div class="card mb-4">
+          <div class="card-head">
+            <div class="flex items-center gap-3 flex-wrap">
+              <div class="search-box"><input class="input" placeholder="搜索组合名称 / 指数"></div>
+              <div class="segmented">
+                <button class="seg active">全部</button>
+                <button class="seg">追踪中</button>
+                <button class="seg">已超额</button>
+              </div>
+            </div>
+            <div class="tiny" style="color:var(--vp-gray-light)">初始资金统一 1000万 · 虚拟成交</div>
+          </div>
+        </div>
+
+        <!-- 指数组合列表 -->
+        <div id="indexPortfolioList"></div>
+      </section>
+
+      <div class="notice mt-4">
+        <span class="ico">ⓘ</span>
+        <span>指数模拟组合以指数<strong>成份股及权重</strong>为起点，支持调整后追踪。涨跌色采用<strong>港式惯例</strong>：涨=#B23A48，跌=#20A06E。数据来源待接入。</span>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- 弹层：基于指数创建组合 -->
+<div class="modal-mask" id="createModal" style="display:none" onclick="if(event.target===this)closeCreateModal()">
+  <div class="modal-box" style="width:560px">
+    <div class="modal-head">
+      <div class="card-title">基于指数创建模拟组合</div>
+      <button class="btn btn-ghost btn-sm" onclick="closeCreateModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- 组合基本信息 -->
+      <div class="mb-4">
+        <div class="tiny mb-1">组合名称</div>
+        <input class="input" id="portfolioName" placeholder="如：MSCI China A 50 模拟盘" style="width:100%">
+      </div>
+      <div class="flex gap-3 mb-4">
+        <div style="flex:1">
+          <div class="tiny mb-1">追踪指数</div>
+          <input class="input" id="trackIndex" readonly placeholder="">
+        </div>
+        <div style="flex:1">
+          <div class="tiny mb-1">初始资金</div>
+          <input class="input" value="1000万" readonly style="width:100%">
+        </div>
+      </div>
+
+      <!-- 权重模式 -->
+      <div class="mb-4">
+        <div class="tiny mb-2">建仓方式</div>
+        <div class="segmented" id="buildModeSeg">
+          <button class="seg active" data-mode="full" onclick="setBuildMode('full')">按指数权重建仓</button>
+          <button class="seg" data-mode="top20" onclick="setBuildMode('top20')">仅前20大成份</button>
+          <button class="seg" data-mode="custom" onclick="setBuildMode('custom')">自定义选择</button>
+        </div>
+      </div>
+
+      <!-- 成份摘要 -->
+      <div id="buildSummary" class="mb-3"></div>
+
+      <!-- 备注 -->
+      <div>
+        <div class="tiny mb-1">备注（可选）</div>
+        <input class="input" id="portfolioNote" placeholder="如：MSCI季度调仓后等权重再平衡" style="width:100%">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeCreateModal()">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmCreate()">确认创建组合</button>
+    </div>
+  </div>
+</div>
+
+<!-- 弹层：调整权重 -->
+<div class="modal-mask" id="weightModal" style="display:none" onclick="if(event.target===this)closeWeightModal()">
+  <div class="modal-box" style="width:680px">
+    <div class="modal-head">
+      <div class="card-title">调整建仓权重</div>
+      <button class="btn btn-ghost btn-sm" onclick="closeWeightModal()">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:60vh;overflow:auto;padding:8px 18px 16px">
+      <div class="tiny mb-3" id="weightModalHint"></div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="wtSelectAll" onchange="toggleWtSelectAll()"></th>
+            <th>代码</th><th>名称</th><th>市场</th>
+            <th class="num">指数权重</th>
+            <th class="num">目标权重</th>
+          </tr>
+        </thead>
+        <tbody id="weightBody"></tbody>
+      </table>
+      <div class="flex justify-between mt-3" style="font-size:13px">
+        <span class="tiny">当前合计：<strong id="wtTotal">0%</strong></span>
+        <span class="tiny">初始资金 1000万 = 每1% ≈ <strong id="wtPerPct">10万</strong></span>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeWeightModal()">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmWeightAdjust()">确认调仓</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== Tab 切换 ===== */
+document.querySelectorAll('#mainTab .seg').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('#mainTab .seg').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
+    document.querySelector('.tab-pane[data-pane="' + b.dataset.tab + '"]').style.display = '';
+    if (b.dataset.tab === 'portfolios') renderIndexPortfolios();
+  };
+});
+
+/* ===== 指数数据 ===== */
+const INDEX_CATEGORIES = {
+  msci: [
+    { code:"MCHINA50", name:"MSCI China A 50",    fullName:"MSCI China A 50 Index",      count:50,  top10Wt:"45.2%", type:"MSCI",     locale:"CN" },
+    { code:"MCHINA",   name:"MSCI China",          fullName:"MSCI China Index",            count:702, top10Wt:"38.1%", type:"MSCI",     locale:"CN" },
+    { code:"MCA100",   name:"MSCI China A 100",    fullName:"MSCI China A 100 Index",     count:100, top10Wt:"42.8%", type:"MSCI",     locale:"CN" },
+    { code:"MEMG",     name:"MSCI Emerging Markets",fullName:"MSCI EM Index",              count:1365,top10Wt:"28.5%", type:"MSCI",     locale:"INT" },
+    { code:"MASI",     name:"MSCI Asia ex Japan",  fullName:"MSCI Asia ex Japan Index",   count:830, top10Wt:"32.0%", type:"MSCI",     locale:"INT" },
+  ],
+  csi: [
+    { code:"000300",  name:"沪深 300",            fullName:"中证 300 指数",               count:300, top10Wt:"24.6%", type:"CSI",      locale:"CN" },
+    { code:"000905",  name:"中证 500",             fullName:"中证 500 指数",               count:500, top10Wt:"7.2%",  type:"CSI",      locale:"CN" },
+    { code:"000852",  name:"中证 1000",            fullName:"中证 1000 指数",             count:1000,top10Wt:"4.8%",  type:"CSI",      locale:"CN" },
+    { code:"000001",  name:"上证指数",             fullName:"上证综合指数",                 count:2200,top10Wt:"--",   type:"CSI",      locale:"CN" },
+  ],
+  hk: [
+    { code:"HSI",     name:"恒生指数",             fullName:"恒生综合指数",                 count:80,  top10Wt:"56.3%", type:"HSI",      locale:"HK" },
+    { code:"HSCEI",   name:"恒生国企指数",          fullName:"恒生中国企业指数",             count:50,  top10Wt:"47.1%", type:"HSI",      locale:"HK" },
+    { code:"HSTECH",  name:"恒生科技指数",          fullName:"恒生科技指数",                 count:30,  top10Wt:"58.2%", type:"HSI",      locale:"HK" },
+  ],
+  us: [
+    { code:"NDX100",  name:"纳指 100",             fullName:"NASDAQ-100 Index",            count:100, top10Wt:"54.8%", type:"NASDAQ",   locale:"US" },
+    { code:"SPX500",  name:"标普 500",              fullName:"S&P 500 Index",              count:500, top10Wt:"26.3%", type:"SPX",      locale:"US" },
+    { code:"DJI30",   name:"道琼斯 30",             fullName:"Dow Jones Industrial Avg",   count:30,  top10Wt:"38.5%", type:"DJI",      locale:"US" },
+  ],
+};
+
+/* ===== 成份股演示数据 ===== */
+const CONSTITUENTS = {
+  "MCHINA50": [
+    { code:"600519", name:"贵州茅台",   market:"A股", industry:"消费",   weight:8.52, price:1432.0, chg:+0.82 },
+    { code:"601318", name:"中国平安",   market:"A股", industry:"金融",   weight:5.73, price:42.15,  chg:-0.34 },
+    { code:"600036", name:"招商银行",   market:"A股", industry:"金融",   weight:4.21, price:33.60,  chg:+0.18 },
+    { code:"002594", name:"比亚迪",     market:"A股", industry:"汽车",   weight:3.85, price:238.50, chg:+1.52 },
+    { code:"300750", name:"宁德时代",   market:"A股", industry:"新能源", weight:3.42, price:198.30, chg:-0.65 },
+    { code:"601888", name:"中国中免",   market:"A股", industry:"消费",   weight:2.68, price:68.40,  chg:+2.10 },
+    { code:"600030", name:"中信证券",   market:"A股", industry:"金融",   weight:2.45, price:22.35,  chg:-0.22 },
+    { code:"601166", name:"兴业银行",   market:"A股", industry:"金融",   weight:2.31, price:17.80,  chg:+0.15 },
+    { code:"002415", name:"海康威视",   market:"A股", industry:"科技",   weight:2.18, price:34.20,  chg:+0.95 },
+    { code:"300059", name:"东方财富",   market:"A股", industry:"金融",   weight:1.96, price:18.45,  chg:+1.28 },
+    { code:"601012", name:"隆基绿能",   market:"A股", industry:"新能源", weight:1.85, price:19.30,  chg:-1.42 },
+    { code:"002230", name:"科大讯飞",   market:"A股", industry:"科技",   weight:1.72, price:52.80,  chg:+3.25 },
+    { code:"600276", name:"恒瑞医药",   market:"A股", industry:"医药",   weight:1.68, price:48.90,  chg:+0.56 },
+    { code:"000858", name:"五粮液",     market:"A股", industry:"消费",   weight:1.55, price:142.60, chg:+0.42 },
+    { code:"601398", name:"工商银行",   market:"A股", industry:"金融",   weight:1.48, price:5.23,   chg:-0.19 },
+    { code:"600887", name:"伊利股份",   market:"A股", industry:"消费",   weight:1.35, price:25.60,  chg:+0.28 },
+    { code:"002236", name:"大华股份",   market:"A股", industry:"科技",   weight:1.22, price:16.30,  chg:+0.74 },
+    { code:"601328", name:"交通银行",   market:"A股", industry:"金融",   weight:1.18, price:5.87,   chg:+0.17 },
+    { code:"000568", name:"泸州老窖",   market:"A股", industry:"消费",   weight:1.12, price:162.40, chg:+0.63 },
+    { code:"600585", name:"海螺水泥",   market:"A股", industry:"原材料", weight:1.05, price:23.70,  chg:-0.85 },
+  ],
+  "CSI300": [
+    { code:"600519", name:"贵州茅台",   market:"A股", industry:"消费",   weight:5.21, price:1432.0, chg:+0.82 },
+    { code:"601318", name:"中国平安",   market:"A股", industry:"金融",   weight:3.82, price:42.15,  chg:-0.34 },
+    { code:"600036", name:"招商银行",   market:"A股", industry:"金融",   weight:2.95, price:33.60,  chg:+0.18 },
+    { code:"002594", name:"比亚迪",     market:"A股", industry:"汽车",   weight:2.68, price:238.50, chg:+1.52 },
+    { code:"300750", name:"宁德时代",   market:"A股", industry:"新能源", weight:2.41, price:198.30, chg:-0.65 },
+    { code:"000001", name:"平安银行",   market:"A股", industry:"金融",   weight:1.82, price:11.20,  chg:+0.45 },
+    { code:"600030", name:"中信证券",   market:"A股", industry:"金融",   weight:1.65, price:22.35,  chg:-0.22 },
+    { code:"601166", name:"兴业银行",   market:"A股", industry:"金融",   weight:1.54, price:17.80,  chg:+0.15 },
+    { code:"002415", name:"海康威视",   market:"A股", industry:"科技",   weight:1.42, price:34.20,  chg:+0.95 },
+    { code:"300059", name:"东方财富",   market:"A股", industry:"金融",   weight:1.28, price:18.45,  chg:+1.28 },
+  ],
+};
+
+/* ===== 我创建的指数组合 ===== */
+const INDEX_PORTFOLIOS = [
+  {
+    id:"IP01", name:"MSCI China A 50 模拟盘", index:"MSCI China A 50",
+    indexCode:"MCHINA50", holdings:20, capital:"1000万", weight:"92%",
+    creator:"Kyra", createDate:"2026-08-10",
+    status:"追踪中", trackError:"-1.2%",
+    nav:[1.000,0.981,0.996,1.024,1.003,1.035,1.048,1.052,1.061],
+    dates:["07-15","07-22","07-29","08-05","08-12","08-19","08-22","08-26","08-28"],
+  },
+  {
+    id:"IP02", name:"沪深300 等权模拟", index:"沪深 300",
+    indexCode:"000300", holdings:15, capital:"1000万", weight:"78%",
+    creator:"David", createDate:"2026-08-05",
+    status:"追踪中", trackError:"+0.4%",
+    nav:[1.000,1.012,0.995,1.035,1.028,1.061],
+    dates:["07-05","07-12","07-19","07-26","08-02","08-05"],
+  },
+];
+
+/* ===== 状态 ===== */
+let curIndexCode = null;
+let sortKey = 'weight';
+let selectedCodes = new Set();
+let buildMode = 'full';
+
+/* ===== 渲染指数列表 ===== */
+function renderIndexList() {
+  const cat = document.getElementById('indexCategory').value;
+  const kw = (document.getElementById('indexSearch').value || '').trim().toLowerCase();
+  const list = (INDEX_CATEGORIES[cat] || []).filter(i =>
+    !kw || i.name.toLowerCase().includes(kw) || i.code.toLowerCase().includes(kw)
+  );
+  const grid = document.getElementById('indexGrid');
+  grid.innerHTML = list.map(idx => {
+    const sel = curIndexCode === idx.code;
+    return `<div class="index-card ${sel ? 'selected' : ''}" onclick="selectIndex('${idx.name}', '${idx.code}')">
+      <div class="flex items-center justify-between mb-2">
+        <span class="index-code">${idx.code}</span>
+        <span class="tag ${idx.type==='MSCI'?'tag-blue':idx.type==='CSI'?'tag-green':'tag-gray'}" style="font-size:10px">${idx.type}</span>
+      </div>
+      <div class="index-name">${idx.name}</div>
+      <div class="tiny mt-2">成份 ${idx.count} 只 · 前10权重 ${idx.top10Wt}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectIndex(name, code) {
+  curIndexCode = code || name;
+  renderIndexList();
+  renderIndexInfo();
+  renderConstituents();
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('constituentSection').style.display = '';
+}
+
+function renderIndexInfo() {
+  const cat = document.getElementById('indexCategory').value;
+  const all = INDEX_CATEGORIES[cat] || [];
+  const idx = all.find(i => i.name === curIndexCode || i.code === curIndexCode) || all[0];
+  if (!idx) return;
+  document.getElementById('indexBadge').textContent = idx.type;
+  document.getElementById('indexName').textContent = idx.fullName;
+  document.getElementById('indexMeta').textContent = `最新调样日期 2026-08-01 · ${idx.locale === 'CN' ? '境内' : idx.locale === 'HK' ? '港股' : '海外'}`;
+  document.getElementById('indexCount').textContent = idx.count;
+  document.getElementById('indexTop10Wt').textContent = idx.top10Wt;
+  document.getElementById('indexCode').textContent = idx.code;
+}
+
+/* ===== 渲染成份股 ===== */
+function renderConstituents() {
+  const data = CONSTITUENTS[curIndexCode] || [];
+  const kw = (document.getElementById('stockSearch').value || '').trim().toLowerCase();
+  const filtered = data.filter(s =>
+    !kw || s.code.toLowerCase().includes(kw) || s.name.toLowerCase().includes(kw)
+  );
+
+  // 排序
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortKey === 'weight') return b.weight - a.weight;
+    if (sortKey === 'code') return a.code.localeCompare(b.code);
+    if (sortKey === 'name') return a.name.localeCompare(b.name);
+    return 0;
+  });
+
+  let cumWt = 0;
+  const rows = sorted.map(s => {
+    cumWt += s.weight;
+    const up = s.chg >= 0;
+    const checked = selectedCodes.has(s.code) ? 'checked' : '';
+    const maxWt = Math.max(...data.map(x => x.weight));
+    const barWidth = (s.weight / maxWt * 100).toFixed(1);
+    return `<tr>
+      <td><input type="checkbox" ${checked} onchange="toggleSelect('${s.code}')"></td>
+      <td class="mono-num muted">${s.code}</td>
+      <td class="bold">${s.name}</td>
+      <td><span class="tag tag-gray" style="font-size:11px">${s.market}</span></td>
+      <td class="tiny">${s.industry}</td>
+      <td class="num mono-num bold">${s.weight.toFixed(2)}%</td>
+      <td>
+        <div class="wt-bar-wrap">
+          <div class="wt-bar-fill" style="width:${barWidth}%"></div>
+          <div class="wt-bar-cursor" style="left:${(s.weight / maxWt * 100).toFixed(1)}%"></div>
+        </div>
+      </td>
+      <td class="num mono-num">${s.price.toLocaleString()}</td>
+      <td class="num mono-num ${up?'tag-up':'tag-down'}">${up?'+':''}${s.chg.toFixed(2)}%</td>
+      <td class="num mono-num muted">${cumWt.toFixed(2)}%</td>
+    </tr>`;
+  });
+
+  document.getElementById('constituentBody').innerHTML = rows.join('');
+  const total = data.reduce((s, x) => s + x.weight, 0);
+  document.getElementById('constituentCount').textContent = `（${data.length} 只 · 合计 ${total.toFixed(2)}%）`;
+}
+
+function setSort(key) {
+  sortKey = key;
+  document.querySelectorAll('#sortSeg .seg').forEach(b => b.classList.toggle('active', b.dataset.sort === key));
+  renderConstituents();
+}
+
+function toggleSelect(code) {
+  if (selectedCodes.has(code)) selectedCodes.delete(code);
+  else selectedCodes.add(code);
+}
+
+function toggleSelectAll() {
+  const data = CONSTITUENTS[curIndexCode] || [];
+  const allSelected = data.every(s => selectedCodes.has(s.code));
+  if (allSelected) {
+    selectedCodes.clear();
+  } else {
+    data.forEach(s => selectedCodes.add(s.code));
+  }
+  renderConstituents();
+}
+
+/* ===== 指数组合列表 ===== */
+function renderIndexPortfolios() {
+  const list = document.getElementById('indexPortfolioList');
+  list.innerHTML = INDEX_PORTFOLIOS.map(p => {
+    const W = 760, H = 80, PL = 44, PR = 20, PT = 8, PB = 16;
+    const iw = W - PL - PR, ih = H - PT - PB;
+    const nav = p.nav;
+    const lo = Math.min(...nav) * 0.995;
+    const hi = Math.max(...nav) * 1.005;
+    const X = i => PL + iw * i / (nav.length - 1);
+    const Y = v => PT + ih * (1 - (v - lo) / (hi - lo));
+    const line = nav.map((v, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join('');
+    const endNav = nav[nav.length - 1];
+    const endDate = p.dates[p.dates.length - 1];
+    const upNav = endNav >= nav[0];
+
+    return `<div class="card mb-4" onclick="showIndexPortfolioDetail('${p.id}')" style="cursor:pointer">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <div class="flex items-center gap-3">
+            <div class="card-title">${p.name}</div>
+            <span class="tag tag-green">${p.status}</span>
+            <span class="tag tag-gray" style="font-size:11px">追踪误差 ${p.trackError}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="kpi-num" style="font-size:24px;color:${upNav?'var(--vp-danger)':'var(--vp-green)'}">${upNav?'+':''}${(endNav*100-100).toFixed(2)}%</div>
+            <div class="tiny muted"> vs 指数</div>
+            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：调整权重')">⚙️ 调仓</button>
+            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();alert('原型：查看详情')">查看</button>
+          </div>
+        </div>
+        <div class="flex gap-4 flex-wrap mb-3" style="font-size:13px;color:var(--vp-gray)">
+          <span>指数：<strong style="color:var(--vp-ink)">${p.index}</strong></span>
+          <span>持仓：<strong style="color:var(--vp-ink)">${p.holdings}只</strong></span>
+          <span>总权重：<strong style="color:var(--vp-ink)">${p.weight}</strong></span>
+          <span>创建人：<strong style="color:var(--vp-ink)">${p.creator}</strong></span>
+          <span>建仓日：<strong style="color:var(--vp-ink)">${p.createDate}</strong></span>
+        </div>
+        <div class="ip-nav-chart">
+          <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
+            <path d="${line}" fill="none" stroke="${upNav?'var(--vp-danger)':'var(--vp-green)'}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+            <circle cx="${X(nav.length-1)}" cy="${Y(endNav)}" r="4" fill="${upNav?'var(--vp-danger)':'var(--vp-green)'}" stroke="#fff" stroke-width="2"/>
+            <text x="${X(nav.length-1)+8}" y="${Y(endNav)+4}" class="end-label" style="font-size:12px;font-weight:700;fill:var(--vp-ink)">${endNav.toFixed(3)}</text>
+          </svg>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showIndexPortfolioDetail(id) {
+  alert('原型：进入指数组合详情（复用模拟组合页的持仓+净值+调仓逻辑）');
+}
+
+/* ===== 创建组合 ===== */
+function openCreateFromIndex() {
+  buildMode = 'full';
+  document.querySelectorAll('#buildModeSeg .seg').forEach(b => b.classList.toggle('active', b.dataset.mode === 'full'));
+  document.getElementById('trackIndex').value = curIndexCode;
+  document.getElementById('portfolioName').value = document.getElementById('indexName').textContent + ' 模拟盘';
+  renderBuildSummary();
+  document.getElementById('createModal').style.display = '';
+}
+
+function openCreateFromSelected() {
+  if (selectedCodes.size === 0) { alert('请先选择要添加的成份股'); return; }
+  buildMode = 'custom';
+  document.querySelectorAll('#buildModeSeg .seg').forEach(b => b.classList.toggle('active', b.dataset.mode === 'custom'));
+  document.getElementById('trackIndex').value = curIndexCode + '（已选 ' + selectedCodes.size + ' 只）';
+  document.getElementById('portfolioName').value = document.getElementById('indexName').textContent + ' 精选模拟盘';
+  renderBuildSummary();
+  document.getElementById('createModal').style.display = '';
+}
+
+function closeCreateModal() {
+  document.getElementById('createModal').style.display = 'none';
+}
+
+function setBuildMode(mode) {
+  buildMode = mode;
+  document.querySelectorAll('#buildModeSeg .seg').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  renderBuildSummary();
+}
+
+function renderBuildSummary() {
+  const data = CONSTITUENTS[curIndexCode] || [];
+  let stocks, totalWt;
+  if (buildMode === 'full') {
+    stocks = data;
+    totalWt = data.reduce((s, x) => s + x.weight, 0);
+  } else if (buildMode === 'top20') {
+    stocks = [...data].sort((a, b) => b.weight - a.weight).slice(0, 20);
+    totalWt = stocks.reduce((s, x) => s + x.weight, 0);
+  } else {
+    stocks = data.filter(s => selectedCodes.has(s.code));
+    totalWt = stocks.reduce((s, x) => s + x.weight, 0);
+  }
+  const summary = document.getElementById('buildSummary');
+  summary.innerHTML = `<div class="flex gap-4 flex-wrap" style="font-size:13px;color:var(--vp-gray)">
+    <span>成份股 <strong style="color:var(--vp-ink)">${stocks.length}</strong> 只</span>
+    <span>合计权重 <strong style="color:var(--vp-ink)">${totalWt.toFixed(1)}%</strong></span>
+    <span>初始资金 <strong style="color:var(--vp-ink)">1000万</strong></span>
+    <span>预留现金 <strong style="color:var(--vp-ink)">${(1000 - totalWt * 10).toFixed(0)}万</strong></span>
+  </div>
+  <div class="flex gap-2 mt-2" style="flex-wrap:wrap">
+    ${stocks.slice(0, 8).map(s => `<span class="tag tag-gray" style="font-size:11px">${s.code} ${s.weight.toFixed(1)}%</span>`).join('')}
+    ${stocks.length > 8 ? `<span class="tiny">+${stocks.length - 8} 只...</span>` : ''}
+  </div>`;
+}
+
+function confirmCreate() {
+  const name = document.getElementById('portfolioName').value.trim();
+  if (!name) { alert('请输入组合名称'); return; }
+  closeCreateModal();
+  alert('原型：组合「' + name + '」已创建（跳转至组合详情页/留在当前页面）');
+}
+
+/* ===== 调仓弹层 ===== */
+function closeWeightModal() { document.getElementById('weightModal').style.display = 'none'; }
+
+function confirmWeightAdjust() {
+  closeWeightModal();
+  alert('原型：调仓已提交，净值曲线与持仓已重算');
+}
+
+/* ===== 时钟 ===== */
+function tick() {
+  const d = new Date(); const p = n => String(n).padStart(2, '0');
+  document.getElementById('clock').textContent = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+tick(); setInterval(tick, 30000);
+
+/* ===== 侧边栏折叠 ===== */
+const SIDEBAR_KEY = 'vp-sidebar-collapsed';
+function applySidebarState() {
+  const sidebar = document.querySelector('.sidebar');
+  const toggleBtn = document.querySelector('.sidebar-toggle');
+  if (!sidebar || !toggleBtn) return;
+  const collapsed = localStorage.getItem(SIDEBAR_KEY) === '1';
+  sidebar.classList.toggle('collapsed', collapsed);
+  toggleBtn.setAttribute('title', collapsed ? '展开菜单' : '收起菜单');
+}
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  if (!sidebar) return;
+  const collapsed = sidebar.classList.toggle('collapsed');
+  localStorage.setItem(SIDEBAR_KEY, collapsed ? '1' : '0');
+}
+applySidebarState();
+
+/* ===== 初始化 ===== */
+renderIndexList();
+renderIndexPortfolios();
+</script>
+
+<style>
+/* 指数卡片网格 */
+.index-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.index-card {
+  background: var(--vp-mint-50);
+  border: 1.5px solid var(--vp-mint-200);
+  border-radius: var(--vp-radius-md);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.index-card:hover { border-color: var(--vp-green); box-shadow: var(--vp-shadow-sm); }
+.index-card.selected { border-color: var(--vp-green); background: var(--vp-green-bg); box-shadow: var(--vp-shadow-md); }
+.index-code { font-size: 11px; color: var(--vp-gray-light); font-variant-numeric: tabular-nums; }
+.index-name { font-size: 14px; font-weight: 700; color: var(--vp-ink); margin-top: 2px; }
+
+/* 指数信息头 */
+.index-badge {
+  width: 40px; height: 40px; border-radius: var(--vp-radius-md);
+  background: var(--vp-green-bg); color: var(--vp-green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; text-align: center;
+}
+.index-stat { text-align: center; padding: 0 12px; border-left: 1px solid var(--vp-mint-200); }
+.index-stat:first-child { border-left: none; }
+.index-stat-num { font-size: 18px; font-weight: 700; color: var(--vp-ink); font-variant-numeric: tabular-nums; }
+.index-stat-label { font-size: 11px; color: var(--vp-gray-light); }
+
+/* 权重条 */
+.wt-bar-wrap { position: relative; height: 8px; background: var(--vp-mint-100); border-radius: 4px; overflow: visible; }
+.wt-bar-fill { height: 100%; background: var(--vp-green); border-radius: 4px; transition: width .3s; max-width: 100%; }
+.wt-bar-cursor { position: absolute; top: -2px; width: 2px; height: 12px; background: var(--vp-green-dark); border-radius: 1px; transform: translateX(-50%); }
+
+/* 指数组合净值迷你图 */
+.ip-nav-chart { margin-top: 4px; }
+.end-label { font-variant-numeric: tabular-nums; }
+
+/* 弹层 */
+.modal-mask { position: fixed; inset: 0; background: rgba(10, 55, 38, .32); display: flex; align-items: center; justify-content: center; z-index: 500; }
+.modal-box { background: #fff; border-radius: var(--vp-radius-lg); width: 480px; max-width: 92vw; max-height: 86vh; display: flex; flex-direction: column; box-shadow: var(--vp-shadow-lg); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--vp-mint-200); }
+.modal-body { padding: 16px 18px; overflow: auto; flex: 1; }
+.modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 18px; border-top: 1px solid var(--vp-mint-200); }
+
+/* 复选框 */
+input[type="checkbox"] { accent-color: var(--vp-green); cursor: pointer; width: 16px; height: 16px; }
+</style>
+</body>
+</html>

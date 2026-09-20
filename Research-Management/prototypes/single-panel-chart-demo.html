@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>方案A示例 · 全部序列同图叠加</title>
+<style>
+  :root { --vp-green:#20A06E; --vp-red:#B23A48; --vp-mint-50:#F2F8F4; --vp-border:#E5EDE8; --vp-gray-300:#CBD5D1; --vp-gray-100:#F1F5F3; --vp-gray-500:#6B7A73; --vp-gray-900:#1F2A25; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:24px; background:var(--vp-mint-50); font-family:"Open Sans","PingFang TC","Microsoft JhengHei",sans-serif; }
+  .card { background:#fff; border-radius:12px; box-shadow:0 4px 16px rgba(21,50,43,.06); max-width:860px; margin:0 auto; }
+  .card-head { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--vp-border); }
+  .card-title { font-size:15px; font-weight:600; color:var(--vp-gray-900); }
+  .card-body { padding:16px 20px; }
+  .seg-wrap { display:flex; gap:4px; background:var(--vp-gray-100); border-radius:8px; padding:3px; }
+  .seg { border:none; background:transparent; padding:5px 12px; font-size:12px; color:var(--vp-gray-500); border-radius:6px; cursor:pointer; }
+  .seg.active { background:#fff; color:var(--vp-green); font-weight:600; box-shadow:0 1px 3px rgba(21,50,43,.1); }
+  .panel-label { font-size:12px; font-weight:600; color:var(--vp-gray-500); margin:0 0 4px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .legend-i { display:inline-flex; align-items:center; gap:4px; font-weight:400; }
+  .legend-i i { width:10px; height:3px; border-radius:2px; display:inline-block; }
+  .axis-tick { font-size:10px; fill:var(--vp-gray-500); font-variant-numeric:tabular-nums; }
+  .tip { position:fixed; display:none; background:#fff; border:1px solid var(--vp-border); border-radius:8px; box-shadow:0 6px 20px rgba(21,50,43,.12); padding:8px 10px; font-size:12px; pointer-events:none; z-index:10; min-width:150px; }
+  .tip .d { font-weight:600; color:var(--vp-gray-900); margin-bottom:4px; }
+  .tip .r { display:flex; align-items:center; gap:6px; color:var(--vp-gray-500); padding:1px 0; }
+  .tip .r i { width:8px; height:8px; border-radius:2px; }
+  .tip .r b { margin-left:auto; color:var(--vp-gray-900); font-variant-numeric:tabular-nums; }
+  .foot-note { font-size:11px; color:var(--vp-gray-500); margin-top:8px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-head">
+    <div class="card-title">组合表现（方案A · 全部序列同图叠加）</div>
+    <div class="seg-wrap">
+      <button class="seg">近1月</button><button class="seg">近3月</button><button class="seg active">近6月</button><button class="seg">今年以来</button><button class="seg">近1年</button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="panel-label">全部序列（纵轴统一为各自区间相对位置）
+      <span class="legend-i"><i style="background:var(--vp-green)"></i>模拟组合净值</span>
+      <span class="legend-i"><i style="background:var(--vp-red)"></i>恒生指数</span>
+      <span class="legend-i"><i style="background:#8B5CF6"></i>累计收益率</span>
+      <span class="legend-i"><i style="background:#F59E0B"></i>夏普比率</span>
+      <span class="legend-i"><i style="background:#3B82F6"></i>最大回撤</span>
+    </div>
+    <svg id="chartSvg" viewBox="0 0 820 240" style="width:100%;height:auto;display:block"></svg>
+    <div class="foot-note">悬停查看各日期数值（tooltip 内为真实值）· 注意：纵轴 0~100% 只是「区间内相对位置」，不是任何真实数值 · 5 条线共用一个刻度空间</div>
+  </div>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+// ---- mock 数据（与方案B完全相同，便于对比）----
+const N = 60;
+const dates = Array.from({length:N}, (_,i) => {
+  const d = new Date(2026, 2, 2 + i*3);
+  return `${d.getMonth()+1}/${d.getDate()}`;
+});
+let nav = 1.0, bm = 1.0;
+const navArr=[nav], bmArr=[bm], cum=[0], sharpe=[1.2], dd=[0];
+for (let i=1;i<N;i++){
+  nav += (Math.sin(i/6)+Math.random()-0.42)*0.008; navArr.push(nav);
+  bm  += (Math.sin(i/5+1)+Math.random()-0.48)*0.007; bmArr.push(bm);
+  cum.push((nav-1)*100);
+  sharpe.push(1.2+Math.sin(i/8)*0.5+(Math.random()-0.5)*0.15);
+  const peak = Math.max(...navArr.slice(0,i+1));
+  dd.push((nav/peak-1)*100);
+}
+const W=820, PL=48, PR=56, H=240, PT=10, PB=18, ih=H-PT-PB;
+const X = i => PL+(W-PL-PR)*i/(N-1);
+const norm = vals => { const lo=Math.min(...vals), hi=Math.max(...vals); const p=(hi-lo)*0.15||0.1; return {lo:lo-p,hi:hi+p}; };
+
+// 5 条序列统一归一化到 0~100% 相对位置
+const series = [
+  { name:"模拟组合净值", color:"var(--vp-green)", vals:navArr, fmt:v=>v.toFixed(3), w:2.4 },
+  { name:"恒生指数",     color:"var(--vp-red)",   vals:bmArr,  fmt:v=>v.toFixed(3), w:2 },
+  { name:"累计收益率",   color:"#8B5CF6", vals:cum,    fmt:v=>v.toFixed(1)+"%", w:1.8 },
+  { name:"夏普比率",     color:"#F59E0B", vals:sharpe, fmt:v=>v.toFixed(2), w:1.8 },
+  { name:"最大回撤",     color:"#3B82F6", vals:dd,     fmt:v=>v.toFixed(1)+"%", w:1.8 },
+].map(s => { const {lo,hi}=norm(s.vals); return {...s, pts:s.vals.map(v=>(v-lo)/(hi-lo)) }; });
+
+const Y = t => PT+ih*(1-t);
+let g = "";
+[0,.25,.5,.75,1].forEach(t=>{ g += `<line x1="${PL}" y1="${Y(t)}" x2="${W-PR}" y2="${Y(t)}" stroke="var(--vp-gray-100)"/><text x="${PL-6}" y="${Y(t)+3}" text-anchor="end" class="axis-tick">${Math.round(t*100)}%</text>`; });
+dates.forEach((d,i)=>{ if(i%8===0||i===N-1) g += `<text x="${X(i)}" y="${H-4}" text-anchor="middle" class="axis-tick">${d}</text>`; });
+const paths = series.map(s=>`<path d="${s.pts.map((t,i)=>(i?'L':'M')+X(i).toFixed(1)+','+Y(t).toFixed(1)).join('')}" fill="none" stroke="${s.color}" stroke-width="${s.w}" stroke-linecap="round" opacity=".85"/>`).join("");
+const dots = series.map((s,k)=>`<circle class="hdot" data-k="${k}" r="4" fill="${s.color}" stroke="#fff" stroke-width="1.5" style="display:none"/>`).join("");
+const svg = document.getElementById("chartSvg");
+svg.innerHTML = g + paths + dots + `<line id="cv" y1="${PT}" y2="${H-PB}" stroke="var(--vp-gray-300)" style="display:none"/>`;
+
+const tip = document.getElementById("tip");
+svg.addEventListener("pointermove", e=>{
+  const r = svg.getBoundingClientRect();
+  const x = (e.clientX-r.left)/r.width*W;
+  let idx = Math.round((x-PL)/(W-PL-PR)*(N-1)); idx=Math.max(0,Math.min(N-1,idx));
+  const cv=svg.querySelector("#cv"); cv.style.display=""; cv.setAttribute("x1",X(idx)); cv.setAttribute("x2",X(idx));
+  svg.querySelectorAll(".hdot").forEach(d=>{ const s=series[+d.dataset.k]; d.style.display=""; d.setAttribute("cx",X(idx)); d.setAttribute("cy",Y(s.pts[idx])); });
+  tip.innerHTML = `<div class="d">2026/${dates[idx]}</div>` +
+    series.map(s=>`<div class="r"><i style="background:${s.color}"></i>${s.name}<b>${s.fmt(s.vals[idx])}</b></div>`).join("");
+  tip.style.display="block";
+  tip.style.left = Math.min(e.clientX+14, window.innerWidth-190)+"px";
+  tip.style.top = (e.clientY-10)+"px";
+});
+svg.addEventListener("pointerleave", ()=>{ tip.style.display="none"; svg.querySelectorAll("#cv,.hdot").forEach(el=>el.style.display="none"); });
+</script>
+</body>
+</html>

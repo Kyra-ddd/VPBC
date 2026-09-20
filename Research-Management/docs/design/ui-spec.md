@@ -1,480 +1,388 @@
-# VP网页 Design Specification
+# VPBC 前端设计规范
 
 ## 1. 设计定位
 
-这是一个功能优先的企业内部监控台，不是米白色的编辑型报告页面。
+这是一个浅色主题的企业内部监控台，视觉基调为浅绿色（薄荷绿）底色，带有蓝色点缀。
 
 视觉基调：
 
-* 冷调浅薄荷绿作为整页画布；
+- 浅绿色 `#F2F8F4` 渐变背景；
+- 白色卡片承载内容，带微妙边框；
+- Inter + JetBrains Mono 字体组合；
+- 信息密度高，通过字体层级和分组维持可读性；
+- 深色主题保留用于涨跌色等金融惯例。
 
-* 纯白卡片承载内容；
+## 2. 核心颜色系统
 
-* Value Partners 品牌绿用于顶栏、主操作与关键数值；
+### 2.1 Primary 色阶（蓝色系）
 
-* 深绿用于标题和高强调文本；
+| Token | 色值 | 用途 |
+|-------|------|------|
+| `--primary-900` | `#0a1628` | 最深背景 |
+| `--primary-800` | `#0f2240` | 深色背景 |
+| `--primary-700` | `#16325f` | 卡片背景 |
+| `--primary-600` | `#1d4580` | 深蓝边框 |
+| `--primary-500` | `#245aa4` | 蓝色 |
+| `--primary-400` | `#2d6ad2` | 主蓝色 |
+| `--primary-300` | `#4f8df0` | 亮蓝色（主强调） |
+| `--primary-200` | `#7ab0ff` | 浅蓝高亮 |
+| `--primary-100` | `#bcd8ff` | 极浅蓝 |
 
-* 低饱和绿灰用于说明、边框和表头；
+### 2.2 Accent 色
 
-* 圆角克制、阴影很轻，保持金融数据页面的稳定和可信；
+| Token | 色值 | 用途 |
+|-------|------|------|
+| `--accent-cyan` | `#14b8d6` | 青色强调 |
+| `--accent-indigo` | `#5b74f5` | 靛蓝强调 |
 
-* 信息密度较高，通过字体层级、分组底色和固定间距维持可读性。
+### 2.3 页面与表面
 
-## 2. 四项核心约束
+| Token | 用途 | 说明 |
+|-------|------|------|
+| `--bg-root` | 根背景 | 浅绿色 `#F2F8F4` |
+| `--bg-sidebar` | 侧边栏背景 | `#ffffff` |
+| `--bg-card` | 卡片背景 | `#ffffff` |
+| `--bg-input` | 输入框背景 | `#F2F8F4` |
+| `--bg-elevated` | 浮动层背景 | `#F2F8F4` |
+| `--bg-card-hover` | 卡片 hover | `#eef5f0` |
 
-### 2.1 字号
+### 2.4 文本色
 
-根字号为 `16px`，正文默认行高为 `24px`。
+| Token | 色值 | 用途 |
+|-------|------|------|
+| `--text-primary` | `#1a2e1a` | 主文本（深绿） |
+| `--text-secondary` | `#4a5a4a` | 次级文本 |
+| `--text-muted` | `#7a8a7a` | 弱化文本 |
+| `--text-accent` | `#2d6ad2` | 强调文本（蓝色） |
 
-| 角色               |   字号 |      字重 |      行高 | 用法            |
-| ---------------- | ---: | ------: | ------: | ------------- |
-| 页面主标题            | 24px |     600 |  28.8px | 每页只出现一次       |
-| 关键统计数字           | 32px |     600 |  35.2px | KPI、摘要数字      |
-| 品牌名称 / 卡片主标题     | 20px |     600 | 24–30px | 顶栏名称、银行名      |
-| 正文               | 16px |     400 |    24px | 普通内容          |
-| 辅助信息 / 筛选按钮 / 表格 | 14px | 400–700 |    21px | 更新时间、正文表格、操作项 |
-| 微型说明 / 标签 / 涨跌值  | 12px | 400–600 |    18px | 时间戳、表头、状态标记   |
+### 2.5 边框色
 
-使用规则：
+| Token | 用途 |
+|-------|------|
+| `--border-subtle` | `rgba(0,0,0,0.08)` |
+| `--border-default` | `rgba(0,0,0,0.12)` |
 
-* 不要用超大标题制造“发布会”效果；此页面最大常规标题仅为 24px。
+### 2.6 状态色
 
-* 关键数字可用 32px，但只用于少量 KPI。
+| Token | 色值 | 用途 |
+|-------|------|------|
+| `--success` | `#22c55e` | 成功/绿 |
+| `--danger` | `#ef4444` | 错误/红 |
+| `--warning` | `#f59e0b` | 警告/橙 |
 
-* 表格正文保持 14px，表头与微型元数据使用 12px。
+### 2.7 香港金融显示惯例
 
-* 数字、时间和利率使用等宽数字特性 `font-variant-numeric: tabular-nums`。
+- 上涨：红色 `#B23A48`（保持不变）
+- 下跌：绿色 `#20A06E`（保持不变）
 
-### 2.2 字体
+## 3. 字体系统
 
-标题字体栈：
+### 3.1 字体栈
 
 ```css
-font-family:
-  "Poppins",
-  "PingFang TC",
-  "Microsoft JhengHei",
-  "Noto Sans TC",
-  Arial,
-  sans-serif;
+/* 主字体 */
+--font-sans: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", "Inter", "Segoe UI", sans-serif;
+
+/* 等宽字体（数字/代码） */
+--font-mono: "JetBrains Mono", monospace;
+
+/* 数字字体 */
+--font-numeric: "Inter", "Segoe UI", "Microsoft YaHei", sans-serif;
+
+/* 数据专用等宽 */
+--font-data-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
 ```
 
-正文字体栈：
+### 3.2 字号系统
+
+| 角色 | 字号 | 字重 | 行高 |
+|------|------|------|------|
+| 页面主标题 | 32-44px | 700 | 1.05 |
+| 品牌名称 | 20px | 700 | - |
+| 卡片标题 | 18px | 600 | - |
+| 正文 | 14px | 400 | 1.5 |
+| 辅助信息 | 12px | 400-600 | - |
+| 微型说明 | 11px | 600-700 | - |
+
+### 3.3 标签文字
 
 ```css
-font-family:
-  "Open Sans",
-  "PingFang TC",
-  "Microsoft JhengHei",
-  "Noto Sans TC",
-  Arial,
-  sans-serif;
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.08em;
+text-transform: uppercase;
 ```
 
-使用规则：
+## 4. 间距与圆角
 
-* Poppins 用于标题、品牌名称、银行名称和关键数字。
-
-* Open Sans 用于正文、导航、说明、筛选器和表格。
-
-* 中文字符实际由系统中的 `PingFang TC` 等后备字体绘制；Poppins / Open Sans 主要统一拉丁字母和数字的气质。
-
-* 页面引入的字重只有：
-
-  * Open Sans：400、600、700；
-
-  * Poppins：500、600、700。
-
-* 不使用衬线字体，不混入装饰性字体。
-
-### 2.3 Logo
-
-官方 Logo 文件：
-
-* 本地资产：[`b-logo.png`](./b-logo.png)
-
-* 原图尺寸：203 × 90 px，透明 PNG；
-
-* 顶栏实际显示：高度 `34px`，宽度自适应，浏览器实测约 `76.7px`；
-
-* Logo 放在品牌绿顶栏上，周围不加白色卡片、描边或阴影。
-
-Logo 与平台名称之间：
-
-* 间距：12px；
-
-* 名称左侧有 `1px solid rgba(255,255,255,0.35)` 分隔线；
-
-* 名称左内边距：12px；
-
-* 品牌名称为白色、20px、Poppins 600、字距 0.02em；
-
-* 小于 768px 时隐藏平台名称，仅保留 Logo。
-
-禁止：
-
-* 不用文字重新拼写 Logo；
-
-* 不改变 Logo 比例；
-
-* 不把 `--vp-lime: #BDD646` 当作界面主色；该色仅属于 Logo 内部；
-
-* 不给 Logo 加圆角容器或彩色底板。
-
-### 2.4 颜色
-
-#### 核心品牌色
-
-| Token               | 色值        | 语义                  |
-| ------------------- | --------- | ------------------- |
-| `--vp-green-dark`   | `#0A3726` | 页面标题、高强调文字、hover 加深 |
-| `--vp-green`        | `#20A06E` | 顶栏、主操作、链接、关键利率      |
-| `--vp-green-2`      | `#1B8A5F` | 主色 hover 备用态        |
-| `--vp-jade`         | `#6BBD9C` | 焦点环和浅玉绿强调           |
-| `--vp-green-bright` | `#7CC366` | 顶栏当前导航项             |
-| `--vp-lime`         | `#BDD646` | 仅 Logo 内部使用         |
-
-#### 页面与表面
-
-| Token            | 色值        | 语义             |
-| ---------------- | --------- | -------------- |
-| `--vp-mint-50`   | `#F2F8F4` | **整页背景**、偶数表格行 |
-| `--vp-mint-100`  | `#E8F3EC` | 分段控件底、浅区块      |
-| `--vp-mint-200`  | `#D6E9DE` | 卡片与输入框边框、分隔线   |
-| `--vp-mint-300`  | `#BADCC8` | 较强边框           |
-| `--vp-green-bg`  | `#E4F3EA` | 重点行浅底          |
-| `--vp-gray-100`  | `#EFF5F1` | 表头、弱底色         |
-| `--vp-white`     | `#FFFFFF` | 卡片、选中分段、输入焦点底色 |
-| `--vp-footer-bg` | `#F1F2F2` | 页脚背景           |
-
-#### 文本与状态
-
-| Token             | 色值        | 语义        |
-| ----------------- | --------- | --------- |
-| `--vp-ink`        | `#1E2B24` | 正文与主标题    |
-| `--vp-gray`       | `#5A6B61` | 次级说明      |
-| `--vp-gray-light` | `#8FA398` | 时间戳、微型元数据 |
-| `--vp-danger`     | `#B23A48` | 上涨、风险提示   |
-| `--vp-danger-bg`  | `#F9EEF0` | 风险浅底      |
-| `--vp-gold`       | `#C7A252` | 第一名       |
-| `--vp-silver`     | `#C0C0C0` | 第二名       |
-| `--vp-bronze`     | `#CD7F32` | 第三名       |
-
-香港金融显示惯例：
-
-* 上涨：红色 `#B23A48`；
-
-* 下跌：绿色 `#20A06E`；
-
-* 不要套用“绿色上涨、红色下跌”的欧美市场习惯。
-
-## 3. 间距、圆角与阴影
-
-间距采用 4px 基准：
+### 4.1 间距（4px 基准）
 
 ```css
---vp-space-1: 4px;
---vp-space-2: 8px;
---vp-space-3: 12px;
---vp-space-4: 16px;
---vp-space-5: 24px;
---vp-space-6: 32px;
---vp-space-7: 48px;
+--space-1: 4px;
+--space-2: 8px;
+--space-3: 12px;
+--space-4: 16px;
+--space-5: 24px;
+--space-6: 32px;
+--space-7: 48px;
 ```
 
-圆角：
+### 4.2 圆角系统
 
 ```css
---vp-radius-sm: 4px;
---vp-radius-md: 8px;
---vp-radius-lg: 12px;
---vp-radius-pill: 999px;
+--radius-sm: 8px;
+--radius-md: 12px;
+--radius-lg: 16px;
+--radius-xl: 22px;
 ```
 
-阴影带轻微深绿色调：
+### 4.3 阴影与发光
 
 ```css
---vp-shadow-sm: 0 1px 3px rgba(10, 55, 38, 0.08);
---vp-shadow-md: 0 4px 12px rgba(10, 55, 38, 0.10);
---vp-shadow-lg: 0 8px 24px rgba(10, 55, 38, 0.12);
+--shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+--shadow-md: 0 4px 12px rgba(0,0,0,0.25);
+--shadow-lg: 0 8px 24px rgba(0,0,0,0.3);
+--shadow-glow: 0 0 20px rgba(79,141,240,0.25); /* 蓝色发光 */
 ```
 
-使用规则：
-
-* 普通卡片：8px 圆角、1px `#D6E9DE` 边框、`shadow-sm`；
-
-* hover 卡片：边框变为品牌绿，阴影提升到 `shadow-md`；
-
-* 筛选按钮、搜索框、分段项使用 999px 胶囊圆角；
-
-* 不使用厚重黑色投影、玻璃拟态或高光渐变。
-
-## 4. 页面布局
-
-### 4.1 桌面端
-
-浏览器取样视口：1479 × 953 px。
-
-* 顶栏宽度占满，高度 53px，左右内边距 16px；
-
-* 主内容使用全宽容器，左右内边距 24px；
-
-* 页面标题区上下内边距 16px；
-
-* KPI 区：
-
-  * 768px 及以上为三列；
-
-  * 列间总 gutter 为 24px；
-
-  * 单卡内边距 24px；
-
-* 银行卡片区：
-
-  * 1200px 及以上为三列；
-
-  * 992–1199px 为两列；
-
-  * 992px 以下为单列；
-
-  * 每列左右各 12px gutter；
-
-  * 行间距 24px；
-
-  * 桌面实测单卡宽约 461px。
-
-页面不设置窄版最大宽度，目的是充分利用监控屏和桌面宽屏。
-
-### 4.2 手机端
-
-390 × 844 px 实测：
-
-* 页面没有横向溢出，`scrollWidth = 390px`；
-
-* 顶栏换行为两层，总高约 103px；
-
-* 平台名称隐藏，Logo 保留；
-
-* 顶部时钟在小于 992px 时隐藏；
-
-* 主内容左右仍保持 24px；
-
-* 标题与更新时间换行；
-
-* 三张 KPI 卡改为单列；
-
-* 筛选面板与银行卡均为单列，内容宽约 342px；
-
-* 银行筛选 pills 保持单行横向滚动，而不是强行多行压缩。
-
-## 5. 组件规范
-
-### 5.1 顶栏
-
-* 背景：`#20A06E`；
-
-* 桌面高度：53px；
-
-* 阴影：`0 4px 12px rgba(10,55,38,0.10)`；
-
-* 普通导航：14px / 600，白色 85% 透明度，内边距 `16px 12px`；
-
-* 当前导航：白色文字、`#7CC366` 实色背景；
-
-* hover：增加 14% 白色叠层，并由中间展开 2px 白色底线；
-
-* 键盘焦点：2px `#7CC366` 内偏移描边。
-
-### 5.2 页面标题区
-
-* 标题：24px / 600 / Poppins，颜色 `#1E2B24`；
-
-* 标题图标：`#20A06E`，与标题间距 8px；
-
-* 更新时间：14px / 400，颜色 `#5A6B61`；
-
-* 左标题、右更新时间；窄屏允许换行。
-
-### 5.3 KPI 卡
-
-* 白底、8px 圆角、1px 薄荷绿边框、轻阴影；
-
-* 内边距 24px，图标与文字间距 16px；
-
-* 图标圆：48 × 48px，背景 `rgba(32,160,110,0.12)`；
-
-* 数字：32px / 600 / Poppins；
-
-* 标签：14px / 400 / `#5A6B61`，上间距 2px。
-
-### 5.4 筛选面板
-
-* 白底、8px 圆角、轻阴影；
-
-* 内边距 `16px 24px`；
-
-* 页面滚动时吸顶：`position: sticky; top: 8px; z-index: 100`；
-
-* 标题：16px / 600；
-
-* 搜索框：
-
-  * 宽度至少 220px，高度 35px；
-
-  * 背景 `#F2F8F4`；
-
-  * 边框 `#D6E9DE`；
-
-  * 14px 字号；
-
-  * 内边距 `6px 16px 6px 34px`；
-
-  * 聚焦时白底、品牌绿边框、浅玉绿焦点环；
-
-* 银行 pill：
-
-  * 14px / 600；
-
-  * 内边距 `6px 16px`；
-
-  * 外边距 4px；
-
-  * 默认白底绿灰文字；
-
-  * 激活态为 `#20A06E` 底、白字。
-
-### 5.5 银行卡片
-
-* 白底、8px 圆角、1px `#D6E9DE` 边框、轻阴影；
-
-* 卡片 body 内边距 16px；
-
-* 卡头间距 12px，下间距 16px；
-
-* 银行 Logo 芯片：40 × 40px、白底、1px 边框、约 22% 圆角；
-
-* 银行名称：20px / 600 / Poppins，单行溢出省略；
-
-* 快照时间：12px / 400 / `#8FA398`，右对齐、不可压缩。
-
-### 5.6 货币分段控件
-
-* 外层背景 `#E8F3EC`，8px 圆角，内边距 3px，项间距 2px；
-
-* 单项：12px / 600，内边距 `5px 8px`，胶囊圆角；
-
-* 默认透明底、`#5A6B61` 文字；
-
-* 激活项白底、`#0A3726` 文字、轻阴影；
-
-* 外层下间距 12px。
-
-### 5.7 利率表格
-
-* 表格正文：14px / 400；
-
-* 表头：
-
-  * 12px / 600；
-
-  * 背景 `#EFF5F1`；
-
-  * 文字 `#5A6B61`；
-
-  * 字距 0.04em；
-
-  * 内边距 `8px 12px`；
-
-* 数据单元格：内边距 `6px 12px`，底部分隔线 `#EFF5F1`；
-
-* 偶数行：`#F2F8F4`；
-
-* 行 hover：`#E8F3EC`；
-
-* 利率列固定约 96px、右对齐、700 字重、`#20A06E`；
-
-* 涨跌列固定约 60px；
-
-* 涨跌值：12px / 600，数字等宽。
-
-### 5.8 页脚
-
-* 背景：`#F1F2F2`；
-
-* 上边框：1px `#D6E9DE`；
-
-* 上下内边距：24px；
-
-* 与主内容间距：48px；
-
-* 正文：12px / 400 / `#5A6B61`；
-
-* 品牌名：14px / 600 / Poppins / `#0A3726`。
-
-## 6. 最小实现 Token
-
-新页面至少应先落地以下变量，不应另起一套近似色：
+### 4.4 毛玻璃效果
 
 ```css
-:root {
-  --vp-green-dark: #0A3726;
-  --vp-green: #20A06E;
-  --vp-green-bright: #7CC366;
-  --vp-mint-50: #F2F8F4;
-  --vp-mint-100: #E8F3EC;
-  --vp-mint-200: #D6E9DE;
-  --vp-gray-100: #EFF5F1;
-  --vp-ink: #1E2B24;
-  --vp-gray: #5A6B61;
-  --vp-gray-light: #8FA398;
-  --vp-white: #FFFFFF;
-  --vp-danger: #B23A48;
-  --vp-footer-bg: #F1F2F2;
+backdrop-filter: blur(16px);
+background: linear-gradient(180deg, rgba(255,255,255,0.06), transparent 28%), var(--bg-elevated);
+```
+
+## 5. 布局系统
+
+### 5.1 布局尺寸
+
+| Token | 值 | 用途 |
+|-------|------|------|
+| `--sidebar-width` | 228px | 侧边栏宽度 |
+| `--header-height` | 56px | 顶栏高度 |
+| `--page-max-width` | 100% | 页面最大宽度 |
+
+### 5.2 过渡动画
+
+```css
+--transition-fast: 0.15s ease;
+--transition-normal: 0.25s ease;
+--transition-slow: 0.35s ease;
+```
+
+## 6. 组件规范
+
+### 6.1 侧边栏
+
+- 宽度：228px（折叠后 58px）
+- 背景：`--bg-sidebar`（白色）
+- 边框：`1px solid var(--border-default)`
+- 菜单项：
+  - 高度：36px
+  - 圆角：8px
+  - hover：`background: rgba(79,141,240,0.08)`
+  - 激活：`color: var(--primary-400)`
+
+### 6.2 顶栏
+
+- 高度：56px
+- 背景：`--bg-sidebar`
+- 边框：`1px solid var(--border-subtle)`
+- 头像按钮：34px 圆形，带渐变背景
+
+### 6.3 浮动菜单（毛玻璃）
+
+```css
+padding: 8px;
+border-radius: 14px;
+border: 1px solid var(--border-default);
+background: linear-gradient(180deg, rgba(255,255,255,0.06), transparent 28%), var(--bg-elevated);
+box-shadow: var(--shadow-lg);
+backdrop-filter: blur(16px);
+```
+
+### 6.4 卡片
+
+- 背景：`var(--bg-card)`（白色）
+- 边框：`1px solid var(--border-subtle)`
+- 圆角：`var(--radius-lg)`
+- 阴影：`var(--shadow-sm)`
+- hover：`border-color: var(--border-default); box-shadow: var(--shadow-md);`
+
+### 6.5 Hero 区域
+
+- 背景：`var(--bg-card)`
+- 白色卡片，带轻微阴影
+
+### 6.6 Pill 标签
+
+```css
+display: inline-flex;
+align-items: center;
+padding: 4px 10px;
+border-radius: 999px;
+background: rgba(79,141,240,0.08);
+color: var(--text-accent);
+font-size: 11px;
+font-weight: 600;
+```
+
+### 6.7 Eyebrow 标签
+
+```css
+width: fit-content;
+display: inline-flex;
+align-items: center;
+padding: 4px 10px;
+border-radius: 999px;
+background: rgba(79,141,240,0.08);
+color: var(--text-accent);
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+```
+
+### 6.8 按钮
+
+**主按钮：**
+```css
+min-height: 36px;
+padding: 0 16px;
+border-radius: var(--radius-sm);
+border: 1px solid transparent;
+background: linear-gradient(135deg, var(--primary-300), var(--primary-400));
+color: #fff;
+```
+
+**次按钮：**
+```css
+background: transparent;
+color: var(--text-secondary);
+border-color: var(--border-subtle);
+```
+
+### 6.9 搜索框
+
+```css
+background: var(--bg-input);
+border: 1px solid var(--border-subtle);
+border-radius: var(--radius-sm);
+transition: box-shadow 0.22s ease, border-color 0.22s ease;
+```
+
+聚焦状态：
+```css
+border-color: var(--primary-300);
+box-shadow: 0 0 0 2px rgba(79,141,240,0.14), var(--shadow-md);
+```
+
+### 6.10 表格
+
+- 表头背景：`var(--bg-elevated)`
+- 行背景：`var(--bg-card)`
+- 行 hover：`var(--bg-card-hover)`
+- 边框：`1px solid var(--border-subtle)`
+
+### 6.11 分段控件（Tab Strip）
+
+```css
+border-radius: 7px 7px 0 0;
+border: 1px solid transparent;
+border-bottom: 0;
+padding: 0 9px;
+font-size: 11px;
+background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(79,141,240,0.04));
+color: var(--text-muted);
+```
+
+激活态：
+```css
+color: var(--text-primary);
+border-color: var(--border-subtle);
+background: linear-gradient(180deg, rgba(255,255,255,0.08), transparent 60%), var(--bg-card);
+box-shadow: 0 -1px 0 var(--bg-card), var(--shadow-sm);
+```
+
+## 7. 设计模式
+
+### 7.1 背景模式
+
+页面背景使用纯色：
+
+```css
+body {
+  background: var(--bg-root);
 }
 ```
 
-## 7. 事实与解释边界
+### 7.2 字体禁用规则
 
-以下内容是从目标页面源码、CSS 或浏览器计算样式直接确认的事实：
+- 不要使用 `--vp-lime: #BDD646` 作为界面主色（仅限 Logo）
+- 不要使用 Poppins/Open Sans（改用 Inter + JetBrains Mono）
+- 不要使用深色主题作为默认界面
 
-* 字体栈、字号、字重、颜色 token；
+### 7.3 金融显示颜色（港式惯例）
 
-* Logo 文件、原图尺寸和页面实际显示尺寸；
+涨跌色在浅色和深色主题下都保持不变：
 
-* 间距、圆角、边框、阴影；
+```css
+/* 涨跌色保持不变 */
+--vp-danger: #B23A48;   /* 上涨（红色） */
+--vp-green: #20A06E;    /* 下跌（绿色） */
+```
 
-* Bootstrap 响应式列规则；
+## 8. 最小实现 Token
 
-* 390px 手机端实际换行和隐藏行为；
+```css
+:root {
+  /* Primary Blue */
+  --primary-900: #0a1628;
+  --primary-800: #0f2240;
+  --primary-700: #16325f;
+  --primary-600: #1d4580;
+  --primary-500: #245aa4;
+  --primary-400: #2d6ad2;
+  --primary-300: #4f8df0;
+  --primary-200: #7ab0ff;
+  --primary-100: #bcd8ff;
 
-* 表格、筛选器、卡片、顶栏、页脚的组件样式。
+  /* Accent */
+  --accent-cyan: #14b8d6;
+  --accent-indigo: #5b74f5;
 
-以下是对这些事实的设计解释，不是页面源码中的原文：
+  /* 保留港式惯例 */
+  --vp-danger: #B23A48;
+  --vp-green: #20A06E;
 
-* “功能优先的企业内部监控台”；
+  /* 布局 */
+  --sidebar-width: 228px;
+  --header-height: 56px;
 
-* “稳定、可信、克制”的视觉性格；
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
 
-* 后续页面应优先复用这些 token，而不是仅做视觉近似。
+  /* 过渡 */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.35s ease;
+}
+```
 
-## 8. 本目录证据索引
+## 9. 响应式断点
 
-* [`page.html`](./page.html)：服务器返回的干净页面源码；
+| 断点 | 布局变化 |
+|------|----------|
+| ≤960px | 侧边栏变为顶部导航 |
+| ≤1100px | Hero 和 Dashboard Grid 变为单列 |
+| ≤900px | Card Grid 变为 2 列 |
+| ≤720px | Card Grid 变为单列 |
 
-* [`rendered-page.html`](./rendered-page.html)：加载数据后的浏览器 DOM 快照；
+## 10. 设计资产
 
-* [`tokens.css`](./tokens.css)：目标页面原始设计 token；
-
-* [`brand.css`](./brand.css)：目标页面原始品牌与组件样式；
-
-* [`computed-styles.json`](./computed-styles.json)：1479px 桌面端最终计算样式；
-
-* [`responsive-styles.json`](./responsive-styles.json)：390px 手机端布局测量；
-
-* [`page-screenshot.jpg`](./page-screenshot.jpg)：桌面端完整页面截图；
-
-* [`page-screenshot-mobile.jpg`](./page-screenshot-mobile.jpg)：手机端完整页面截图；
-
-* [`assets/manifest.json`](./assets/manifest.json)：下载资源与原 URL 对照；
-
-* [`assets/`](./assets/)：CSS、Logo 与银行图标资源包。
+- **图标库**：使用 SVG 内联图标，stroke-width: 1.8
+- **头像**：渐变背景 `linear-gradient(135deg, var(--primary-300), var(--accent-indigo))`
+- **圆角**：8px / 12px / 16px / 22px 四级
