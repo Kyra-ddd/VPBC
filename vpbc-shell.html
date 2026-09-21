@@ -4405,15 +4405,29 @@ function idxDevTableHTML(tasks) {
   const cons = [...(IDX_CONSTITUENTS[idxDashIndex] || [])].sort((a, b) => b.weight - a.weight);
   const PER_COLS = 5; // wt, dev, tp, upside, remark
 
-  // Row 1: analyst names spanning their columns
+  // Row 1: analyst names spanning their columns (now 7 per analyst: wt/dev/tp/upside/remark/1m/ytd)
+  const PER_COLS2 = 7;
   const r1Cells = tasks.map(t =>
-    `<th class="center" colspan="${PER_COLS}">${t.analyst}</th>`
+    `<th class="center" colspan="${PER_COLS2}">${t.analyst}</th>`
   ).join("");
 
   // Row 2: sub-headers under each analyst
   const subHeaders = tasks.map(() =>
-    `<th class="right">权重(%)</th><th class="right">偏差(pp)</th><th class="right">TP</th><th class="right">Upside</th><th class="left">TP Remark</th>`
+    `<th class="right">权重(%)</th><th class="right">偏差(pp)</th><th class="right">TP</th><th class="right">Upside</th><th class="left">TP Remark</th><th class="right">近1月<br>回报率</th><th class="right">年初至今<br>回报率</th>`
   ).join("");
+
+  // 计算研究员组合区间回报（近1月 ≈ 4个周期前，YTD = 第一个周期）
+  function taskReturns(t) {
+    const nav = t.nav;
+    if (!nav || nav.length < 2) return { ret1m: null, retYtd: null };
+    const n = nav.length;
+    // 近1月：最新净值 / 4期前净值 - 1
+    const i1m = Math.max(0, n - 4);
+    const ret1m = nav[n - 1] / nav[i1m] - 1;
+    // 年初至今：最新净值 / 首期净值 - 1
+    const retYtd = nav[n - 1] / nav[0] - 1;
+    return { ret1m, retYtd };
+  }
 
   // Rows
   const rows = cons.map(s => {
@@ -4421,8 +4435,6 @@ function idxDevTableHTML(tasks) {
     const analystTags = (s.analysts || []).map(a =>
       `<span class="tag tag-gray" style="margin:1px">${a}</span>`
     ).join("");
-    const ret1mCls = s.ret1m >= 0 ? "tag-up" : "tag-down";
-    const retYtdCls = s.retYtd >= 0 ? "tag-up" : "tag-down";
 
     const cells = tasks.map(t => {
       const h = t.holdings.find(x => x.code === s.code);
@@ -4430,6 +4442,9 @@ function idxDevTableHTML(tasks) {
       const dev = s.weight - rw;
       const devCls = Math.abs(dev) < 0.005 ? "cell-muted" : dev > 0 ? "tag-up" : "tag-down";
       const upsideCls = h && h.upside > 0 ? "tag-up" : h && h.upside < 0 ? "tag-down" : "cell-muted";
+      const { ret1m, retYtd } = taskReturns(t);
+      const r1mCls = ret1m == null ? "cell-muted" : ret1m >= 0 ? "tag-up" : "tag-down";
+      const rYtdCls = retYtd == null ? "cell-muted" : retYtd >= 0 ? "tag-up" : "tag-down";
 
       return [
         `<td class="right" style="font-variant-numeric:tabular-nums">${h ? rw.toFixed(2) + "%" : '<span class="cell-muted">—</span>'}</td>`,
@@ -4437,6 +4452,8 @@ function idxDevTableHTML(tasks) {
         `<td class="right" style="font-variant-numeric:tabular-nums">${h && h.tp ? h.tp.toFixed(1) : '<span class="cell-muted">—</span>'}</td>`,
         `<td class="right ${upsideCls}" style="font-variant-numeric:tabular-nums">${h && h.upside ? (h.upside >= 0 ? "+" : "") + h.upside.toFixed(1) + "%" : '<span class="cell-muted">—</span>'}</td>`,
         `<td class="left tiny" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${h && h.tpRemark || ""}">${h && h.tpRemark || "—"}</td>`,
+        `<td class="right ${r1mCls}" style="font-variant-numeric:tabular-nums">${ret1m != null ? (ret1m >= 0 ? "+" : "") + (ret1m * 100).toFixed(1) + "%" : "—"}</td>`,
+        `<td class="right ${rYtdCls}" style="font-variant-numeric:tabular-nums">${retYtd != null ? (retYtd >= 0 ? "+" : "") + (retYtd * 100).toFixed(1) + "%" : "—"}</td>`,
       ].join("");
     }).join("");
 
@@ -4447,14 +4464,12 @@ function idxDevTableHTML(tasks) {
       <td><div>${s.name}</div>${en ? `<div class="tiny" style="color:var(--text-muted)">${en}</div>` : ""}</td>
       <td class="cell-muted">${s.industry || "—"}</td>
       <td class="cell-muted">${s.msciCountry || "—"}</td>
-      <td class="right ${ret1mCls}" style="font-variant-numeric:tabular-nums">${s.ret1m >= 0 ? "+" : ""}${s.ret1m != null ? s.ret1m.toFixed(1) + "%" : "—"}</td>
-      <td class="right ${retYtdCls}" style="font-variant-numeric:tabular-nums">${s.retYtd >= 0 ? "+" : ""}${s.retYtd != null ? s.retYtd.toFixed(1) + "%" : "—"}</td>
       <td><div style="display:flex;gap:2px;flex-wrap:wrap">${analystTags || '<span class="cell-muted">—</span>'}</div></td>
       ${cells}
     </tr>`;
   }).join("");
 
-  const totalCols = 9 + tasks.length * PER_COLS;
+  const totalCols = 7 + tasks.length * PER_COLS2;
   return `<div class="card mb-4">
     <div class="card-head"><div class="card-title">权重偏差明细 <span class="tiny">研究员持仓 vs 指数成份 · 偏差 = 指数权重 − 研究员权重（正 = 低配 / 负 = 超配）</span></div></div>
     <div style="overflow:auto;max-height:520px">
@@ -4467,8 +4482,6 @@ function idxDevTableHTML(tasks) {
             <th rowspan="2" class="left">股票名称</th>
             <th rowspan="2" class="left">所属行业</th>
             <th rowspan="2" class="left">MSCI国家</th>
-            <th rowspan="2" class="right">近1月<br>回报率</th>
-            <th rowspan="2" class="right">年初至今<br>回报率</th>
             <th rowspan="2" class="left">覆盖<br>研究员</th>
             ${r1Cells}
           </tr>
