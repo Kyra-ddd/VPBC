@@ -4155,7 +4155,6 @@ function buildIndexSim() {
           <div class="flex gap-2">
             <input type="text" class="input" style="width:160px" id="idxStockSearch" placeholder="搜索代码/Ticker/SEDOL/名称" oninput="idxRenderConstituents()">
             <button class="btn btn-ghost btn-sm" onclick="idxToggleSelectAll()">全选</button>
-            <button class="btn btn-primary btn-sm" onclick="idxOpenCreate('custom')">＋ 追加到组合</button>
           </div>
         </div>
         <div style="overflow:auto;max-height:520px">
@@ -4164,8 +4163,7 @@ function buildIndexSim() {
               <th style="width:36px"><input type="checkbox" onchange="idxToggleSelectAll()" id="idxSelectAllCk"></th>
               <th>股票代码</th><th>Ticker</th><th>SEDOL</th><th>股票名称</th><th>市场</th><th>行业</th>
               <th style="width:230px">权重(%) / 分布</th>
-              <th class="right">最新价</th><th class="right">今日涨跌</th><th class="right">累计权重</th>
-            </tr></thead>
+                          </tr></thead>
             <tbody id="idxConstBody"></tbody>
           </table>
         </div>
@@ -4307,12 +4305,9 @@ function idxRenderConstituents() {
     return a.name.localeCompare(b.name, 'zh');
   });
   const maxWt = Math.max(...data.map(x => x.weight), 0.01);
-  let cum = 0;
   body.innerHTML = sorted.length === 0
-    ? '<tr><td colspan="11" class="muted" style="text-align:center;padding:32px">该指数暂无演示数据</td></tr>'
+    ? '<tr><td colspan="8" class="muted" style="text-align:center;padding:32px">该指数暂无演示数据</td></tr>'
     : sorted.map(s => {
-      cum += s.weight;
-      const up = s.chg >= 0;
       const pct = (s.weight / maxWt * 100).toFixed(1);
       return `<tr>
         <td><input type="checkbox" ${idxSelected.has(s.code) ? 'checked' : ''} onchange="idxToggleSelect('${s.code}')"></td>
@@ -4328,9 +4323,6 @@ function idxRenderConstituents() {
             <div style="flex:1;height:8px;background:var(--bg-elevated);border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--vp-green);border-radius:4px"></div></div>
           </div>
         </td>
-        <td class="right" style="font-variant-numeric:tabular-nums">${s.price.toLocaleString()}</td>
-        <td class="right ${up?'tag-up':'tag-down'}">${up?'+':''}${s.chg.toFixed(2)}%</td>
-        <td class="right cell-muted" style="font-variant-numeric:tabular-nums">${cum.toFixed(2)}%</td>
       </tr>`;
     }).join("");
   const total = data.reduce((s, x) => s + x.weight, 0);
